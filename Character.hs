@@ -1,9 +1,12 @@
 module Character where
 
 import Modifier
+import Taggable
 import Race
-import CharacterClass
+import CharacterClass as CC
 import Level
+import Skill
+import Equipment
 
 
 data Character = Character { name :: String
@@ -16,7 +19,29 @@ data Character = Character { name :: String
                            , race :: Race
                            , characterClass :: Class
                            , levels :: [Level]
+                           , equippedGear :: [Equipment]
+                           , carriedGear :: [Equipment]
                            } deriving (Show)
+
+
+skillAbilMod Acrobatics = (dexMod) 
+skillAbilMod Arcana = (intMod) 
+skillAbilMod Athletics = (strMod)
+skillAbilMod Bluff = (chaMod)
+skillAbilMod Diplomacy = (chaMod)
+skillAbilMod Dungeoneering = (wisMod)
+skillAbilMod Endurance = (conMod)
+skillAbilMod Heal = (wisMod)
+skillAbilMod History= (intMod)
+skillAbilMod Insight = (wisMod)
+skillAbilMod Intimidate = (chaMod)
+skillAbilMod Nature = (wisMod)
+skillAbilMod Perception = (wisMod)
+skillAbilMod Religion= (intMod)
+skillAbilMod Stealth = (dexMod)
+skillAbilMod Streetwise = (chaMod)
+skillAbilMod Thievery = (dexMod)
+
 
 str :: Character -> Int
 str c = sum $ baseStr c:(map value (Character.strMods c))
@@ -59,22 +84,35 @@ chaMod c = (abilMod . cha) c
 
 
 strMods :: (Modifiable a) => a -> [Modifier]
-strMods c = filter (\mod -> modType mod == "Strength") (Modifier.modifiers c)
+strMods c = filter (\mod -> target mod == "Strength") (Modifier.modifiers c)
 
 dexMods :: (Modifiable a) => a -> [Modifier]
-dexMods c = filter (\mod -> modType mod == "Dexterity") (Modifier.modifiers c)
+dexMods c = filter (\mod -> target mod == "Dexterity") (Modifier.modifiers c)
 
 conMods :: (Modifiable a) => a -> [Modifier]
-conMods c = filter (\mod -> modType mod == "Constitution") (Modifier.modifiers c)
+conMods c = filter (\mod -> target mod == "Constitution") (Modifier.modifiers c)
 
 intMods :: (Modifiable a) => a -> [Modifier]
-intMods c = filter (\mod -> modType mod == "Intelligence") (Modifier.modifiers c)
+intMods c = filter (\mod -> target mod == "Intelligence") (Modifier.modifiers c)
 
 wisMods :: (Modifiable a) => a -> [Modifier]
-wisMods c = filter (\mod -> modType mod == "Wisdom") (Modifier.modifiers c)
+wisMods c = filter (\mod -> target mod == "Wisdom") (Modifier.modifiers c)
 
 chaMods :: (Modifiable a) => a -> [Modifier]
-chaMods c = filter (\mod -> modType mod == "Charisma") (Modifier.modifiers c)
+chaMods c = filter (\mod -> target mod == "Charisma") (Modifier.modifiers c)
+
+
+fortMods :: (Modifiable a) => a -> [Modifier]
+fortMods c = filter (\mod -> target mod == "Fortitude") (Modifier.modifiers c)
+
+refMods :: (Modifiable a) => a -> [Modifier]
+refMods c = filter (\mod -> target mod == "Reflex") (Modifier.modifiers c)
+
+willMods :: (Modifiable a) => a -> [Modifier]
+willMods c = filter (\mod -> target mod == "Will") (Modifier.modifiers c)
+
+acMods :: (Modifiable a) => a -> [Modifier]
+acMods c = filter (\mod -> target mod == "AC") (Modifier.modifiers c)
 
 
 level :: Character -> Int
@@ -90,14 +128,37 @@ tenPlusHalfLevel c = 10 + halfLevel c
 initiative :: Character -> Int
 initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
 
+
+ac :: Character -> Int
+-- dexMod if wearing light or no armor
+ac c = sum $ [tenPlusHalfLevel c, 
+              abilModForAc c,
+              sum $ map value (acMods c)]
+-- enhancement bonus
+-- misc bonus
+
 fortitude :: Character -> Int
-fortitude c = maximum [strMod c, conMod c] + tenPlusHalfLevel c
+fortitude c = maximum [strMod c, conMod c] 
+         + tenPlusHalfLevel c
+         + (sum $ map value (fortMods c))
 
 reflex :: Character -> Int
-reflex c = maximum [dexMod c, intMod c] + tenPlusHalfLevel c
+reflex c = maximum [intMod c, dexMod c] 
+         + tenPlusHalfLevel c
+         + (sum $ map value (refMods c))
 
 will :: Character -> Int
-will c = maximum [chaMod c, wisMod c] + tenPlusHalfLevel c
+will c = maximum [chaMod c, wisMod c] 
+         + tenPlusHalfLevel c
+         + (sum $ map value (willMods c))
+
+abilModForAc :: Character -> Int
+abilModForAc c
+  | wearingLightOrNoArmor c == True = maximum [intMod c, dexMod c]
+  | otherwise                       = 0
+
+wearingLightOrNoArmor :: Character -> Bool
+wearingLightOrNoArmor c = taggedWithP (equippedGear c) heavyArmorTag == False
 
 hp :: Character -> Int
 hp c = con c
@@ -112,10 +173,33 @@ healingSurgeValue c = hp c `div` 4
 
 healingSurgesPerDay :: Character -> Int
 healingSurgesPerDay c = conMod c
-                        + (CharacterClass.healingSurgesPerDay . characterClass) c
+                        + (CC.healingSurgesPerDay . characterClass) c
 
+skill :: Character -> SkillName -> Int
+skill c s = halfLevel c 
+            + trainedBonus c s
+            + (skillAbilMod s) c 
+            -- + armor check penalty
 
+skills c = mapM_ (displaySkill c) skillNames
+
+displaySkill :: Character -> SkillName -> IO ()
+displaySkill c s = putStrLn $ (show s) ++ ":\t" ++ (show $ skill c s)
+  
+trainedBonus :: Character -> SkillName -> Int
+trainedBonus c s 
+  | isTrained c s == True = 5 -- magic number :(
+  | otherwise             = 0
+
+isTrained :: Character -> SkillName -> Bool
+isTrained c s = s `elem` Character.trainedSkills c
+
+trainedSkills :: Character -> [SkillName]
+trainedSkills c = concat [(CC.trainedSkills . characterClass) c
+                          -- feats that train in skills
+                         ]
 instance Modifiable Character where
   modifiers c = concat [(Race.modifiers . race) c,
-                        (CharacterClass.modifiers . characterClass) c,
+                        (CC.modifiers . characterClass) c,
+                        (concatMap Equipment.modifiers (equippedGear c)),
                         (concatMap Level.modifiers (Character.levels c))]
