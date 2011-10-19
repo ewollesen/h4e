@@ -2,7 +2,14 @@ module Modifier where
 
 data Modifier = Modifier { name :: String
                          , modType :: String -- I should be an enum
-                         , mod :: Int
+                         , value :: Int
                          } deriving (Show)
 
-raceWisPlus2 = Modifier {name="+2 Wisdom (Racial)", modType="Wisdom", Modifier.mod=2}
+
+class Modifiable a where
+  modifiers :: a -> [Modifier]
+
+
+modFactory name modType value = Modifier { Modifier.name=name
+                                         , Modifier.modType=modType
+                                         , Modifier.value=value }

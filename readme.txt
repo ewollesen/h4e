@@ -2,9 +2,9 @@ D&D Character Calculations
 
 Goal: To calculate all the fields on a 4E D&D Character Sheet
 
-Inputs: Character=([ability],
+Inputs: Character=(str, dex, con, int, wis, cha,
                    race=([ability_mod]),
-                   class,
+                   class=([ability_mod]),
                    [level=(feats, skills, [ability_mod])])
 
 Ouptuts: initiative, [defenses=(!ac, fort, ref, will)], hit points, bloodied,
