@@ -99,7 +99,23 @@ reflex c = maximum [dexMod c, intMod c] + tenPlusHalfLevel c
 will :: Character -> Int
 will c = maximum [chaMod c, wisMod c] + tenPlusHalfLevel c
 
+hp :: Character -> Int
+hp c = con c
+       + (hpAtFirstLevel . characterClass) c
+       + ((hpPerLevelGained . characterClass) c * (Character.level c - 1))
+
+bloodied :: Character -> Int
+bloodied c = hp c `div` 2
+
+healingSurgeValue :: Character -> Int
+healingSurgeValue c = hp c `div` 4
+
+healingSurgesPerDay :: Character -> Int
+healingSurgesPerDay c = conMod c
+                        + (CharacterClass.healingSurgesPerDay . characterClass) c
+
+
 instance Modifiable Character where
-  modifiers c = concat [(Race.modifiers . race) c, 
+  modifiers c = concat [(Race.modifiers . race) c,
                         (CharacterClass.modifiers . characterClass) c,
                         (concatMap Level.modifiers (Character.levels c))]
