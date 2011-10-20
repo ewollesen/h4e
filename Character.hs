@@ -86,7 +86,7 @@ halfLevel c = Character.level c `div` 2
 tenPlusHalfLevel :: Character -> Int
 tenPlusHalfLevel c = 10 + halfLevel c
 
--- is initiative affected by the armor check penalty in 4E?
+-- is initiative affected by the armor check penalty in 4E? NO.
 initiative :: Character -> Int
 initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
 

@@ -13,16 +13,14 @@ attackMod :: Int -> Int
 attackMod lvl = lvl `div` 2
 
 
- 
 pontus = Character { Character.name = "Pontus"
                    , baseStr=11
-                   , baseDex=11
+                   , baseDex=10
                    , baseCon=17
-                   , baseInt=11
+                   , baseInt=10
                    , baseWis=14
-                   , baseCha=14
-                   , characterClass=battlemind classWisPlus2
+                   , baseCha=12
+                   , characterClass=battlemind
                    , race=human raceWisPlus2
-                   , levels=[Level.level levelWisPlus1, 
-                             Level.level levelConPlus1]
+                   , levels=[Level.level]
                    }
