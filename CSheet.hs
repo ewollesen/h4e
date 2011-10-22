@@ -21,8 +21,8 @@ printRule s = printRow "-----------------------" ""
 csheet :: Character -> IO ()
 csheet c = do
   printRow "Strength:" (show $ str c)
-  printRow "Dexterity:" (show $ dex c)
   printRow "Constitution:" (show $ con c)
+  printRow "Dexterity:" (show $ dex c)
   printRow "Intelligence:" (show $ int c)
   printRow "Wisdom:" (show $ wis c)
   printRow "Charisma:" (show $ cha c)

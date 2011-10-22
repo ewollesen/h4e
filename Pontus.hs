@@ -13,14 +13,15 @@ import Equipment
 
 pontus = Character { Character.name = "Pontus"
                    , baseStr=11
-                   , baseDex=10
                    , baseCon=17
+                   , baseDex=10
                    , baseInt=10
                    , baseWis=14
                    , baseCha=12
-                   , characterClass=battlemind [] [Skill.Heal, 
+                   , characterClass=battlemind [] [Skill.Heal,
                                                    Skill.Diplomacy,
-                                                   Skill.Endurance]
+                                                   Skill.Endurance,
+                                                   Skill.Insight]
                    , race=human raceWisPlus2
                    , levels=[Level.level []]
                    , equippedGear=[scaleMail, lightShield]

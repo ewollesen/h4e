@@ -7,6 +7,7 @@ import CharacterClass as CC
 import Level
 import Skill
 import Equipment
+import Ability
 
 
 data Character = Character { name :: String
@@ -22,6 +23,15 @@ data Character = Character { name :: String
                            , equippedGear :: [Equipment]
                            , carriedGear :: [Equipment]
                            } deriving (Show)
+
+
+
+ability Strength = (str)
+ability Dexterity = (dex)
+ability Constitution = (con)
+ability Intelligence = (int)
+ability Wisdom = (wis)
+ability Charisma = (cha)
 
 
 skillAbilMod Acrobatics = (dexMod)
@@ -42,12 +52,6 @@ skillAbilMod Stealth = (dexMod)
 skillAbilMod Streetwise = (chaMod)
 skillAbilMod Thievery = (dexMod)
 
-ability Strength = (str)
-ability Dexterity = (dex)
-ability Constitution = (con)
-ability Intelligence = (int)
-ability Wisdom = (wis)
-ability Charisma = (cha)
 
 abilityMod Strength = (strMod)
 abilityMod Dexterity = (dexMod)
@@ -115,16 +119,6 @@ wisMods c = filter (\mod -> target mod == "Wisdom") (Modifier.modifiers c)
 chaMods :: (Modifiable a) => a -> [Modifier]
 chaMods c = filter (\mod -> target mod == "Charisma") (Modifier.modifiers c)
 
-data AbilityName = Strength
-                 | Dexterity
-                 | Constitution
-                 | Intelligence
-                 | Wisdom
-                 | Charisma
-               deriving (Show, Eq, Enum)
-
--- ability :: Character -> AbilityName -> Int
--- ability c a = ???
 
 fortMods :: (Modifiable a) => a -> [Modifier]
 fortMods c = filter (\mod -> target mod == "Fortitude") (Modifier.modifiers c)
@@ -199,19 +193,19 @@ healingSurgesPerDay :: Character -> Int
 healingSurgesPerDay c = conMod c
                         + (CC.healingSurgesPerDay . characterClass) c
 
-skill :: Character -> SkillName -> Int
-skill c s = halfLevel c
-            + trainedBonus c s
-            + (skillAbilMod s) c
+-- skill :: Character -> SkillName -> Int
+-- skill c s = halfLevel c
+--             + trainedBonus c s
+--             + (skillAbilMod s) c
             -- + armor check penalty
 
 trainedBonus :: Character -> SkillName -> Int
 trainedBonus c s
-  | isTrained c s == True = 5 -- magic number :(
-  | otherwise             = 0
+  | trainedp c s == True = 5 -- magic number :(
+  | otherwise            = 0
 
-isTrained :: Character -> SkillName -> Bool
-isTrained c s = s `elem` Character.trainedSkills c
+trainedp :: Character -> SkillName -> Bool
+trainedp c s = s `elem` Character.trainedSkills c
 
 trainedSkills :: Character -> [SkillName]
 trainedSkills c = concat [(CC.trainedSkills . characterClass) c
@@ -222,3 +216,19 @@ instance Modifiable Character where
                         (CC.modifiers . characterClass) c,
                         (concatMap Equipment.modifiers (equippedGear c)),
                         (concatMap Level.modifiers (Character.levels c))]
+
+instance Skilled Character where
+  skill c name = trainedBonus c name + (skillAbilMod name) c + skillArmorPenalty c name
+  skillMods c name = []
+  skillArmorPenalty c name
+    | skillArmorPenaltyp name == True && not (wearingLightOrNoArmor c) = armorPenalty c
+    | otherwise = 0
+
+skillArmorPenaltyp Acrobatics = True
+skillArmorPenaltyp Athletics = True
+skillArmorPenaltyp Endurance = True
+skillArmorPenaltyp Stealth = True
+skillArmorPenaltyp Thievery = True
+skillArmorPenaltyp n = False
+
+armorPenalty c = sum $ (map value (filter (\mod -> target mod == "ArmorPenalty") (Modifier.modifiers c)))
