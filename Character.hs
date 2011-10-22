@@ -24,8 +24,8 @@ data Character = Character { name :: String
                            } deriving (Show)
 
 
-skillAbilMod Acrobatics = (dexMod) 
-skillAbilMod Arcana = (intMod) 
+skillAbilMod Acrobatics = (dexMod)
+skillAbilMod Arcana = (intMod)
 skillAbilMod Athletics = (strMod)
 skillAbilMod Bluff = (chaMod)
 skillAbilMod Diplomacy = (chaMod)
@@ -41,6 +41,20 @@ skillAbilMod Religion= (intMod)
 skillAbilMod Stealth = (dexMod)
 skillAbilMod Streetwise = (chaMod)
 skillAbilMod Thievery = (dexMod)
+
+ability Strength = (str)
+ability Dexterity = (dex)
+ability Constitution = (con)
+ability Intelligence = (int)
+ability Wisdom = (wis)
+ability Charisma = (cha)
+
+abilityMod Strength = (strMod)
+abilityMod Dexterity = (dexMod)
+abilityMod Constitution = (conMod)
+abilityMod Intelligence = (intMod)
+abilityMod Wisdom = (wisMod)
+abilityMod Charisma = (chaMod)
 
 
 str :: Character -> Int
@@ -101,6 +115,16 @@ wisMods c = filter (\mod -> target mod == "Wisdom") (Modifier.modifiers c)
 chaMods :: (Modifiable a) => a -> [Modifier]
 chaMods c = filter (\mod -> target mod == "Charisma") (Modifier.modifiers c)
 
+data AbilityName = Strength
+                 | Dexterity
+                 | Constitution
+                 | Intelligence
+                 | Wisdom
+                 | Charisma
+               deriving (Show, Eq, Enum)
+
+-- ability :: Character -> AbilityName -> Int
+-- ability c a = ???
 
 fortMods :: (Modifiable a) => a -> [Modifier]
 fortMods c = filter (\mod -> target mod == "Fortitude") (Modifier.modifiers c)
@@ -131,24 +155,24 @@ initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
 
 ac :: Character -> Int
 -- dexMod if wearing light or no armor
-ac c = sum $ [tenPlusHalfLevel c, 
+ac c = sum $ [tenPlusHalfLevel c,
               abilModForAc c,
               sum $ map value (acMods c)]
 -- enhancement bonus
 -- misc bonus
 
 fortitude :: Character -> Int
-fortitude c = maximum [strMod c, conMod c] 
+fortitude c = maximum [strMod c, conMod c]
          + tenPlusHalfLevel c
          + (sum $ map value (fortMods c))
 
 reflex :: Character -> Int
-reflex c = maximum [intMod c, dexMod c] 
+reflex c = maximum [intMod c, dexMod c]
          + tenPlusHalfLevel c
          + (sum $ map value (refMods c))
 
 will :: Character -> Int
-will c = maximum [chaMod c, wisMod c] 
+will c = maximum [chaMod c, wisMod c]
          + tenPlusHalfLevel c
          + (sum $ map value (willMods c))
 
@@ -176,18 +200,13 @@ healingSurgesPerDay c = conMod c
                         + (CC.healingSurgesPerDay . characterClass) c
 
 skill :: Character -> SkillName -> Int
-skill c s = halfLevel c 
+skill c s = halfLevel c
             + trainedBonus c s
-            + (skillAbilMod s) c 
+            + (skillAbilMod s) c
             -- + armor check penalty
 
-skills c = mapM_ (displaySkill c) skillNames
-
-displaySkill :: Character -> SkillName -> IO ()
-displaySkill c s = putStrLn $ (show s) ++ ":\t" ++ (show $ skill c s)
-  
 trainedBonus :: Character -> SkillName -> Int
-trainedBonus c s 
+trainedBonus c s
   | isTrained c s == True = 5 -- magic number :(
   | otherwise             = 0
 

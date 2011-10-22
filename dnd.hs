@@ -1,7 +1,8 @@
 import Pontus
 import Character  
-import Equipment
+import CSheet
+import Text.Printf
+--printrow "AC" (ac pontus)
 
-  
-main = do 
-  skills pontus
+foo :: String -> IO ()
+foo x = printf $ show x ++ "\n"
