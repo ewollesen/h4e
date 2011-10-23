@@ -27,6 +27,11 @@ csheet c = do
   printRow "Wisdom:" (show $ wis c)
   printRow "Charisma:" (show $ cha c)
   printRule ""
+  printRow "Max HP:" (show $ hp c)
+  printRow "Bloodied:" (show $ bloodied c)
+  printRow "Healing surge value:" (show $ healingSurgeValue c)
+  printRow "Healing surges/day:" (show $ healingSurgesPerDay c)
+  printRule ""
   printRow "Initiative:" (show $ initiative c)
   printRule ""
   printRow "AC:" (show $ ac c)
@@ -34,9 +39,9 @@ csheet c = do
   printRow "Reflex:" (show $ reflex c)
   printRow "Willpower:" (show $ will c)
   printRule ""
-  printRow "HP:" (show $ hp c)
-  printRow "Bloodied:" (show $ bloodied c)
-  printRow "Healing surges/day:" (show $ healingSurgesPerDay c)
-  printRow "Healing surge value:" (show $ healingSurgeValue c)
+  printRow "Speed:" (show $ speed c)
+  printRule ""
+  printRow "Passive insight:" (show $ skillPassiveInsight c)
+  printRow "Passive perception:" (show $ skillPassivePerception c)
   printRule ""
   printSkills c

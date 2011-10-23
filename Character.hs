@@ -33,6 +33,12 @@ ability Intelligence = (int)
 ability Wisdom = (wis)
 ability Charisma = (cha)
 
+abilityMod Strength = (strMod)
+abilityMod Dexterity = (dexMod)
+abilityMod Constitution = (conMod)
+abilityMod Intelligence = (intMod)
+abilityMod Wisdom = (wisMod)
+abilityMod Charisma = (chaMod)
 
 skillAbilMod Acrobatics = (dexMod)
 skillAbilMod Arcana = (intMod)
@@ -51,14 +57,6 @@ skillAbilMod Religion= (intMod)
 skillAbilMod Stealth = (dexMod)
 skillAbilMod Streetwise = (chaMod)
 skillAbilMod Thievery = (dexMod)
-
-
-abilityMod Strength = (strMod)
-abilityMod Dexterity = (dexMod)
-abilityMod Constitution = (conMod)
-abilityMod Intelligence = (intMod)
-abilityMod Wisdom = (wisMod)
-abilityMod Charisma = (chaMod)
 
 
 str :: Character -> Int
@@ -142,18 +140,24 @@ halfLevel c = Character.level c `div` 2
 tenPlusHalfLevel :: Character -> Int
 tenPlusHalfLevel c = 10 + halfLevel c
 
--- is initiative affected by the armor check penalty in 4E? NO.
+-- is initiative affected by the armor penalty in 4E? NO.
+-- add other mods, feats, powers, equipment
 initiative :: Character -> Int
 initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
 
 
 ac :: Character -> Int
--- dexMod if wearing light or no armor
 ac c = sum $ [tenPlusHalfLevel c,
               abilModForAc c,
               sum $ map value (acMods c)]
--- enhancement bonus
--- misc bonus
+
+abilModForAc :: Character -> Int
+abilModForAc c
+  | wearingLightOrNoArmor c == True = maximum [intMod c, dexMod c]
+  | otherwise                       = 0
+
+wearingLightOrNoArmor :: Character -> Bool
+wearingLightOrNoArmor c = taggedWithP (equippedGear c) heavyArmorTag == False
 
 fortitude :: Character -> Int
 fortitude c = maximum [strMod c, conMod c]
@@ -170,14 +174,6 @@ will c = maximum [chaMod c, wisMod c]
          + tenPlusHalfLevel c
          + (sum $ map value (willMods c))
 
-abilModForAc :: Character -> Int
-abilModForAc c
-  | wearingLightOrNoArmor c == True = maximum [intMod c, dexMod c]
-  | otherwise                       = 0
-
-wearingLightOrNoArmor :: Character -> Bool
-wearingLightOrNoArmor c = taggedWithP (equippedGear c) heavyArmorTag == False
-
 hp :: Character -> Int
 hp c = con c
        + (hpAtFirstLevel . characterClass) c
@@ -193,24 +189,23 @@ healingSurgesPerDay :: Character -> Int
 healingSurgesPerDay c = conMod c
                         + (CC.healingSurgesPerDay . characterClass) c
 
--- skill :: Character -> SkillName -> Int
--- skill c s = halfLevel c
---             + trainedBonus c s
---             + (skillAbilMod s) c
-            -- + armor check penalty
+
+speed c = 6 + armorPenalty c -- magic number, no feats or equipment
+
 
 trainedBonus :: Character -> SkillName -> Int
 trainedBonus c s
-  | trainedp c s == True = 5 -- magic number :(
+  | trainedSkill c s == True = 5 -- magic number :(
   | otherwise            = 0
 
-trainedp :: Character -> SkillName -> Bool
-trainedp c s = s `elem` Character.trainedSkills c
+trainedSkill :: Character -> SkillName -> Bool
+trainedSkill c s = s `elem` Character.trainedSkills c
 
 trainedSkills :: Character -> [SkillName]
 trainedSkills c = concat [(CC.trainedSkills . characterClass) c
                           -- feats that train in skills
                          ]
+
 instance Modifiable Character where
   modifiers c = concat [(Race.modifiers . race) c,
                         (CC.modifiers . characterClass) c,
@@ -218,17 +213,17 @@ instance Modifiable Character where
                         (concatMap Level.modifiers (Character.levels c))]
 
 instance Skilled Character where
-  skill c name = trainedBonus c name + (skillAbilMod name) c + skillArmorPenalty c name
+  skill c name = trainedBonus c name +
+                 (skillAbilMod name) c +
+                 skillArmorPenalty c name
   skillMods c name = []
   skillArmorPenalty c name
-    | skillArmorPenaltyp name == True && not (wearingLightOrNoArmor c) = armorPenalty c
+    | skillArmorPenaltyApplies name (not (wearingLightOrNoArmor c)) = armorPenalty c
     | otherwise = 0
 
-skillArmorPenaltyp Acrobatics = True
-skillArmorPenaltyp Athletics = True
-skillArmorPenaltyp Endurance = True
-skillArmorPenaltyp Stealth = True
-skillArmorPenaltyp Thievery = True
-skillArmorPenaltyp n = False
-
 armorPenalty c = sum $ (map value (filter (\mod -> target mod == "ArmorPenalty") (Modifier.modifiers c)))
+
+
+basicMeleeAttack c = halfLevel c + strMod c + weaponProficiencyBonus c
+
+weaponProficiencyBonus c = 3

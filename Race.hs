@@ -11,8 +11,14 @@ data Race = Race { name :: String
 raceConPlus2 = modFactory "+2 Constitution (Racial)" "Constitution" 2
 raceWisPlus2 = modFactory "+2 Wisdom (Racial)" "Wisdom" 2
 
+racePlusOneFortitude = modFactory "+1 Fortitude (Racial)" "Fortitude" 1
+racePlusOneReflex = modFactory "+1 Reflex (Racial)" "Reflex" 1
+racePlusOneWill = modFactory "+1 Will (Racial)" "Will" 1
 
 human :: Modifier -> Race
 human abil = Race { Race.name="human"
-                  , Race.modifiers=[abil]
+                  , Race.modifiers=[abil,
+                                    racePlusOneFortitude,
+                                    racePlusOneReflex,
+                                    racePlusOneWill]
                   }

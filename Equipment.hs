@@ -27,5 +27,9 @@ lightShield = equipFactory "Shield (light)"
                modFactory "+1 Reflex bonus (Shield)" "Reflex" 1]
               [lightArmorTag]
 
+longsword = equipFactory "Longsword"
+            []
+            []
+
 instance Taggable Equipment where
   tags e = Equipment.tags e

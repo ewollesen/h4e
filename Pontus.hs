@@ -24,6 +24,6 @@ pontus = Character { Character.name = "Pontus"
                                                    Skill.Insight]
                    , race=human raceWisPlus2
                    , levels=[Level.level []]
-                   , equippedGear=[scaleMail, lightShield]
+                   , equippedGear=[scaleMail, lightShield, longsword]
                    , carriedGear=[]
                    }
