@@ -9,6 +9,7 @@ import CharacterClass.Battlemind
 import Level
 import Skill
 import Equipment
+import Weapon
 
 
 pontus = Character { Character.name = "Pontus"
@@ -23,7 +24,7 @@ pontus = Character { Character.name = "Pontus"
                                                    Skill.Endurance,
                                                    Skill.Insight]
                    , race=human raceWisPlus2
-                   , levels=[Level.level []]
-                   , equippedGear=[scaleMail, lightShield, longsword]
-                   , carriedGear=[]
+                   , levels=[Level.level [] [ironFist]]
+                   , gear=[scaleMail, lightShield]
+                   , weapons=[longsword, dagger]
                    }

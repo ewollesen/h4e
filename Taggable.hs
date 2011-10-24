@@ -8,5 +8,5 @@ class Taggable a where
 tagFactory n = Tag { name=n }
 
 
-taggedWith e t = filter (\e -> t `elem` tags e) e
-taggedWithP e t = length (filter (\e -> t `elem` tags e) e) > 0
+taggedWith e t = length (filter (\e -> t `elem` tags e) e) > 0
+isTaggedWith e t = t `elem` (tags e)

@@ -6,9 +6,11 @@ import Race
 import CharacterClass as CC
 import Level
 import Skill
-import Equipment
 import Ability
-
+import Equipment
+import Equippable
+import Weapon
+import Weaponlike
 
 data Character = Character { name :: String
                            , baseStr :: Int
@@ -20,8 +22,8 @@ data Character = Character { name :: String
                            , race :: Race
                            , characterClass :: Class
                            , levels :: [Level]
-                           , equippedGear :: [Equipment]
-                           , carriedGear :: [Equipment]
+                           , gear :: [Equipment]
+                           , weapons :: [Weapon]
                            } deriving (Show)
 
 
@@ -157,7 +159,7 @@ abilModForAc c
   | otherwise                       = 0
 
 wearingLightOrNoArmor :: Character -> Bool
-wearingLightOrNoArmor c = taggedWithP (equippedGear c) heavyArmorTag == False
+wearingLightOrNoArmor c = taggedWith (gear c) heavyArmorTag == False
 
 fortitude :: Character -> Int
 fortitude c = maximum [strMod c, conMod c]
@@ -209,7 +211,7 @@ trainedSkills c = concat [(CC.trainedSkills . characterClass) c
 instance Modifiable Character where
   modifiers c = concat [(Race.modifiers . race) c,
                         (CC.modifiers . characterClass) c,
-                        (concatMap Equipment.modifiers (equippedGear c)),
+                        (concatMap Equipment.modifiers (gear c)),
                         (concatMap Level.modifiers (Character.levels c))]
 
 instance Skilled Character where
@@ -221,9 +223,22 @@ instance Skilled Character where
     | skillArmorPenaltyApplies name (not (wearingLightOrNoArmor c)) = armorPenalty c
     | otherwise = 0
 
+
 armorPenalty c = sum $ (map value (filter (\mod -> target mod == "ArmorPenalty") (Modifier.modifiers c)))
 
 
-basicMeleeAttack c = halfLevel c + strMod c + weaponProficiencyBonus c
+basicMeleeAttack c w = basicAttack c w + strMod c
+basicRangedAttack c w = basicAttack c w + dexMod c
 
-weaponProficiencyBonus c = 3
+basicAttack c w = halfLevel c + (weaponProficiencyBonus c w)
+
+weaponProficiencyBonus c w
+  | isProficientWith c w == True = Weapon.proficiencyBonus w
+  | otherwise = 0
+
+primaryWeapon c = head $ weapons c
+secondaryWeapon c = head $ tail (weapons c)
+
+isProficientWith c w = grantsProficiencyWith (characterClass c) w
+
+powers c = concatMap Level.powers (levels c)

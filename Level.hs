@@ -1,13 +1,15 @@
 module Level where
 
 import Modifier
+import Power
 
 data Level = Level { modifiers :: [Modifier]
+                   , powers :: [Power]
                    --, feats :: [Feat]
                    } deriving (Show)
 
-level :: [Modifier] -> Level
-level x = Level {Level.modifiers=x}
+level :: [Modifier] -> [Power] -> Level
+level x y = Level {Level.modifiers=x, Level.powers=y}
 
 
 levelConPlus1 = modFactory "Constitution +1 (Level)" "Constitution" 1
