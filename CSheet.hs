@@ -24,12 +24,12 @@ printAbility c a = printRow ((show a) ++ ":")
                     " (" ++ (printf "+%d" $ (abilityMod a) c ) ++ ")")
 
 printPowers :: Character -> IO ()
-printPowers c = mapM_ (printPower) (Character.powers c)
+printPowers c = mapM_ (printPower c) (Character.powers c)
 
-printPower :: Power -> IO ()
-printPower p = do
-  printRow (Power.name p) ""
-  printRow "Attack:" ((show $ attackAbility p) ++ " vs " ++ (attackVsDefense p))
+printPower :: Character -> Power -> IO ()
+printPower c p = do
+  printRow ("=== " ++ (Power.name p) ++ " ===") ""
+  printRow "Attack:" ((printf "%s (%+d)" (show $ attackAbility p) (attackBonus c (attackAbility p))) ++ " vs " ++ (attackVsDefense p))
   printRow "Hit:" (hit p)
 
 csheet :: Character -> IO ()
