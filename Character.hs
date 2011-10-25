@@ -234,3 +234,6 @@ secondaryWeapon c = head $ tail (weapons c)
 isProficientWith c w = grantsProficiencyWith (characterClass c) w
 
 powers c = concatMap Level.powers (levels c)
+
+attackBonus :: Character -> AbilityName -> Int
+attackBonus c a = (basicAttack c (primaryWeapon c)) + ((abilityMod a) c)
