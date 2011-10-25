@@ -17,9 +17,14 @@ equipFactory n m t = Equipment { Equipment.name=n
 lightArmorTag = tagFactory "Light"
 heavyArmorTag = tagFactory "Heavy"
 
+plateMail = equipFactory "Plate mail"
+            [modFactory "+8 AC bonus (Armor)" "AC" 8,
+             modFactory "-1 Armor penalty" "ArmorPenalty" (-2)]
+            [heavyArmorTag]
+
 scaleMail = equipFactory "Scale mail"
             [modFactory "+7 AC bonus (Armor)" "AC" 7,
-             modFactory "-1 Armor penalty" "ArmorPenalty" (-1)]
+             modFactory "-1 Armor penalty" "ArmorPenalty" 0]
             [heavyArmorTag]
 
 lightShield = equipFactory "Shield (light)"
