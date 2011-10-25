@@ -195,19 +195,6 @@ healingSurgesPerDay c = conMod c
 speed c = 6 + armorPenalty c -- magic number, no feats or equipment
 
 
-trainedBonus :: Character -> SkillName -> Int
-trainedBonus c s
-  | trainedSkill c s == True = 5 -- magic number :(
-  | otherwise            = 0
-
-trainedSkill :: Character -> SkillName -> Bool
-trainedSkill c s = s `elem` Character.trainedSkills c
-
-trainedSkills :: Character -> [SkillName]
-trainedSkills c = concat [(CC.trainedSkills . characterClass) c
-                          -- feats that train in skills
-                         ]
-
 instance Modifiable Character where
   modifiers c = concat [(Race.modifiers . race) c,
                         (CC.modifiers . characterClass) c,
@@ -222,6 +209,11 @@ instance Skilled Character where
   skillArmorPenalty c name
     | skillArmorPenaltyApplies name (not (wearingLightOrNoArmor c)) = armorPenalty c
     | otherwise = 0
+  trainedSkills c = concat [(CC.trainedSkills . characterClass) c
+                            -- feats that train in skills
+                           ]
+  trainedSkill c s = s `elem` Skill.trainedSkills c
+
 
 
 armorPenalty c = sum $ (map value (filter (\mod -> target mod == "ArmorPenalty") (Modifier.modifiers c)))
