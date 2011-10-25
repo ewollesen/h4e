@@ -24,3 +24,15 @@ ironFist = Power { Power.name="Iron Fist"
                  , Power.attackAbility=Constitution
                  , Power.attackVsDefense="AC"
                  }
+
+bullsStrength = Power { Power.name="Bull's Strength"
+                      , Power.hit="1[W] + Constitution modifier damage, and you push the target 1 square"
+                      , Power.attackAbility=Constitution
+                      , Power.attackVsDefense="AC"
+                      }
+
+whirlingDefense = Power { Power.name="Whirling Defense"
+                      , Power.hit="1[W] + Constitution modifier damage, and you mark the target until the end of your next turn"
+                      , Power.attackAbility=Constitution
+                      , Power.attackVsDefense="AC"
+                      }

@@ -24,7 +24,7 @@ pontus = Character { Character.name = "Pontus"
                                                    Skill.Endurance,
                                                    Skill.Insight]
                    , race=human raceWisPlus2
-                   , levels=[Level.level [] [ironFist]]
+                   , levels=[Level.level [] [bullsStrength, ironFist, whirlingDefense]]
                    , gear=[scaleMail, lightShield]
                    , weapons=[longsword, dagger]
                    }
