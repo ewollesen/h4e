@@ -12,6 +12,8 @@ import Control.Monad
 import Equipment
 import Modifier
 import Taggable
+import System.IO
+
 
 data Foo = Foo { word :: String } deriving (Show)
 $(derive[''Foo])
@@ -34,3 +36,6 @@ $(derive[''Tag])
 
 pm = toJsonString plateMail
 pm' = getIt $ fromJsonString (undefined :: Equipment) pm
+
+dumpIt e f = do
+  writeFile f $ toJsonString e
