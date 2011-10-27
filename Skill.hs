@@ -29,19 +29,19 @@ skillNames = [Acrobatics .. Thievery]
 class Skilled a where
   skill :: a -> SkillName -> Int
   skillMods :: a -> SkillName -> [Modifier]
-  skillArmorPenalty :: a -> SkillName -> Int
+  skillArmorCheckPenalty :: a -> SkillName -> Int
   trainedSkills :: a -> [SkillName]
   trainedSkill :: a -> SkillName -> Bool
 
-skillHasArmorPenalty Acrobatics = True
-skillHasArmorPenalty Athletics = True
-skillHasArmorPenalty Endurance = True
-skillHasArmorPenalty Stealth = True
-skillHasArmorPenalty Thievery = True
-skillHasArmorPenalty n = False
+skillHasArmorCheckPenalty Acrobatics = True
+skillHasArmorCheckPenalty Athletics = True
+skillHasArmorCheckPenalty Endurance = True
+skillHasArmorCheckPenalty Stealth = True
+skillHasArmorCheckPenalty Thievery = True
+skillHasArmorCheckPenalty n = False
 
-skillArmorPenaltyApplies name True
-  | skillHasArmorPenalty name == True = True
+skillArmorCheckPenaltyApplies name True
+  | skillHasArmorCheckPenalty name == True = True
   | otherwise = False
 
 skillPassiveInsight :: (Skilled c) => c -> Int
