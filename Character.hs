@@ -50,7 +50,7 @@ skillAbilMod Diplomacy = (chaMod)
 skillAbilMod Dungeoneering = (wisMod)
 skillAbilMod Endurance = (conMod)
 skillAbilMod Heal = (wisMod)
-skillAbilMod History= (intMod)
+skillAbilMod History = (intMod)
 skillAbilMod Insight = (wisMod)
 skillAbilMod Intimidate = (chaMod)
 skillAbilMod Nature = (wisMod)
@@ -59,6 +59,24 @@ skillAbilMod Religion= (intMod)
 skillAbilMod Stealth = (dexMod)
 skillAbilMod Streetwise = (chaMod)
 skillAbilMod Thievery = (dexMod)
+
+skillAbil Acrobatics = Dexterity
+skillAbil Arcana = Intelligence
+skillAbil Athletics = Strength
+skillAbil Bluff = Charisma
+skillAbil Diplomacy = Charisma
+skillAbil Dungeoneering = Wisdom
+skillAbil Endurance = Constitution
+skillAbil Heal = Wisdom
+skillAbil History = Intelligence
+skillAbil Insight = Wisdom
+skillAbil Intimidate = Charisma
+skillAbil Nature = Wisdom
+skillAbil Perception = Wisdom
+skillAbil Religion= Intelligence
+skillAbil Stealth = Dexterity
+skillAbil Streetwise = Charisma
+skillAbil Thievery = Dexterity
 
 
 str :: Character -> Int
@@ -192,7 +210,8 @@ healingSurgesPerDay c = conMod c
                         + (CC.healingSurgesPerDay . characterClass) c
 
 
-speed c = 6 + armorPenalty c -- magic number, no feats or equipment
+speed c = (baseSpeed (race c)) + (sum $ (map value (speedMods c)))
+speedMods c = filter (\mod -> target mod == "Speed") (Modifier.modifiers c)
 
 
 instance Modifiable Character where
@@ -201,13 +220,14 @@ instance Modifiable Character where
                         (concatMap Equipment.modifiers (gear c)),
                         (concatMap Level.modifiers (Character.levels c))]
 
+
 instance Skilled Character where
   skill c name = trainedBonus c name +
                  (skillAbilMod name) c +
-                 skillArmorPenalty c name
+                 skillArmorCheckPenalty c name
   skillMods c name = []
-  skillArmorPenalty c name
-    | skillArmorPenaltyApplies name (not (wearingLightOrNoArmor c)) = armorPenalty c
+  skillArmorCheckPenalty c name
+    | skillArmorCheckPenaltyApplies name (not (wearingLightOrNoArmor c)) = armorCheckPenalty c
     | otherwise = 0
   trainedSkills c = concat [(CC.trainedSkills . characterClass) c
                             -- feats that train in skills
@@ -216,9 +236,8 @@ instance Skilled Character where
 
 
 
-armorPenalty c = sum $ (map value (filter (\mod -> target mod == "ArmorPenalty") (Modifier.modifiers c)))
-
-
+armorCheckPenalty c = sum $ (map value (armorCheckPenaltyMods c))
+armorCheckPenaltyMods c = filter (\mod -> target mod == "ArmorCheckPenalty") (Modifier.modifiers c)
 basicMeleeAttack c w = basicAttack c w + strMod c
 basicRangedAttack c w = basicAttack c w + dexMod c
 
@@ -229,11 +248,11 @@ weaponProficiencyBonus c w
   | otherwise = 0
 
 primaryWeapon c = head $ weapons c
-secondaryWeapon c = head $ tail (weapons c)
+secondaryWeapon c = head $ tail $ weapons c
 
-isProficientWith c w = grantsProficiencyWith (characterClass c) w
+isProficientWith c w = grantsProficiencyWith (characterClass c) w -- TODO feats
 
-powers c = concatMap Level.powers (levels c)
+powers c = concatMap Level.powers (levels c) -- TODO racial
 
 attackBonus :: Character -> AbilityName -> Int
 attackBonus c a = (basicAttack c (primaryWeapon c)) + ((abilityMod a) c)

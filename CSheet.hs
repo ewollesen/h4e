@@ -12,12 +12,11 @@ printRow k v = printf "%-20s %2s\n" k v
 printSkills c = mapM_ (printSkill c) skillNames
 
 printSkill :: Character -> SkillName -> IO ()
-printSkill c s = printRow ((show s) ++ ":") (show $ skill c s)
+printSkill c s = printRow ((show s) ++ " (" ++ (take 3 $ show $ skillAbil s) ++ "):") (show $ skill c s)
 
 printRule :: String -> IO ()
 printRule s = printRow "----------------------------" ""
 
--- printAbilities c = mapM_ (printAbility c) abilityNames
 printAbility :: Character -> AbilityName -> IO ()
 printAbility c a = printRow ((show a) ++ ":")
                    (show ((ability a) c) ++
