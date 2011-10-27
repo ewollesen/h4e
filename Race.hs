@@ -3,6 +3,7 @@ module Race where
 import Modifier
 
 data Race = Race { name :: String
+                 , baseSpeed :: Int
                  , modifiers :: [Modifier]
                  } deriving (Show)
 
@@ -17,6 +18,7 @@ racePlusOneWill = modFactory "+1 Will (Racial)" "Will" 1
 
 human :: Modifier -> Race
 human abil = Race { Race.name="human"
+                  , Race.baseSpeed=6
                   , Race.modifiers=[abil,
                                     racePlusOneFortitude,
                                     racePlusOneReflex,
