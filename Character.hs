@@ -11,6 +11,8 @@ import Equipment
 import Equippable
 import Weapon
 import Weaponlike
+import Feat
+
 
 data Character = Character { name :: String
                            , baseStr :: Int
@@ -165,6 +167,8 @@ tenPlusHalfLevel c = 10 + halfLevel c
 initiative :: Character -> Int
 initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
 
+feats :: Character -> [Feat]
+feats c = concatMap Level.feats (levels c)
 
 ac :: Character -> Int
 ac c = sum $ [tenPlusHalfLevel c,
@@ -198,6 +202,9 @@ hp :: Character -> Int
 hp c = con c
        + (hpAtFirstLevel . characterClass) c
        + ((hpPerLevelGained . characterClass) c * (Character.level c - 1))
+       + (sum $ map value (hpMods c))
+
+hpMods c = filter (\mod -> target mod == "Hit Points") (Modifier.modifiers c)
 
 bloodied :: Character -> Int
 bloodied c = hp c `div` 2
@@ -217,12 +224,14 @@ speedMods c = filter (\mod -> target mod == "Speed") (Modifier.modifiers c)
 instance Modifiable Character where
   modifiers c = concat [(Race.modifiers . race) c,
                         (CC.modifiers . characterClass) c,
+                        (concatMap Feat.modifiers (Character.feats c)),
                         (concatMap Equipment.modifiers (gear c)),
                         (concatMap Level.modifiers (Character.levels c))]
 
 
 instance Skilled Character where
   skill c name = trainedBonus c name +
+                 halfLevel c +
                  (skillAbilMod name) c +
                  skillArmorCheckPenalty c name
   skillMods c name = []

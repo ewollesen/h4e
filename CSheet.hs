@@ -5,6 +5,8 @@ import Character
 import Skill
 import Ability
 import Power
+import Feat
+
 
 printRow :: String -> String -> IO ()
 printRow k v = printf "%-20s %2s\n" k v

@@ -10,6 +10,7 @@ import Level
 import Skill
 import Equipment
 import Weapon
+import Feat
 
 
 pontus = Character { Character.name = "Pontus"
@@ -24,7 +25,10 @@ pontus = Character { Character.name = "Pontus"
                                                    Skill.Endurance,
                                                    Skill.Insight]
                    , race=human raceWisPlus2
-                   , levels=[Level.level [] [bullsStrength, ironFist, whirlingDefense]]
+                   , levels=[
+                     Level.level [] [bullsStrength, ironFist, whirlingDefense] [],
+                     Level.level [] [] [featFactory "Psionic Toughness" [modFactory "+3 HP (Feat)" "Hit Points" 3]]
+                     ]
                    , gear=[scaleMail, lightShield]
                    , weapons=[longsword, dagger]
                    }
