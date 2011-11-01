@@ -1,6 +1,15 @@
+{-# OPTIONS_GHC
+    -XTemplateHaskell
+    -XFlexibleInstances
+    -XMultiParamTypeClasses
+    -XFlexibleContexts
+    -XUndecidableInstances #-}
+
 module Skill where
 
-
+import Text.RJson
+import Data.Generics.SYB.WithClass.Basics
+import Data.Generics.SYB.WithClass.Derive
 import Modifier
 import Ability
 
@@ -55,3 +64,14 @@ trainedBonus :: (Skilled c) => c -> SkillName -> Int
 trainedBonus c s
   | trainedSkill c s == True = skillTrainingBonus
   | otherwise            = 0
+
+skillNameToString :: String -> String
+skillNameToString sn = sn
+
+instance Data ToJsonD SkillName => ToJson SkillName where
+  toJson = (enumToJson skillNameToString)
+
+instance (Data FromJsonD SkillName, TranslateField SkillName) => FromJson SkillName where
+  fromJson = (enumFromJson skillNameToString)
+
+$(derive[''SkillName])

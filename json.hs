@@ -13,7 +13,6 @@ import Equipment
 import Modifier
 import Taggable
 import System.IO
-import Pontus
 import Character
 import Weapon
 import Level
@@ -23,18 +22,16 @@ import Power
 import Skill
 import Ability
 import CSheet
+import Feat
+import Pontus
 
 
-data Foo = Foo { word :: String } deriving (Show)
-$(derive[''Foo])
+-- data Foo = Foo { word :: String } deriving (Show)
+-- $(derive[''Foo])
 
-a = Foo { word="bar" }
-b = toJsonString a
-c = fromJsonString (undefined :: Foo) b
-
-getIt :: Either String a -> a
-getIt c = case c of Right x -> x
-                    Left e -> error e
+-- a = Foo { word="bar" }
+-- b = toJsonString a
+-- c = fromJsonString (undefined :: Foo) b
 
 
 $(derive[''Race])
@@ -45,15 +42,14 @@ $(derive[''Equipment])
 $(derive[''Modifier])
 $(derive[''Tag])
 $(derive[''Power])
-$(derive[''AbilityName])
-$(derive[''SkillName])
 $(derive[''Character])
+$(derive[''Feat])
 
---plateMail
---print $ toJsonString plateMail
 
-pm = toJsonString plateMail
-pm' = getIt $ fromJsonString (undefined :: Equipment) pm
+
+getIt :: Either String a -> a
+getIt c = case c of Right x -> x
+                    Left e -> error e
 
 dumpIt e f = do
   writeFile f $ toJsonString e
@@ -62,11 +58,13 @@ loadIt :: String -> IO ()
 loadIt f = do
   inh <- openFile f ReadMode
   jsonData <- hGetContents inh
-  let p' = getIt $ fromJsonString (undefined :: Character) jsonData
-  csheet p'
+  putStrLn jsonData
+  let pontus' = getIt $ fromJsonString (undefined :: Character) jsonData
+  csheet pontus'
+  putStrLn $ show $ Skill.trainedSkills pontus'
   hClose inh
 
---  x <- readFile f
---  putStr x
-
---loadIt e f = getIt $ fromJsonString e (readIt f)
+main = do
+  --putStrLn $ toJsonString pontus
+  dumpIt pontus "pontus.json"
+  loadIt "pontus.json"
