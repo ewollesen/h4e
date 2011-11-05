@@ -65,6 +65,8 @@ trainedBonus c s
   | trainedSkill c s == True = skillTrainingBonus
   | otherwise            = 0
 
+$(derive[''SkillName])
+
 skillNameToString :: String -> String
 skillNameToString sn = sn
 
@@ -73,5 +75,3 @@ instance Data ToJsonD SkillName => ToJson SkillName where
 
 instance (Data FromJsonD SkillName, TranslateField SkillName) => FromJson SkillName where
   fromJson = (enumFromJson skillNameToString)
-
-$(derive[''SkillName])

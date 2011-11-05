@@ -9,6 +9,7 @@ import Data.Generics.SYB.WithClass.Basics
 import Data.Generics.SYB.WithClass.Derive
 import Text.Printf
 import Control.Monad
+import System (getArgs)
 import Equipment
 import Modifier
 import Taggable
@@ -26,14 +27,6 @@ import Feat
 import Pontus
 
 
--- data Foo = Foo { word :: String } deriving (Show)
--- $(derive[''Foo])
-
--- a = Foo { word="bar" }
--- b = toJsonString a
--- c = fromJsonString (undefined :: Foo) b
-
-
 $(derive[''Race])
 $(derive[''Weapon])
 $(derive[''Class])
@@ -46,25 +39,23 @@ $(derive[''Character])
 $(derive[''Feat])
 
 
-
 getIt :: Either String a -> a
 getIt c = case c of Right x -> x
                     Left e -> error e
 
-dumpIt e f = do
-  writeFile f $ toJsonString e
+saveToJson record filename = do
+  writeFile filename $ toJsonString record
 
-loadIt :: String -> IO ()
-loadIt f = do
-  inh <- openFile f ReadMode
+printCSheet :: String -> IO ()
+printCSheet filename = do
+  inh <- openFile filename ReadMode
   jsonData <- hGetContents inh
-  putStrLn jsonData
-  let pontus' = getIt $ fromJsonString (undefined :: Character) jsonData
-  csheet pontus'
-  putStrLn $ show $ Skill.trainedSkills pontus'
+  let character = getIt $ fromJsonString (undefined :: Character) jsonData
+  csheet character
   hClose inh
 
 main = do
-  --putStrLn $ toJsonString pontus
-  dumpIt pontus "pontus.json"
-  loadIt "pontus.json"
+  args <- getArgs
+  let filename = head args
+  saveToJson pontus filename
+  printCSheet filename
