@@ -1,0 +1,6 @@
+#!/bin/bash
+
+make pontus.pdf
+while inotifywait -e modify pontus.pl; do
+    make pontus.pdf
+done
