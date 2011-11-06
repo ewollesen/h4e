@@ -1,4 +1,15 @@
+{-# OPTIONS_GHC
+    -XTemplateHaskell
+    -XFlexibleInstances
+    -XMultiParamTypeClasses
+    -XFlexibleContexts
+    -XUndecidableInstances #-}
 module Modifier where
+
+import Text.RJson
+import Data.Generics.SYB.WithClass.Basics
+import Data.Generics.SYB.WithClass.Derive
+
 
 data ModType = AbilityMod
              | ArmorMod
@@ -8,6 +19,7 @@ data ModType = AbilityMod
              | ShieldMod
              | UntypedMod
              deriving (Show, Eq)
+$(derive[''ModType])
 
 data ModTarget = ArmorClass
                | ArmorSpeed
@@ -44,13 +56,13 @@ data ModTarget = ArmorClass
                | Thievery
                -}
                deriving (Show, Eq)
+$(derive[''ModTarget])
 
 data Modifier = Modifier { name :: String
                          , target :: ModTarget
                          , value :: Int
                          , modType :: ModType
                          } deriving (Show)
-
 
 class Modifiable a where
   modifiers :: a -> [Modifier]
@@ -76,3 +88,21 @@ instance Eq Modifier where
 
 instance Ord Modifier where
   x < y = target x == target y && modType x == modType y && value x < value y
+
+
+
+modTypeToString :: String -> String
+modTypeToString mt = mt
+modTargetToString = modTypeToString
+
+instance Data ToJsonD ModType => ToJson ModType where
+  toJson = (enumToJson modTypeToString)
+
+instance (Data FromJsonD ModType, TranslateField ModType) => FromJson ModType where
+  fromJson = (enumFromJson modTypeToString)
+
+instance Data ToJsonD ModTarget => ToJson ModTarget where
+  toJson = (enumToJson modTargetToString)
+
+instance (Data FromJsonD ModTarget, TranslateField ModTarget) => FromJson ModTarget where
+  fromJson = (enumFromJson modTargetToString)
