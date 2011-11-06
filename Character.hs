@@ -340,6 +340,19 @@ healingSurgesPerDay c = conMod c
 speed c = (baseSpeed (race c)) + (sum $ (map value (speedMods c)))
 speedMods c = filter (\mod -> target mod == "Speed") (Modifier.modifiers c)
 armorSpeedMod c = sum $ map value $ filter (\mod -> target mod == "Speed") (concatMap Equipment.modifiers (gear c)) -- not entirely accurate, add a filter for tagged with armor I guess?
+itemSpeedMod c
+  | length mods > 0 = value $ maximum mods
+  | otherwise = 0
+  where
+    nonArmor = filter (\gear -> isTaggedWith gear armorTag == False) $ gear c
+    mods = concat [modsByTarget x "Speed" | x <- nonArmor]
+
+nonMiscSpeedModTypes = [ArmorMod]
+miscSpeedMod c
+  | length mods > 0 = value $ maximum $ mods
+  | otherwise = 0
+  where speedMods = modsByTarget c "Speed"
+        mods = filter (\mod -> modType mod `notElem` nonMiscSpeedModTypes) speedMods
 
 seventeenFeats c = buildSeventeenFeats $ map Feat.name $ Character.feats c
 buildSeventeenFeats f
