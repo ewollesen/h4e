@@ -16,14 +16,14 @@ data Class = Class { name :: String
                    } deriving (Show)
 
 -- is there a way to generate these from a list?
-classWisPlus2 = modFactory "+2 Wisdom (Class)" "Wisdom" 2 ClassMod
-classWillPlus2 = modFactory "+2 Will Defense (Class)" "Will" 2 ClassMod
+classWisPlus2 = modFactory "+2 Wisdom (Class)" Wisdom 2 ClassMod
+classWillPlus2 = modFactory "+2 Will Defense (Class)" Will 2 ClassMod
 
 grantsProficiencyWith cc weapon =
   any (isTaggedWith weapon) (proficientWithWeaponsTaggedWith cc)
 
 acMods cc =
-  filter (\mod -> target mod == "AC") $ CharacterClass.modifiers cc
+  filter (\mod -> target mod == ArmorClass) $ CharacterClass.modifiers cc
 
 instance Modifiable Class where
   modifiers c = CharacterClass.modifiers c

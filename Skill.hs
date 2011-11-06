@@ -43,6 +43,24 @@ class Skilled a where
   trainedSkill :: a -> SkillName -> Bool
   skillAbilModPlusHalfLevel :: a -> SkillName -> Int
 
+skillAbil Acrobatics = Ability.Dexterity
+skillAbil Arcana = Ability.Intelligence
+skillAbil Athletics = Ability.Strength
+skillAbil Bluff = Ability.Charisma
+skillAbil Diplomacy = Ability.Charisma
+skillAbil Dungeoneering = Ability.Wisdom
+skillAbil Endurance = Ability.Constitution
+skillAbil Heal = Ability.Wisdom
+skillAbil History = Ability.Intelligence
+skillAbil Insight = Ability.Wisdom
+skillAbil Intimidate = Ability.Charisma
+skillAbil Nature = Ability.Wisdom
+skillAbil Perception = Ability.Wisdom
+skillAbil Religion = Ability.Intelligence
+skillAbil Stealth = Ability.Dexterity
+skillAbil Streetwise = Ability.Charisma
+skillAbil Thievery = Ability.Dexterity
+
 skillHasArmorCheckPenalty Acrobatics = True
 skillHasArmorCheckPenalty Athletics = True
 skillHasArmorCheckPenalty Endurance = True
