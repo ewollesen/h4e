@@ -31,4 +31,12 @@ pontus = Character { Character.name = "Pontus"
                      ]
                    , gear=[scaleMail, lightShield]
                    , weapons=[longsword, dagger]
+                   , xp=1675
+                   , age=24
+                   , gender="Male"
+                   , height="5' 9\""
+                   , weight="165 lbs"
+                   , alignment="Unaligned"
+                   , deity=""
+                   , languages=["Common"]
                    }

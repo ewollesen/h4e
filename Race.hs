@@ -4,6 +4,7 @@ import Modifier
 
 data Race = Race { name :: String
                  , baseSpeed :: Int
+                 , size :: String -- should be an enum?
                  , modifiers :: [Modifier]
                  } deriving (Show)
 
@@ -17,8 +18,9 @@ racePlusOneReflex = modFactory "+1 Reflex (Racial)" "Reflex" 1
 racePlusOneWill = modFactory "+1 Will (Racial)" "Will" 1
 
 human :: Modifier -> Race
-human abil = Race { Race.name="human"
+human abil = Race { Race.name="Human"
                   , Race.baseSpeed=6
+                  , Race.size="Medium"
                   , Race.modifiers=[abil,
                                     racePlusOneFortitude,
                                     racePlusOneReflex,

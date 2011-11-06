@@ -41,6 +41,7 @@ class Skilled a where
   skillArmorCheckPenalty :: a -> SkillName -> Int
   trainedSkills :: a -> [SkillName]
   trainedSkill :: a -> SkillName -> Bool
+  skillAbilModPlusHalfLevel :: a -> SkillName -> Int
 
 skillHasArmorCheckPenalty Acrobatics = True
 skillHasArmorCheckPenalty Athletics = True
