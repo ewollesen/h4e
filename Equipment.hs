@@ -18,19 +18,19 @@ lightArmorTag = tagFactory "Light"
 heavyArmorTag = tagFactory "Heavy"
 
 plateMail = equipFactory "Plate mail"
-            [modFactory "+8 AC bonus (Armor)" "AC" 8,
-             modFactory "-1 Speed penalty (Armor)" "Speed" (-1),
-             modFactory "-2 Armor penalty" "ArmorPenalty" (-2)]
+            [modFactory "+8 AC bonus (Armor)" "AC" 8 ArmorMod,
+             modFactory "-1 Speed penalty (Armor)" "Speed" (-1) ArmorMod,
+             modFactory "-2 Armor penalty" "ArmorPenalty" (-2) ArmorMod]
             [heavyArmorTag]
 
 scaleMail = equipFactory "Scale mail"
-            [modFactory "+7 AC bonus (Armor)" "AC" 7,
-             modFactory "-1 Speed penalty (Armor)" "Speed" (-1)]
+            [modFactory "+7 AC bonus (Armor)" "AC" 7 ArmorMod,
+             modFactory "-1 Speed penalty (Armor)" "Speed" (-1) ArmorMod]
             [heavyArmorTag]
 
 lightShield = equipFactory "Shield (light)"
-              [modFactory "+1 AC bonus (Shield)" "AC" 1,
-               modFactory "+1 Reflex bonus (Shield)" "Reflex" 1]
+              [modFactory "+1 AC bonus (Shield)" "AC" 1 ShieldMod,
+               modFactory "+1 Reflex bonus (Shield)" "Reflex" 1 ShieldMod]
               [lightArmorTag]
 
 instance Taggable Equipment where

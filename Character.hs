@@ -35,6 +35,7 @@ data Character = Character { name :: String
                            , weapons :: [Weapon]
                            , xp :: Int
                            , languages :: [String]
+                           , adventuringCompanyOrOtherAffiliations :: String
                            } deriving (Show)
 
 
@@ -165,8 +166,51 @@ willMods :: (Modifiable a) => a -> [Modifier]
 willMods c = filter (\mod -> target mod == "Will") (Modifier.modifiers c)
 
 acMods :: (Modifiable a) => a -> [Modifier]
-acMods c = filter (\mod -> target mod == "AC") (Modifier.modifiers c)
+acMods c = modsByTarget c "AC"
 
+enhModToTarget c t =
+  maximum $ 0:(map value $ modsByTargetAndType c t EnhancementMod)
+enhModToAC c = enhModToTarget c "AC"
+enhModToFortitude c = enhModToTarget c "Fortitude"
+enhModToReflex c = enhModToTarget c "Reflex"
+enhModToWill c = enhModToTarget c "Will"
+
+
+firstMod mods
+  | length mods > 0 = value $ head mods
+  | otherwise = 0
+
+secondMod mods
+  | length mods > 1 = value $ head $ tail mods
+  | otherwise = 0
+
+nonMiscACModTypes = [AbilityMod, ArmorMod, ClassMod, EnhancementMod, FeatMod]
+miscACMods c =
+  filter (\mod -> modType mod `notElem` nonMiscACModTypes) acMods
+  where acMods = Character.acMods c
+firstMiscACMod c = firstMod $ miscACMods c
+secondMiscACMod c = secondMod $ miscACMods c
+
+nonMiscFortitudeModTypes = [AbilityMod, ClassMod, EnhancementMod, FeatMod]
+miscFortitudeMods c =
+  filter (\mod -> modType mod `notElem` nonMiscFortitudeModTypes) $ fortMods c
+  where acMods = Character.acMods c
+firstMiscFortitudeMod c = firstMod $ miscFortitudeMods c
+secondMiscFortitudeMod c = secondMod $ miscFortitudeMods c
+
+nonMiscReflexModTypes = nonMiscFortitudeModTypes
+miscReflexMods c =
+  filter (\mod -> modType mod `notElem` nonMiscReflexModTypes) $refMods c
+  where acMods = Character.acMods c
+firstMiscReflexMod c = firstMod $ miscReflexMods c
+secondMiscReflexMod c = secondMod $ miscReflexMods c
+
+nonMiscWillModTypes = nonMiscFortitudeModTypes
+miscWillMods c =
+  filter (\mod -> modType mod `notElem` nonMiscWillModTypes) $ willMods c
+  where acMods = Character.acMods c
+firstMiscWillMod c = firstMod $ miscWillMods c
+secondMiscWillMod c = secondMod $ miscWillMods c
 
 className c = (CC.name . characterClass) c
 
@@ -183,6 +227,10 @@ tenPlusHalfLevel c = 10 + halfLevel c
 -- add other mods, feats, powers, equipment
 initiative :: Character -> Int
 initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
+
+miscModToInit c = sum $ map value $ modsFor c "Initiative" -- primitive, and use an enum for "Initiative"
+
+modsFor c t = filter (\mod -> target mod == t) $ Modifier.modifiers c
 
 feats :: Character -> [Feat]
 feats c = concatMap Level.feats (levels c)

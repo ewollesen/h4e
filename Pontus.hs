@@ -27,7 +27,7 @@ pontus = Character { Character.name = "Pontus"
                    , race=human raceWisPlus2
                    , levels=[
                      Level.level [] [bullsStrength, ironFist, whirlingDefense] [],
-                     Level.level [] [] [featFactory "Psionic Toughness" [modFactory "+3 HP (Feat)" "Hit Points" 3]]
+                     Level.level [] [] [psionicToughness]
                      ]
                    , gear=[scaleMail, lightShield]
                    , weapons=[longsword, dagger]
@@ -39,4 +39,5 @@ pontus = Character { Character.name = "Pontus"
                    , alignment="Unaligned"
                    , deity=""
                    , languages=["Common"]
+                   , adventuringCompanyOrOtherAffiliations=""
                    }
