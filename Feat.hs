@@ -14,3 +14,6 @@ featFactory n m = Feat { Feat.name=n
 
 psionicToughness = featFactory "Psionic Toughness"
                    [modFactory "+3 HP (Feat)" HitPoints 3 FeatMod]
+
+lureOfIron = featFactory "Lure of Iron" []
+deceptiveMind = featFactory "Deceptive Mind" []

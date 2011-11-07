@@ -1,6 +1,6 @@
 #!/bin/bash
 
-make pontus.pdf
-while inotifywait -e modify pontus.pl; do
+while inotifywait -e modify `find . -iname '*.hs'` pontus.pl; do
+    runghc Form.hs > pontus.pl
     make pontus.pdf
 done

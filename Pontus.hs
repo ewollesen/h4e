@@ -14,20 +14,21 @@ import Feat
 
 
 pontus = Character { Character.name = "Pontus"
+                   , playerName = "Eric Wollesen"
                    , baseStr=11
                    , baseCon=17
                    , baseDex=10
                    , baseInt=10
                    , baseWis=14
                    , baseCha=12
-                   , characterClass=battlemind [] [Skill.Heal,
-                                                   Skill.Diplomacy,
-                                                   Skill.Endurance,
-                                                   Skill.Insight]
+                   , characterClass=battlemind [] [Heal,
+                                                   Diplomacy,
+                                                   Endurance,
+                                                   Insight]
                    , race=human raceWisPlus2
                    , levels=[
-                     Level.level [] [bullsStrength, ironFist, whirlingDefense] [],
-                     Level.level [] [] [psionicToughness]
+                     Level.level [] [bullsStrength, ironFist, whirlingDefense, aspectOfElevatedHarmony, battlemindsDemand, battleResilience, blurredStep, mindSpike] [deceptiveMind, lureOfIron],
+                     Level.level [] [dimensionSlide] [psionicToughness]
                      ]
                    , gear=[scaleMail, lightShield]
                    , weapons=[longsword, dagger]
@@ -35,7 +36,7 @@ pontus = Character { Character.name = "Pontus"
                    , age=24
                    , gender="Male"
                    , height="5' 9\""
-                   , weight="165 lbs"
+                   , weight="150 lbs"
                    , alignment="Unaligned"
                    , deity=""
                    , languages=["Common"]

@@ -16,6 +16,7 @@ import Feat
 
 
 data Character = Character { name :: String
+                           , playerName :: String
                            , baseStr :: Int
                            , baseDex :: Int
                            , baseCon :: Int
@@ -120,32 +121,32 @@ chaMod c = (abilMod . cha) c
 
 
 strMods :: (Modifiable a) => a -> [Modifier]
-strMods c = filter (\mod -> target mod == Modifier.Strength) (Modifier.modifiers c)
+strMods c = filter (\mod -> Modifier.target mod == Modifier.Strength) (Modifier.modifiers c)
 
 dexMods :: (Modifiable a) => a -> [Modifier]
-dexMods c = filter (\mod -> target mod == Modifier.Dexterity) (Modifier.modifiers c)
+dexMods c = filter (\mod -> Modifier.target mod == Modifier.Dexterity) (Modifier.modifiers c)
 
 conMods :: (Modifiable a) => a -> [Modifier]
-conMods c = filter (\mod -> target mod == Modifier.Constitution) (Modifier.modifiers c)
+conMods c = filter (\mod -> Modifier.target mod == Modifier.Constitution) (Modifier.modifiers c)
 
 intMods :: (Modifiable a) => a -> [Modifier]
-intMods c = filter (\mod -> target mod == Modifier.Intelligence) (Modifier.modifiers c)
+intMods c = filter (\mod -> Modifier.target mod == Modifier.Intelligence) (Modifier.modifiers c)
 
 wisMods :: (Modifiable a) => a -> [Modifier]
-wisMods c = filter (\mod -> target mod == Modifier.Wisdom) (Modifier.modifiers c)
+wisMods c = filter (\mod -> Modifier.target mod == Modifier.Wisdom) (Modifier.modifiers c)
 
 chaMods :: (Modifiable a) => a -> [Modifier]
-chaMods c = filter (\mod -> target mod == Modifier.Charisma) (Modifier.modifiers c)
+chaMods c = filter (\mod -> Modifier.target mod == Modifier.Charisma) (Modifier.modifiers c)
 
 
 fortMods :: (Modifiable a) => a -> [Modifier]
-fortMods c = filter (\mod -> target mod == Fortitude) (Modifier.modifiers c)
+fortMods c = filter (\mod -> Modifier.target mod == Fortitude) (Modifier.modifiers c)
 
 refMods :: (Modifiable a) => a -> [Modifier]
-refMods c = filter (\mod -> target mod == Reflex) (Modifier.modifiers c)
+refMods c = filter (\mod -> Modifier.target mod == Reflex) (Modifier.modifiers c)
 
 willMods :: (Modifiable a) => a -> [Modifier]
-willMods c = filter (\mod -> target mod == Will) (Modifier.modifiers c)
+willMods c = filter (\mod -> Modifier.target mod == Will) (Modifier.modifiers c)
 
 acMods :: (Modifiable a) => a -> [Modifier]
 acMods c = modsByTarget c ArmorClass
@@ -212,7 +213,7 @@ initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
 
 miscModToInit c = sum $ map value $ modsFor c Initiative -- primitive
 
-modsFor c t = filter (\mod -> target mod == t) $ Modifier.modifiers c
+modsFor c t = filter (\mod -> Modifier.target mod == t) $ Modifier.modifiers c
 
 feats :: Character -> [Feat]
 feats c = concatMap Level.feats (levels c)
@@ -237,7 +238,7 @@ armorOrAbilityModToAC c
 
 classModToAC c = sum $ map Modifier.value $ (Character.acMods . Character.characterClass) c
 
-featModToAC c = sum $ map Modifier.value $ filter (\mod -> target mod == ArmorClass) (concatMap Feat.modifiers (Character.feats c))
+featModToAC c = sum $ map Modifier.value $ filter (\mod -> Modifier.target mod == ArmorClass) (concatMap Feat.modifiers (Character.feats c))
 
 fortitude :: Character -> Int
 fortitude c = abilityModToFortitude c
@@ -258,7 +259,7 @@ featModToFortitude c
   where mods = modsFromFeatsWithTarget c Fortitude
 
 modsFromFeatsWithTarget c t =
-  filter (\mod -> target mod == t) $ featModifiers c
+  filter (\mod -> Modifier.target mod == t) $ featModifiers c
 
 featModifiers c = concatMap Feat.modifiers (Character.feats c)
 
@@ -306,7 +307,7 @@ hp c = con c
        + ((hpPerLevelGained . characterClass) c * (Character.level c - 1))
        + (sum $ map value (hpMods c))
 
-hpMods c = filter (\mod -> target mod == HitPoints) (Modifier.modifiers c)
+hpMods c = filter (\mod -> Modifier.target mod == HitPoints) (Modifier.modifiers c)
 
 bloodied :: Character -> Int
 bloodied c = hp c `div` 2
@@ -320,8 +321,8 @@ healingSurgesPerDay c = conMod c
 
 
 speed c = (baseSpeed (race c)) + (sum $ (map value (speedMods c)))
-speedMods c = filter (\mod -> target mod == Speed) (Modifier.modifiers c)
-armorSpeedMod c = sum $ map value $ filter (\mod -> target mod == Speed) (concatMap Equipment.modifiers (gear c)) -- not entirely accurate, add a filter for tagged with armor I guess?
+speedMods c = filter (\mod -> Modifier.target mod == Speed) (Modifier.modifiers c)
+armorSpeedMod c = sum $ map value $ filter (\mod -> Modifier.target mod == Speed) (concatMap Equipment.modifiers (gear c)) -- not entirely accurate, add a filter for tagged with armor I guess?
 itemSpeedMod c
   | length mods > 0 = value $ maximum mods
   | otherwise = 0
@@ -387,7 +388,7 @@ instance Skilled Character where
 
 
 armorCheckPenalty c = sum $ (map value (armorCheckPenaltyMods c))
-armorCheckPenaltyMods c = filter (\mod -> target mod == ArmorSkill) (Modifier.modifiers c)
+armorCheckPenaltyMods c = filter (\mod -> Modifier.target mod == ArmorSkill) (Modifier.modifiers c)
 basicMeleeAttack c w = basicAttack c w + strMod c
 basicRangedAttack c w = basicAttack c w + dexMod c
 
@@ -405,6 +406,7 @@ isProficientWith c w = grantsProficiencyWith (characterClass c) w -- TODO feats
 powers c = concatMap Level.powers (levels c) -- TODO racial
 powersByUses c u = filter (\p -> Power.uses p == u) $ Character.powers c
 atWillPowers c = powersByUses c "At-Will"
+atWillAttackPowers p = filter (\power -> Power.attackFeatureOrUtility power == "Attack") p
 encounterPowers c = powersByUses c "Encounter"
 dailyPowers c = powersByUses c "Daily"
 utilityPowers c = powersByUses c "Utility" -- does this even make sense?
@@ -429,3 +431,6 @@ thirdLanguage c
   | otherwise = langs !! 2
   where
     langs = languages c
+
+firstAttack c = head $ atWillAttackPowers $ atWillPowers c
+secondAttack c = head $ tail $ atWillAttackPowers $ atWillPowers c
