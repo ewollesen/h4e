@@ -342,22 +342,22 @@ buildSeventeenFeats f
   | length f < 17 = buildSeventeenFeats (f ++ [""])
   | otherwise = f
 
-sixAtWillPowers c = buildSixAtWillPowers $ map Power.name $ Character.atWillPowers c
+sixAtWillPowers c = buildSixAtWillPowers $ map Power.name $ atWillPowers $ Character.powers c
 buildSixAtWillPowers p
   | length p < 6 = buildSixAtWillPowers (p ++ [""])
   | otherwise = p
 
-sixEncounterPowers c = buildSixEncounterPowers $ map Power.name $ Character.encounterPowers c
+sixEncounterPowers c = buildSixEncounterPowers $ map Power.name $ encounterPowers $ Character.powers c
 buildSixEncounterPowers p
   | length p < 6 = buildSixEncounterPowers (p ++ [""])
   | otherwise = p
 
-sixDailyPowers c = buildSixDailyPowers $ map Power.name $ Character.dailyPowers c
+sixDailyPowers c = buildSixDailyPowers $ map Power.name $ dailyPowers $ Character.powers c
 buildSixDailyPowers p
   | length p < 6 = buildSixDailyPowers (p ++ [""])
   | otherwise = p
 
-eightUtilityPowers c = buildEightUtilityPowers $ map Power.name $ Character.utilityPowers c
+eightUtilityPowers c = buildEightUtilityPowers $ map Power.name $ utilityPowers $ Character.powers c
 buildEightUtilityPowers p
   | length p < 8 = buildEightUtilityPowers (p ++ [""])
   | otherwise = p
@@ -400,16 +400,21 @@ weaponProficiencyBonus c w
 
 primaryWeapon c = head $ weapons c
 secondaryWeapon c = head $ tail $ weapons c
+isArmed c
+  | length (weapons c) == 0 = False
+  | otherwise = True
 
 isProficientWith c w = grantsProficiencyWith (characterClass c) w -- TODO feats
 
-powers c = concatMap Level.powers (levels c) -- TODO racial
-powersByUses c u = filter (\p -> Power.uses p == u) $ Character.powers c
-atWillPowers c = powersByUses c "At-Will"
-atWillAttackPowers p = filter (\power -> Power.attackFeatureOrUtility power == "Attack") p
-encounterPowers c = powersByUses c "Encounter"
-dailyPowers c = powersByUses c "Daily"
-utilityPowers c = powersByUses c "Utility" -- does this even make sense?
+powers c = concatMap Level.powers (levels c) -- TODO racial & class
+powersByUses powers uses =
+  filter (\p -> Power.uses p == uses) powers
+atWillPowers powers = powersByUses powers "At-Will"
+attackPowers powers =
+  filter (\p -> Power.attackFeatureOrUtility p == "Attack") powers
+encounterPowers powers = powersByUses powers "Encounter"
+dailyPowers powers = powersByUses powers "Daily"
+utilityPowers powers = powersByUses powers "Utility"
 
 attackBonus :: Character -> AbilityName -> Int
 attackBonus c a = (basicAttack c (primaryWeapon c)) + ((abilityMod a) c)
@@ -432,5 +437,9 @@ thirdLanguage c
   where
     langs = languages c
 
-firstAttack c = head $ atWillAttackPowers $ atWillPowers c
-secondAttack c = head $ tail $ atWillAttackPowers $ atWillPowers c
+firstAttack c = head $ attackPowers $ atWillPowers $ Character.powers c
+secondAttack c = head $ tail $ attackPowers $ atWillPowers $ Character.powers c
+
+proficiencyModForPower c p
+  | powerHasKeyword p "Weapon" == True && isArmed c = Weapon.proficiencyBonus $ Character.primaryWeapon c
+  | otherwise = 0

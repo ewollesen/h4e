@@ -1,6 +1,11 @@
 #!/bin/bash
 
-while inotifywait -e modify `find . -iname '*.hs'` pontus.pl; do
+function build () {
     runghc Form.hs > pontus.pl
     make pontus.pdf
+}
+
+build
+while inotifywait -e modify `find . -iname '*.hs'` pontus.pl; do
+    build
 done

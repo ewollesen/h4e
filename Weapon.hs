@@ -46,4 +46,3 @@ bastardsword = weaponFactory "Bastard sword"
                []
                [weaponTag, meleeWeaponTag, exoticWeaponTag]
                (-99) -- so I know this value is not verified
-

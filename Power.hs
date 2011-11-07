@@ -5,18 +5,19 @@ import Ability
 
 
 data Power = Power { name :: String
-                   , hit :: String
+                   , attackFeatureOrUtility :: String -- enum
+                   , keywords :: [String] -- possibly an enum
+                   , uses :: String -- Uses enum
+                   , action :: String -- enum
+                   , range :: String -- ? am I needed?
                    , attackAbility :: AbilityName
                    , attackVsDefense :: String -- DefenseName enum
-                   , uses :: String -- Uses enum
-                   , effect :: String
-                   , action :: String -- enum
                    , target :: String
-                   , trigger :: String
+                   , hit :: String
                    , miss :: String
-                   , attackFeatureOrUtility :: String -- enum
-                   , keywords :: [String]
-                   , range :: String -- ?
-                   -- tags
+                   , trigger :: String
+                   , effect :: String
                    } deriving (Show)
 
+
+powerHasKeyword power keyword = keyword `elem` (Power.keywords power)
