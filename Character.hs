@@ -443,3 +443,18 @@ secondAttack c = head $ tail $ attackPowers $ atWillPowers $ Character.powers c
 proficiencyModForPower c p
   | powerHasKeyword p "Weapon" == True && isArmed c = Weapon.proficiencyBonus $ Character.primaryWeapon c
   | otherwise = 0
+
+classModifierFor c p =
+  maximum $ 0:(map value $ filter (\mod -> (show $ Modifier.target mod) == Power.name p) $ CC.modifiers $ characterClass c)
+
+featModifierFor c p =
+  maximum $ 0:(map value $ filter (\mod -> (show $ Modifier.target mod) == Power.name p) $ concatMap Feat.modifiers $ Character.feats c)
+
+nonMiscAttackModTypes = [AbilityMod, ClassMod, ProficiencyMod, FeatMod, EnhancementMod]
+miscAttackMods c =
+  filter (\mod -> modType mod `notElem` nonMiscAttackModTypes) $ attackMods c
+  where attackMods = Character.attackMods c
+
+attackMods c a =
+  [halfLevel c, (abilityMod a) c, (weaponProficiencyBonus c weapon),
+  where weapon = primaryWeapon c
