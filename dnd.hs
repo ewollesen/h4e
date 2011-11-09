@@ -1,5 +1,4 @@
+import Modifier
 import Pontus
 import Character
 --import CSheet
-import Skill
-import Character.Race

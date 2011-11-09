@@ -40,31 +40,15 @@ data Character = Character { name :: String
                            } deriving (Show)
 
 
-ability Ability.Strength = (str)
-ability Ability.Dexterity = (dex)
-ability Ability.Constitution = (con)
-ability Ability.Intelligence = (int)
-ability Ability.Wisdom = (wis)
-ability Ability.Charisma = (cha)
-
+{-------------}
+{- Abilities -}
+{-------------}
 abilityMod Ability.Strength = (strMod)
 abilityMod Ability.Dexterity = (dexMod)
 abilityMod Ability.Constitution = (conMod)
 abilityMod Ability.Intelligence = (intMod)
 abilityMod Ability.Wisdom = (wisMod)
 abilityMod Ability.Charisma = (chaMod)
-
-skillAbilMod = (abilityMod . skillAbil)
-
-skillTakeTen :: SkillName -> Character -> Int
-skillTakeTen s c = 10 + skill c s
-
-passiveInsight :: Character -> Int
-passiveInsight = (skillTakeTen Insight)
-
-passivePerception :: Character -> Int
-passivePerception = (skillTakeTen Perception)
-
 
 str :: Character -> Int
 str c = sum $ baseStr c:(map value $ strMods c)
@@ -128,6 +112,19 @@ chaMods :: (Modifiable a) => a -> [Modifier]
 chaMods = (abilityMods Modifier.Charisma)
 
 
+
+skillAbilMod = (abilityMod . skillAbil)
+
+skillTakeTen :: SkillName -> Character -> Int
+skillTakeTen s c = 10 + skill c s
+
+passiveInsight :: Character -> Int
+passiveInsight = (skillTakeTen Insight)
+
+passivePerception :: Character -> Int
+passivePerception = (skillTakeTen Perception)
+
+
 defenseMods :: (Modifiable a) => ModTarget -> a -> [Modifier]
 defenseMods t c = modsByTarget t $ Modifier.modifiers c
 
@@ -154,15 +151,23 @@ enhModToAC c = enhModToTarget c ArmorClass
 enhModToFortitude c = enhModToTarget c Fortitude
 enhModToReflex c = enhModToTarget c Reflex
 
+enhModToWill :: Modifiable a => a -> Int
+enhModToWill c = (Modifier.mod Will EnhancementMod) c
+
+classModToWill :: Modifiable a => a -> Int
+classModToWill c = (Modifier.mod Will ClassMod) c
+
 enhModsWill c = ((modsByType EnhancementMod) . (modsByTarget Will)) mods
   where mods = Modifier.modifiers c
 
-enhModToWill c
+enhModToWill' c
   | length modValues > 0 = maximum modValues
   | otherwise = 0
   where modValues = map value filteredMods
         filteredMods = ((modsByType EnhancementMod) . (modsByTarget Will)) mods
         mods = Modifier.modifiers c
+
+
 
 firstMod mods
   | length mods > 0 = value $ head mods
@@ -283,7 +288,7 @@ featModToReflex c
 
 abilityModToWill c = maximum [wisMod c, chaMod c]
 
-classModToWill c
+classModToWill' c
    | length mods == 0 = 0
    | otherwise = maximum $ map value mods
   where
