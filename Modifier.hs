@@ -135,6 +135,10 @@ modFactory name target value modType =
            , Modifier.modType=modType
            }
 
+sortByValue :: [Modifier] -> [Modifier]
+sortByValue m = sortBy (\m1 m2 -> compare (value m1) (value m2)) m
+
+
 instance Eq Modifier where
   x == y = stackable x y && value x == value y
 

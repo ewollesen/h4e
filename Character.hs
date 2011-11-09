@@ -40,6 +40,16 @@ data Character = Character { name :: String
                            } deriving (Show)
 
 
+{--------------------}
+{- Modifier Helpers -}
+{--------------------}
+characterModsByTarget :: (Modifiable a) => ModTarget -> a -> [Modifier]
+characterModsByTarget t c = modsByTarget t $ Modifier.modifiers c
+
+wearingLightOrNoArmor :: Character -> Bool
+wearingLightOrNoArmor c = taggedWith (gear c) heavyArmorTag == False
+
+
 {-------------}
 {- Abilities -}
 {-------------}
@@ -89,7 +99,6 @@ strMod c = (abilMod . str) c
 chaMod :: Character -> Int
 chaMod c = (abilMod . cha) c
 
-
 abilityMods :: (Modifiable a) => ModTarget -> a -> [Modifier]
 abilityMods t c = modsByTarget t $ Modifier.modifiers c
 
@@ -112,7 +121,9 @@ chaMods :: (Modifiable a) => a -> [Modifier]
 chaMods = (abilityMods Modifier.Charisma)
 
 
-
+{----------}
+{- Skills -}
+{----------}
 skillAbilMod = (abilityMod . skillAbil)
 
 skillTakeTen :: SkillName -> Character -> Int
@@ -125,85 +136,64 @@ passivePerception :: Character -> Int
 passivePerception = (skillTakeTen Perception)
 
 
-defenseMods :: (Modifiable a) => ModTarget -> a -> [Modifier]
-defenseMods t c = modsByTarget t $ Modifier.modifiers c
-
+{------------}
+{- Defenses -}
+{------------}
 fortMods :: (Modifiable a) => a -> [Modifier]
-fortMods = (defenseMods Fortitude)
+fortMods = (characterModsByTarget Fortitude)
 
 refMods :: (Modifiable a) => a -> [Modifier]
-refMods = (defenseMods Reflex)
+refMods = (characterModsByTarget Reflex)
 
 willMods :: (Modifiable a) => a -> [Modifier]
-willMods = (defenseMods Will)
+willMods = (characterModsByTarget Will)
 
 acMods :: (Modifiable a) => a -> [Modifier]
-acMods c = modsByTarget ArmorClass $ Modifier.modifiers c
+acMods = (characterModsByTarget ArmorClass)
+
+ac :: Character -> Int
+ac c = sum $ [tenPlusHalfLevel c,
+              abilModForAC c,
+              modForTarget ArmorClass $ Modifier.modifiers c]
+
+armorAndAbilityModToAC :: Character -> Int
+armorAndAbilityModToAC c = abilModForAC c +
+                           Modifier.mod ArmorClass ArmorMod c
+
+abilModForAC :: Character -> Int
+abilModForAC c
+  | wearingLightOrNoArmor c == True = maximum [intMod c, dexMod c]
+  | otherwise = 0
+
+classModToAC :: Character -> Int
+classModToAC c = Modifier.mod ArmorClass ClassMod c
+
+featModToAC :: Character -> Int
+featModToAC c = Modifier.mod ArmorClass FeatMod c
+
+miscModsToAC :: Character -> [Modifier]
+miscModsToAC c = filter (\mod -> modType mod `notElem` specificTypes) $ Character.acMods c
+  where specificTypes = [ArmorMod, ClassMod, EnhancementMod, FeatMod]
+
+misc1ModToAC :: Character -> Int
+misc1ModToAC c
+  | length mods > 0 = value $ last $ sortByValue mods
+  | otherwise = 0
+  where mods = miscModsToAC c
+
+misc2ModToAC :: Character -> Int
+misc2ModToAC c
+  | length mods > 1 = value $ last $ init $ sortByValue mods
+  | otherwise = 0
+  where mods = miscModsToAC c
 
 
+{---------}
+{- Speed -}
+{---------}
 speedMods :: (Modifiable a) => a -> [Modifier]
 speedMods c = modsByTarget Speed $ Modifier.modifiers c
 
-
-enhModToTarget c t =
-  maximum $ 0:(map value $ ((modsByType EnhancementMod) . (modsByTarget t)) $ Modifier.modifiers c)
-enhModToAC c = enhModToTarget c ArmorClass
-enhModToFortitude c = enhModToTarget c Fortitude
-enhModToReflex c = enhModToTarget c Reflex
-
-enhModToWill :: Modifiable a => a -> Int
-enhModToWill c = (Modifier.mod Will EnhancementMod) c
-
-classModToWill :: Modifiable a => a -> Int
-classModToWill c = (Modifier.mod Will ClassMod) c
-
-enhModsWill c = ((modsByType EnhancementMod) . (modsByTarget Will)) mods
-  where mods = Modifier.modifiers c
-
-enhModToWill' c
-  | length modValues > 0 = maximum modValues
-  | otherwise = 0
-  where modValues = map value filteredMods
-        filteredMods = ((modsByType EnhancementMod) . (modsByTarget Will)) mods
-        mods = Modifier.modifiers c
-
-
-
-firstMod mods
-  | length mods > 0 = value $ head mods
-  | otherwise = 0
-
-secondMod mods
-  | length mods > 1 = value $ head $ tail mods
-  | otherwise = 0
-
-nonMiscACModTypes = [AbilityMod, ArmorMod, ClassMod, EnhancementMod, FeatMod]
-miscACMods c =
-  filter (\mod -> modType mod `notElem` nonMiscACModTypes) acMods
-  where acMods = Character.acMods c
-firstMiscACMod c = firstMod $ miscACMods c
-secondMiscACMod c = secondMod $ miscACMods c
-
-nonMiscFortitudeModTypes = [AbilityMod, ClassMod, EnhancementMod, FeatMod]
-miscFortitudeMods c =
-  filter (\mod -> modType mod `notElem` nonMiscFortitudeModTypes) $ fortMods c
-  where acMods = Character.acMods c
-firstMiscFortitudeMod c = firstMod $ miscFortitudeMods c
-secondMiscFortitudeMod c = secondMod $ miscFortitudeMods c
-
-nonMiscReflexModTypes = nonMiscFortitudeModTypes
-miscReflexMods c =
-  filter (\mod -> modType mod `notElem` nonMiscReflexModTypes) $refMods c
-  where acMods = Character.acMods c
-firstMiscReflexMod c = firstMod $ miscReflexMods c
-secondMiscReflexMod c = secondMod $ miscReflexMods c
-
-nonMiscWillModTypes = nonMiscFortitudeModTypes
-miscWillMods c =
-  filter (\mod -> modType mod `notElem` nonMiscWillModTypes) $ willMods c
-  where acMods = Character.acMods c
-firstMiscWillMod c = firstMod $ miscWillMods c
-secondMiscWillMod c = secondMod $ miscWillMods c
 
 className c = (CC.name . characterClass) c
 
@@ -216,39 +206,26 @@ halfLevel c = Character.level c `div` 2
 tenPlusHalfLevel :: Character -> Int
 tenPlusHalfLevel c = 10 + halfLevel c
 
+
+{---------}
+{- Speed -}
+{---------}
 -- is initiative affected by the armor penalty in 4E? NO.
 -- add other mods, feats, powers, equipment
 initiative :: Character -> Int
 initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
 
-miscModToInit c = sum $ map value $ modsFor c Initiative -- primitive
+-- initiative mods called out: 1/2 level, dex mod, and misc. Since this is
+-- less detailed than many other fields, I am going to sum all valid mods and
+-- use that for the misc field.
+miscModToInit c = modForTarget Initiative $ Modifier.modifiers c
 
-modsFor c t = filter (\mod -> Modifier.target mod == t) $ Modifier.modifiers c
 
+{---------}
+{- Feats -}
+{---------}
 feats :: Character -> [Feat]
 feats c = concatMap Level.feats (levels c)
-
-ac :: Character -> Int
-ac c = sum $ [tenPlusHalfLevel c,
-              abilModForAc c,
-              sum $ map value (Character.acMods c)]
-
-abilModForAc :: Character -> Int
-abilModForAc c
-  | wearingLightOrNoArmor c == True = maximum [intMod c, dexMod c]
-  | otherwise                       = 0
-
-wearingLightOrNoArmor :: Character -> Bool
-wearingLightOrNoArmor c = taggedWith (gear c) heavyArmorTag == False
-
-armorOrAbilityModToAC :: Character -> Int
-armorOrAbilityModToAC c
-  | wearingLightOrNoArmor c == True = abilModForAc c
-  | otherwise = sum $ map value (Character.acMods c) -- I probably need to be more specific
-
-classModToAC c = sum $ map Modifier.value $ (Character.acMods . Character.characterClass) c
-
-featModToAC c = sum $ map Modifier.value $ filter (\mod -> Modifier.target mod == ArmorClass) (concatMap Feat.modifiers (Character.feats c))
 
 fortitude :: Character -> Int
 fortitude c = abilityModToFortitude c
