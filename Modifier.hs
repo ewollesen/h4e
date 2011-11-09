@@ -27,7 +27,6 @@ data ModType = AbilityMod
 $(derive[''ModType])
 
 data ModTarget = ArmorClass
-               | Skill
                | Fortitude
                | Reflex
                | Will
@@ -37,6 +36,7 @@ data ModTarget = ArmorClass
                | Intelligence
                | Wisdom
                | Charisma
+               | Skill
                | HitPoints
                | Initiative
                | Speed
@@ -59,8 +59,12 @@ data ModTarget = ArmorClass
                | Streetwise
                | Thievery
                -}
-               deriving (Show, Eq, Ord)
+               deriving (Show, Eq)
 $(derive[''ModTarget])
+
+-- manually defining this allows me to order my enums more logically
+instance Ord ModTarget where
+  compare x y = compare (show x) (show y)
 
 data Modifier = Modifier { name :: String
                          , target :: ModTarget
@@ -88,41 +92,28 @@ mod a y c
   where filteredMods = mods a y $ modifiers c
 
 -- Return a list of mods, where each mod has the largest value for its target
--- type pair. Will not work for penalties. Will not handle multiple
--- UntypedMods.
+-- type pair.
 modsForTarget :: ModTarget -> [Modifier] -> [Modifier]
-modsForTarget t m = map maximum (groupMods (modsByTarget t m))
+modsForTarget t m = concatMap stack $ groupSortMods $ modsByTarget t m
 
 -- Return an integer value which is the sum of the values of each unique
--- target type pair of modifications. Will not work for penalties. Will not
--- handle multiple UntypedMods.
+-- target type pair of modifications.
 modForTarget :: ModTarget -> [Modifier] -> Int
 modForTarget t m = sum $ map value $ modsForTarget t m
 
 -- Return a list of mods (max size 1), where each mod has the largest value
--- for its target type pair. Will not work for penalties. Will not handle
--- multiple UntypedMods.
+-- for its target type pair.
 modsForTargetType :: ModTarget -> ModType -> [Modifier] -> [Modifier]
 modsForTargetType a y m = modsByType y $ modsForTarget a m
 
 -- Return an integer value which is the value of the largest mod for the given
--- target tyep pair. Will not work for penalties. Will not handle multiple
--- UntypedMods.
+-- target type pair.
 modForTargetType :: ModTarget -> ModType -> [Modifier] -> Int
 modForTargetType a y m = sum $ map value $ modsForTargetType a y m
 
-
--- Remove non-stacking mods, keeping only the greatest positive and greatest
--- negative mods.
---groupMaxMinUntyped :: [Modifier] -> [Modifier]
---groupMaxMinUntyped m =
-
--- groupMaxMinUntyped :: [Modifier] -> [Modifier]
--- groupMaxMinUntyped m =
---   (getUntyped m) ++ (map greatestBonusPenalty (groupMods (getTyped m)))
-
-greatestBonusPenalty :: [Modifier] -> [Modifier]
-greatestBonusPenalty m
+stack :: [Modifier] -> [Modifier]
+stack m
+  | all (\mod -> modType mod == UntypedMod) m == True = m -- untyped mods stack
   | minVal < 0 && maxVal > 0 = [min, max] -- bonus & penalty
   | minVal < 0 && maxVal <= 0 = [min] -- penalty only
   | minVal >= 0 = [max] -- bonus only
@@ -131,33 +122,11 @@ greatestBonusPenalty m
         max = maximum m
         maxVal = value $ max
 
-getUntyped :: [Modifier] -> [Modifier]
-getUntyped m = filter (\mod -> modType mod == UntypedMod) m
-
-getTyped :: [Modifier] -> [Modifier]
-getTyped m = filter (\mod -> modType mod /= UntypedMod) m
-
-groupUntyped :: [Modifier] -> ([Modifier], [Modifier])
-groupUntyped m = partition (untyped) m
-
-groupMods :: [Modifier] -> [[Modifier]]
-groupMods m = groupBy (stackable) m
+groupSortMods :: [Modifier] -> [[Modifier]]
+groupSortMods m = groupBy (stackable) $ sort m
 
 stackable :: Modifier -> Modifier -> Bool
 stackable m1 m2 = target m1 == target m2 && modType m1 == modType m2
-
-untyped :: Modifier -> Bool
-untyped m = modType m == UntypedMod
-
-sortByTargetType :: [Modifier] -> [Modifier]
-sortByTargetType m = sortBy (targetTypeCompare) m
-
-targetTypeCompare m1 m2
-  | stackable m1 m2 == True = EQ
-  | compareType == EQ = compareTarget
-  | otherwise = compareType
-  where compareTarget = compare (target m1) (target m2)
-        compareType = compare (modType m1) (modType m2)
 
 modFactory name target value modType =
   Modifier { Modifier.name=name
@@ -171,9 +140,11 @@ instance Eq Modifier where
 
 instance Ord Modifier where
   compare x y
-    | x == y = EQ
-    | stackable x y && value x < value y = LT
-    | stackable x y && value x > value y = GT
+    | targetsMatch == False = compare (target x) (target y)
+    | typesMatch == False = compare (modType x) (modType y)
+    | otherwise = compare (value x) (value y)
+    where targetsMatch = target x == target y
+          typesMatch = modType x == modType y
 
 
 modTypeToString :: String -> String
