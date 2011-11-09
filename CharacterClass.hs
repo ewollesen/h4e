@@ -22,8 +22,5 @@ classWillPlus2 = modFactory "+2 Will Defense (Class)" Will 2 ClassMod
 grantsProficiencyWith cc weapon =
   any (isTaggedWith weapon) (proficientWithWeaponsTaggedWith cc)
 
-acMods cc =
-  filter (\mod -> target mod == ArmorClass) $ CharacterClass.modifiers cc
-
 instance Modifiable Class where
   modifiers c = CharacterClass.modifiers c

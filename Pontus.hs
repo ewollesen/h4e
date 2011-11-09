@@ -28,10 +28,9 @@ pontus = Character { Character.name = "Pontus"
                    , race=human Wisdom
                    , levels=[
                      Level.level [] [bullsStrength, ironFist, whirlingDefense, aspectOfElevatedHarmony, battlemindsDemand, battleResilience, blurredStep, mindSpike] [deceptiveMind, lureOfIron],
-                     Level.level [] [dimensionSlide] [psionicToughness],
-                     Level.level [(modFactory "Testing Armor Penalty 2" ArmorClass (-2) ArmorMod), (modFactory "Testing Armor Penalty" ArmorClass (-1) ArmorMod)] [] []
+                     Level.level [] [dimensionSlide] [psionicToughness]
                      ]
-                   , gear=[plateMail, scaleMail, lightShield]
+                   , gear=[scaleMail, lightShield]
                    , weapons=[longsword, dagger]
                    , xp=1675
                    , age=24

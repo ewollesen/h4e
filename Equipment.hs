@@ -26,13 +26,11 @@ plateMail = equipFactory "Plate mail"
 
 scaleMail = equipFactory "Scale mail"
             [modFactory "+7 AC bonus (Armor)" ArmorClass 7 ArmorMod,
-             modFactory "+2 untyped test" ArmorClass 2 UntypedMod,
              modFactory "-1 Speed penalty (Armor)" Speed (-1) ArmorMod]
             [heavyArmorTag, armorTag]
 
 lightShield = equipFactory "Shield (light)"
               [modFactory "+1 AC bonus (Shield)" ArmorClass 1 ShieldMod,
-               modFactory "+3 untyped test" ArmorClass 3 UntypedMod,
                modFactory "+1 Reflex bonus (Shield)" Reflex 1 ShieldMod]
               [lightArmorTag]
 

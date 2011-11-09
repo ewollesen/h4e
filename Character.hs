@@ -139,22 +139,122 @@ passivePerception = (skillTakeTen Perception)
 {------------}
 {- Defenses -}
 {------------}
+{- Fortitude -}
+fortitude :: Character -> Int
+fortitude c = abilModForFort c
+              + tenPlusHalfLevel c
+              + (modForTarget Fortitude $ Modifier.modifiers c)
+
+abilModForFort :: Character -> Int
+abilModForFort c = maximum [strMod c, conMod c]
+
+classModToFort :: Character -> Int
+classModToFort c = Modifier.mod Fortitude ClassMod c
+
+enhModToFort :: Character -> Int
+enhModToFort c = Modifier.mod Fortitude EnhancementMod c
+
+featModToFort :: Character -> Int
+featModToFort c = Modifier.mod Fortitude FeatMod c
+
+miscModsToFort :: Character -> [Modifier]
+miscModsToFort c = filter (\m -> modType m `notElem` specificTypes) $ fortMods c
+  where specificTypes = [ClassMod, EnhancementMod, FeatMod]
+
 fortMods :: (Modifiable a) => a -> [Modifier]
 fortMods = (characterModsByTarget Fortitude)
+
+misc1ModToFort :: Character -> Int
+misc1ModToFort c
+  | length mods > 0 = value $ last $ sortByValue mods
+  | otherwise = 0
+  where mods = miscModsToFort c
+
+misc2ModToFort :: Character -> Int
+misc2ModToFort c
+  | length mods > 1 = value $ last $ init $ sortByValue mods
+  | otherwise = 0
+  where mods = miscModsToFort c
+
+{- Reflex -}
+reflex :: Character -> Int
+reflex c = abilModForRef c
+         + tenPlusHalfLevel c
+         + (modForTarget Reflex $ Modifier.modifiers c)
+
+abilModForRef :: Character -> Int
+abilModForRef c = maximum [dexMod c, intMod c]
+
+classModToRef :: Character -> Int
+classModToRef c = Modifier.mod Reflex ClassMod c
+
+enhModToRef :: Character -> Int
+enhModToRef c = Modifier.mod Reflex EnhancementMod c
+
+featModToRef :: Character -> Int
+featModToRef c = Modifier.mod Reflex FeatMod c
+
+miscModsToRef :: Character -> [Modifier]
+miscModsToRef c = filter (\m -> modType m `notElem` specificTypes) $ refMods c
+  where specificTypes = [ClassMod, EnhancementMod, FeatMod]
 
 refMods :: (Modifiable a) => a -> [Modifier]
 refMods = (characterModsByTarget Reflex)
 
+misc1ModToRef :: Character -> Int
+misc1ModToRef c
+  | length mods > 0 = value $ last $ sortByValue mods
+  | otherwise = 0
+  where mods = miscModsToRef c
+
+misc2ModToRef :: Character -> Int
+misc2ModToRef c
+  | length mods > 1 = value $ last $ init $ sortByValue mods
+  | otherwise = 0
+  where mods = miscModsToRef c
+
+{- Will -}
+will :: Character -> Int
+will c = abilModForWill c
+         + tenPlusHalfLevel c
+         + (modForTarget Will $ Modifier.modifiers c)
+
+abilModForWill :: Character -> Int
+abilModForWill c = maximum [wisMod c, chaMod c]
+
+classModToWill :: Character -> Int
+classModToWill c = Modifier.mod Will ClassMod c
+
+enhModToWill :: Character -> Int
+enhModToWill c = Modifier.mod Will EnhancementMod c
+
+featModToWill :: Character -> Int
+featModToWill c = Modifier.mod Will FeatMod c
+
+miscModsToWill :: Character -> [Modifier]
+miscModsToWill c = filter (\m -> modType m `notElem` specificTypes) $ willMods c
+  where specificTypes = [ClassMod, EnhancementMod, FeatMod]
+
 willMods :: (Modifiable a) => a -> [Modifier]
 willMods = (characterModsByTarget Will)
 
-acMods :: (Modifiable a) => a -> [Modifier]
-acMods = (characterModsByTarget ArmorClass)
+misc1ModToWill :: Character -> Int
+misc1ModToWill c
+  | length mods > 0 = value $ last $ sortByValue mods
+  | otherwise = 0
+  where mods = miscModsToWill c
 
+misc2ModToWill :: Character -> Int
+misc2ModToWill c
+  | length mods > 1 = value $ last $ init $ sortByValue mods
+  | otherwise = 0
+  where mods = miscModsToWill c
+
+{- Armor Class -}
 ac :: Character -> Int
-ac c = sum $ [tenPlusHalfLevel c,
-              abilModForAC c,
-              modForTarget ArmorClass $ Modifier.modifiers c]
+ac c = tenPlusHalfLevel c
+       + abilModForAC c
+       + (modForTarget ArmorClass $ Modifier.modifiers c)
 
 armorAndAbilityModToAC :: Character -> Int
 armorAndAbilityModToAC c = abilModForAC c +
@@ -168,12 +268,18 @@ abilModForAC c
 classModToAC :: Character -> Int
 classModToAC c = Modifier.mod ArmorClass ClassMod c
 
+enhModToAC :: Character -> Int
+enhModToAC c = Modifier.mod ArmorClass EnhancementMod c
+
 featModToAC :: Character -> Int
 featModToAC c = Modifier.mod ArmorClass FeatMod c
 
 miscModsToAC :: Character -> [Modifier]
-miscModsToAC c = filter (\mod -> modType mod `notElem` specificTypes) $ Character.acMods c
+miscModsToAC c = filter (\m -> modType m `notElem` specificTypes) $ acMods c
   where specificTypes = [ArmorMod, ClassMod, EnhancementMod, FeatMod]
+
+acMods :: (Modifiable a) => a -> [Modifier]
+acMods = (characterModsByTarget ArmorClass)
 
 misc1ModToAC :: Character -> Int
 misc1ModToAC c
@@ -227,74 +333,18 @@ miscModToInit c = modForTarget Initiative $ Modifier.modifiers c
 feats :: Character -> [Feat]
 feats c = concatMap Level.feats (levels c)
 
-fortitude :: Character -> Int
-fortitude c = abilityModToFortitude c
-              + tenPlusHalfLevel c
-              + (sum $ map value (fortMods c))
 
-abilityModToFortitude c = maximum [strMod c, conMod c]
-
-classModToFortitude c
-   | length mods == 0 = 0
-   | otherwise = maximum $ map value mods
-  where
-    mods = fortMods $ Character.characterClass c
-
-featModToFortitude c
-  | length mods == 0 = 0
-  | otherwise = maximum $ map value mods
-  where mods = modsFromFeatsWithTarget c Fortitude
-
-modsFromFeatsWithTarget c t =
-  filter (\mod -> Modifier.target mod == t) $ featModifiers c
-
-featModifiers c = concatMap Feat.modifiers (Character.feats c)
-
-abilityModToReflex c = maximum [dexMod c, intMod c]
-
-classModToReflex c
-   | length mods == 0 = 0
-   | otherwise = maximum $ map value mods
-  where
-    mods = refMods $ Character.characterClass c
-
-featModToReflex c
-  | length mods == 0 = 0
-  | otherwise = maximum $ map value mods
-  where mods = modsFromFeatsWithTarget c Reflex
-
-abilityModToWill c = maximum [wisMod c, chaMod c]
-
-classModToWill' c
-   | length mods == 0 = 0
-   | otherwise = maximum $ map value mods
-  where
-    mods = willMods $ Character.characterClass c
-
-featModToWill c
-  | length mods == 0 = 0
-  | otherwise = maximum $ map value mods
-  where mods = modsFromFeatsWithTarget c Will
-
-
-
-reflex :: Character -> Int
-reflex c = maximum [intMod c, dexMod c]
-         + tenPlusHalfLevel c
-         + (sum $ map value (refMods c))
-
-will :: Character -> Int
-will c = maximum [chaMod c, wisMod c]
-         + tenPlusHalfLevel c
-         + (sum $ map value (willMods c))
-
+{--------------}
+{- Hit Points -}
+{--------------}
 hp :: Character -> Int
 hp c = con c
        + (hpAtFirstLevel . characterClass) c
        + ((hpPerLevelGained . characterClass) c * (Character.level c - 1))
        + (sum $ map value (hpMods c))
 
-hpMods c = filter (\mod -> Modifier.target mod == HitPoints) (Modifier.modifiers c)
+hpMods c = filter hpFilter  (Modifier.modifiers c)
+  where hpFilter = (\mod -> Modifier.target mod == HitPoints)
 
 bloodied :: Character -> Int
 bloodied c = hp c `div` 2
