@@ -20,13 +20,13 @@ armorTag = tagFactory "Armor"
 
 plateMail = equipFactory "Plate mail"
             [modFactory "+8 AC bonus (Armor)" ArmorClass 8 ArmorMod,
-             modFactory "-1 Speed penalty (Armor)" ArmorSpeed (-1) ArmorMod,
-             modFactory "-2 Armor penalty" ArmorSkill (-2) ArmorMod]
+             modFactory "-1 Speed penalty (Armor)" Speed (-1) ArmorMod,
+             modFactory "-2 Armor penalty" Skill (-2) ArmorMod]
             [heavyArmorTag, armorTag]
 
 scaleMail = equipFactory "Scale mail"
             [modFactory "+7 AC bonus (Armor)" ArmorClass 7 ArmorMod,
-             modFactory "-1 Speed penalty (Armor)" ArmorSpeed (-1) ArmorMod]
+             modFactory "-1 Speed penalty (Armor)" Speed (-1) ArmorMod]
             [heavyArmorTag, armorTag]
 
 lightShield = equipFactory "Shield (light)"

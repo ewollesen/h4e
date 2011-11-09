@@ -1,4 +1,7 @@
-module Race where
+module Race (Race.Race,
+             Race.name,
+             Race.size,
+             Race.human) where
 
 import Modifier
 
@@ -8,20 +11,24 @@ data Race = Race { name :: String
                  , modifiers :: [Modifier]
                  } deriving (Show)
 
+instance Modifiable Race where
+  modifiers r = baseSpeedMod r:Race.modifiers r
 
--- is there a way to generate these from a list?
-raceWisPlus2 = modFactory "+2 Wisdom (Racial)" Wisdom 2 UntypedMod
+baseSpeedMod r = modFactory "Base Speed" Speed (baseSpeed r) UntypedMod
 
-racePlusOneFortitude = modFactory "+1 Fortitude (Racial)" Fortitude 1 UntypedMod
-racePlusOneReflex = modFactory "+1 Reflex (Racial)" Reflex 1 UntypedMod
-racePlusOneWill = modFactory "+1 Will (Racial)" Will 1 UntypedMod
+human :: ModTarget -> Race
+human a = Race { Race.name="Human"
+               , Race.baseSpeed=6
+               , Race.size="Medium"
+               , Race.modifiers=[abilModFactory a,
+                                 plusOneFortitude,
+                                 plusOneReflex,
+                                 plusOneWill]
+               }
 
-human :: Modifier -> Race
-human abil = Race { Race.name="Human"
-                  , Race.baseSpeed=6
-                  , Race.size="Medium"
-                  , Race.modifiers=[abil,
-                                    racePlusOneFortitude,
-                                    racePlusOneReflex,
-                                    racePlusOneWill]
-                  }
+abilModFactory a = modFactory desc a 2 UntypedMod
+  where desc = "+2 " ++ (show a) ++ " (Racial)"
+
+plusOneFortitude = modFactory "+1 Fortitude (Racial)" Fortitude 1 UntypedMod
+plusOneReflex = modFactory "+1 Reflex (Racial)" Reflex 1 UntypedMod
+plusOneWill = modFactory "+1 Will (Racial)" Will 1 UntypedMod

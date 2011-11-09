@@ -40,7 +40,6 @@ data Character = Character { name :: String
                            } deriving (Show)
 
 
-
 ability Ability.Strength = (str)
 ability Ability.Dexterity = (dex)
 ability Ability.Constitution = (con)
@@ -55,50 +54,37 @@ abilityMod Ability.Intelligence = (intMod)
 abilityMod Ability.Wisdom = (wisMod)
 abilityMod Ability.Charisma = (chaMod)
 
-skillAbilMod Acrobatics = (dexMod)
-skillAbilMod Arcana = (intMod)
-skillAbilMod Athletics = (strMod)
-skillAbilMod Bluff = (chaMod)
-skillAbilMod Diplomacy = (chaMod)
-skillAbilMod Dungeoneering = (wisMod)
-skillAbilMod Endurance = (conMod)
-skillAbilMod Heal = (wisMod)
-skillAbilMod History = (intMod)
-skillAbilMod Insight = (wisMod)
-skillAbilMod Intimidate = (chaMod)
-skillAbilMod Nature = (wisMod)
-skillAbilMod Perception = (wisMod)
-skillAbilMod Religion = (intMod)
-skillAbilMod Stealth = (dexMod)
-skillAbilMod Streetwise = (chaMod)
-skillAbilMod Thievery = (dexMod)
+skillAbilMod = (abilityMod . skillAbil)
+
+skillTakeTen :: SkillName -> Character -> Int
+skillTakeTen s c = 10 + skill c s
 
 passiveInsight :: Character -> Int
-passiveInsight c = 10 + skill c Insight
+passiveInsight = (skillTakeTen Insight)
 
 passivePerception :: Character -> Int
-passivePerception c = 10 + skill c Perception
+passivePerception = (skillTakeTen Perception)
 
 
 str :: Character -> Int
-str c = sum $ baseStr c:(map value (Character.strMods c))
+str c = sum $ baseStr c:(map value $ strMods c)
 
 dex :: Character -> Int
-dex c = sum $ baseDex c:(map value (Character.dexMods c))
+dex c = sum $ baseDex c:(map value $ dexMods c)
 
 con :: Character -> Int
-con c = sum $ baseCon c:(map value (Character.conMods c))
+con c = sum $ baseCon c:(map value $ conMods c)
 
 int :: Character -> Int
-int c = sum $ baseInt c:(map value (Character.intMods c))
+int c = sum $ baseInt c:(map value $ intMods c)
 
 wis :: Character -> Int
-wis c = sum $ baseWis c:(map value (Character.wisMods c))
+wis c = sum $ baseWis c:(map value $ wisMods c)
 
 cha :: Character -> Int
-cha c = sum $ baseCha c:(map value (Character.chaMods c))
+cha c = sum $ baseCha c:(map value $ chaMods c)
 
-
+abilMod :: Int -> Int
 abilMod x = x `div` 2 - 5
 
 wisMod :: Character -> Int
@@ -120,44 +106,63 @@ chaMod :: Character -> Int
 chaMod c = (abilMod . cha) c
 
 
+abilityMods :: (Modifiable a) => ModTarget -> a -> [Modifier]
+abilityMods t c = modsByTarget t $ Modifier.modifiers c
+
 strMods :: (Modifiable a) => a -> [Modifier]
-strMods c = filter (\mod -> Modifier.target mod == Modifier.Strength) (Modifier.modifiers c)
+strMods = (abilityMods Modifier.Strength)
 
 dexMods :: (Modifiable a) => a -> [Modifier]
-dexMods c = filter (\mod -> Modifier.target mod == Modifier.Dexterity) (Modifier.modifiers c)
+dexMods = (abilityMods Modifier.Dexterity)
 
 conMods :: (Modifiable a) => a -> [Modifier]
-conMods c = filter (\mod -> Modifier.target mod == Modifier.Constitution) (Modifier.modifiers c)
+conMods = (abilityMods Modifier.Constitution)
 
 intMods :: (Modifiable a) => a -> [Modifier]
-intMods c = filter (\mod -> Modifier.target mod == Modifier.Intelligence) (Modifier.modifiers c)
+intMods = (abilityMods Modifier.Intelligence)
 
 wisMods :: (Modifiable a) => a -> [Modifier]
-wisMods c = filter (\mod -> Modifier.target mod == Modifier.Wisdom) (Modifier.modifiers c)
+wisMods = (abilityMods Modifier.Wisdom)
 
 chaMods :: (Modifiable a) => a -> [Modifier]
-chaMods c = filter (\mod -> Modifier.target mod == Modifier.Charisma) (Modifier.modifiers c)
+chaMods = (abilityMods Modifier.Charisma)
 
+
+defenseMods :: (Modifiable a) => ModTarget -> a -> [Modifier]
+defenseMods t c = modsByTarget t $ Modifier.modifiers c
 
 fortMods :: (Modifiable a) => a -> [Modifier]
-fortMods c = filter (\mod -> Modifier.target mod == Fortitude) (Modifier.modifiers c)
+fortMods = (defenseMods Fortitude)
 
 refMods :: (Modifiable a) => a -> [Modifier]
-refMods c = filter (\mod -> Modifier.target mod == Reflex) (Modifier.modifiers c)
+refMods = (defenseMods Reflex)
 
 willMods :: (Modifiable a) => a -> [Modifier]
-willMods c = filter (\mod -> Modifier.target mod == Will) (Modifier.modifiers c)
+willMods = (defenseMods Will)
 
 acMods :: (Modifiable a) => a -> [Modifier]
-acMods c = modsByTarget c ArmorClass
+acMods c = modsByTarget ArmorClass $ Modifier.modifiers c
+
+
+speedMods :: (Modifiable a) => a -> [Modifier]
+speedMods c = modsByTarget Speed $ Modifier.modifiers c
+
 
 enhModToTarget c t =
-  maximum $ 0:(map value $ modsByTargetAndType c t EnhancementMod)
+  maximum $ 0:(map value $ ((modsByType EnhancementMod) . (modsByTarget t)) $ Modifier.modifiers c)
 enhModToAC c = enhModToTarget c ArmorClass
 enhModToFortitude c = enhModToTarget c Fortitude
 enhModToReflex c = enhModToTarget c Reflex
-enhModToWill c = enhModToTarget c Will
 
+enhModsWill c = ((modsByType EnhancementMod) . (modsByTarget Will)) mods
+  where mods = Modifier.modifiers c
+
+enhModToWill c
+  | length modValues > 0 = maximum modValues
+  | otherwise = 0
+  where modValues = map value filteredMods
+        filteredMods = ((modsByType EnhancementMod) . (modsByTarget Will)) mods
+        mods = Modifier.modifiers c
 
 firstMod mods
   | length mods > 0 = value $ head mods
@@ -320,21 +325,22 @@ healingSurgesPerDay c = conMod c
                         + (CC.healingSurgesPerDay . characterClass) c
 
 
-speed c = (baseSpeed (race c)) + (sum $ (map value (speedMods c)))
-speedMods c = filter (\mod -> Modifier.target mod == Speed) (Modifier.modifiers c)
 armorSpeedMod c = sum $ map value $ filter (\mod -> Modifier.target mod == Speed) (concatMap Equipment.modifiers (gear c)) -- not entirely accurate, add a filter for tagged with armor I guess?
 itemSpeedMod c
   | length mods > 0 = value $ maximum mods
   | otherwise = 0
   where
     nonArmor = filter (\gear -> isTaggedWith gear armorTag == False) $ gear c
-    mods = concat [modsByTarget x Speed | x <- nonArmor]
+    mods = concat [modsByTarget Speed $ Modifier.modifiers x | x <- nonArmor]
+
+
+speed c = sum $ map value $ speedMods c
 
 nonMiscSpeedModTypes = [ArmorMod]
 miscSpeedMod c
   | length mods > 0 = value $ maximum $ mods
   | otherwise = 0
-  where speedMods = modsByTarget c Speed
+  where speedMods = modsByTarget Speed c
         mods = filter (\mod -> modType mod `notElem` nonMiscSpeedModTypes) speedMods
 
 seventeenFeats c = buildSeventeenFeats $ map Feat.name $ Character.feats c
@@ -363,7 +369,7 @@ buildEightUtilityPowers p
   | otherwise = p
 
 instance Modifiable Character where
-  modifiers c = concat [(Race.modifiers . race) c,
+  modifiers c = concat [(Modifier.modifiers . race) c,
                         (CC.modifiers . characterClass) c,
                         (concatMap Feat.modifiers (Character.feats c)),
                         (concatMap Equipment.modifiers (gear c)),
@@ -388,7 +394,7 @@ instance Skilled Character where
 
 
 armorCheckPenalty c = sum $ (map value (armorCheckPenaltyMods c))
-armorCheckPenaltyMods c = filter (\mod -> Modifier.target mod == ArmorSkill) (Modifier.modifiers c)
+armorCheckPenaltyMods c = filter (\mod -> Modifier.target mod == Modifier.Skill) (Modifier.modifiers c)
 basicMeleeAttack c w = basicAttack c w + strMod c
 basicRangedAttack c w = basicAttack c w + dexMod c
 
@@ -450,11 +456,12 @@ classModifierFor c p =
 featModifierFor c p =
   maximum $ 0:(map value $ filter (\mod -> (show $ Modifier.target mod) == Power.name p) $ concatMap Feat.modifiers $ Character.feats c)
 
-nonMiscAttackModTypes = [AbilityMod, ClassMod, ProficiencyMod, FeatMod, EnhancementMod]
-miscAttackMods c =
-  filter (\mod -> modType mod `notElem` nonMiscAttackModTypes) $ attackMods c
-  where attackMods = Character.attackMods c
+-- nonMiscAttackModTypes = [AbilityMod, ClassMod, ProficiencyMod, FeatMod, EnhancementMod]
+-- miscAttackMods c =
+--   filter (\mod -> modType mod `notElem` nonMiscAttackModTypes) $ attackMods c
+--   where attackMods = Character.attackMods c
 
-attackMods c a =
-  [halfLevel c, (abilityMod a) c, (weaponProficiencyBonus c weapon),
-  where weapon = primaryWeapon c
+-- attackMods c a =
+--   [halfLevel c, (abilityMod a) c, (weaponProficiencyBonus c weapon),
+--   where weapon = primaryWeapon c
+

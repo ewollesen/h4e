@@ -15,15 +15,19 @@ data ModType = AbilityMod
              | ArmorMod
              | ClassMod
              | EnhancementMod
+             | ItemMod
              | FeatMod
              | ShieldMod
+             | LevelMod
+             | ProficiencyMod
+             | RacialMod
+             | PowerMod
              | UntypedMod
              deriving (Show, Eq)
 $(derive[''ModType])
 
 data ModTarget = ArmorClass
-               | ArmorSpeed
-               | ArmorSkill
+               | Skill
                | Fortitude
                | Reflex
                | Will
@@ -64,24 +68,23 @@ data Modifier = Modifier { name :: String
                          , modType :: ModType
                          } deriving (Show)
 
+
 class Modifiable a where
   modifiers :: a -> [Modifier]
 
-  modsByType :: a -> ModType -> [Modifier]
-  modsByType a t = filter (\mod -> modType mod == t) $ modifiers a
+modsByType :: ModType -> [Modifier] -> [Modifier]
+modsByType t m = filter (\mod -> modType mod == t) m
 
-  modsByTarget :: a -> ModTarget -> [Modifier]
-  modsByTarget a t = filter (\mod -> target mod == t) $ modifiers a
+modsByTarget :: ModTarget -> [Modifier] -> [Modifier]
+modsByTarget t m  = filter (\mod -> target mod == t) m
 
-  modsByTargetAndType :: a -> ModTarget -> ModType -> [Modifier]
-  modsByTargetAndType a desiredTarget desiredModType =
-    filter (\mod -> target mod == desiredTarget && modType mod == desiredModType) $ modifiers a
 
-modFactory name target value modType = Modifier { Modifier.name=name
-                                                , Modifier.target=target
-                                                , Modifier.value=value
-                                                , Modifier.modType=modType
-                                                }
+modFactory name target value modType =
+  Modifier { Modifier.name=name
+           , Modifier.target=target
+           , Modifier.value=value
+           , Modifier.modType=modType
+           }
 
 instance Eq Modifier where
   x == y = target x == target y && modType x == modType y && value x == value y

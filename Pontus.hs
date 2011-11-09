@@ -25,7 +25,7 @@ pontus = Character { Character.name = "Pontus"
                                                    Diplomacy,
                                                    Endurance,
                                                    Insight]
-                   , race=human raceWisPlus2
+                   , race=human Wisdom
                    , levels=[
                      Level.level [] [bullsStrength, ironFist, whirlingDefense, aspectOfElevatedHarmony, battlemindsDemand, battleResilience, blurredStep, mindSpike] [deceptiveMind, lureOfIron],
                      Level.level [] [dimensionSlide] [psionicToughness]
