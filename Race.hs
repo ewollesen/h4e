@@ -1,6 +1,7 @@
 module Race (Race.Race,
              Race.name,
              Race.size,
+             Race.baseSpeed,
              Race.human) where
 
 import Modifier
@@ -12,9 +13,7 @@ data Race = Race { name :: String
                  } deriving (Show)
 
 instance Modifiable Race where
-  modifiers r = baseSpeedMod r:Race.modifiers r
-
-baseSpeedMod r = modFactory "Base Speed" Speed (baseSpeed r) UntypedMod
+  modifiers r = Race.modifiers r
 
 human :: ModTarget -> Race
 human a = Race { Race.name="Human"

@@ -39,6 +39,28 @@ data Character = Character { name :: String
                            , adventuringCompanyOrOtherAffiliations :: String
                            } deriving (Show)
 
+instance Modifiable Character where
+  modifiers c = concat [(Modifier.modifiers . race) c,
+                        (CC.modifiers . characterClass) c,
+                        (concatMap Feat.modifiers (Character.feats c)),
+                        (concatMap Equipment.modifiers (gear c)),
+                        (concatMap Level.modifiers (Character.levels c))]
+
+instance Skilled Character where
+  skill c name = trainedBonus c name +
+                 halfLevel c +
+                 (skillAbilMod name) c +
+                 skillArmorCheckPenalty c name
+  skillMods c name = []
+  skillArmorCheckPenalty c name
+    | skillArmorCheckPenaltyApplies name (not (wearingLightOrNoArmor c)) = armorCheckPenalty c
+    | otherwise = 0
+  trainedSkills c = concat [(CC.trainedSkills . characterClass) c
+                            -- feats that train in skills
+                           ]
+  trainedSkill c s = s `elem` Skill.trainedSkills c
+  skillAbilModPlusHalfLevel c s = halfLevel c + ((skillAbilMod s) c)
+
 
 {--------------------}
 {- Modifier Helpers -}
@@ -294,15 +316,37 @@ misc2ModToAC c
   where mods = miscModsToAC c
 
 
+className c = (CC.name . characterClass) c
+
+
 {---------}
 {- Speed -}
 {---------}
+speed c = (Race.baseSpeed $ Character.race c)
+          + (modForTarget Speed $ Modifier.modifiers c)
+
+armorSpeedMod c = Modifier.mod Speed ArmorMod  c
+
+itemSpeedMod c = Modifier.mod Speed ItemMod c
+
+miscModToSpeed :: Character -> Int
+miscModToSpeed c
+  | length mods > 0 = value $ last $ sortByValue mods
+  | otherwise = 0
+  where mods = miscModsToSpeed c
+
+miscModsToSpeed :: Character -> [Modifier]
+miscModsToSpeed c = filter (specificFilter) $ speedMods c
+  where specificTypes = [ArmorMod, ItemMod]
+        specificFilter = (\m -> modType m `notElem` specificTypes)
+
 speedMods :: (Modifiable a) => a -> [Modifier]
-speedMods c = modsByTarget Speed $ Modifier.modifiers c
+speedMods = (characterModsByTarget Speed)
 
 
-className c = (CC.name . characterClass) c
-
+{---------}
+{- Level -}
+{---------}
 level :: Character -> Int
 level c = length $ levels c
 
@@ -313,9 +357,9 @@ tenPlusHalfLevel :: Character -> Int
 tenPlusHalfLevel c = 10 + halfLevel c
 
 
-{---------}
-{- Speed -}
-{---------}
+{--------------}
+{- Initiative -}
+{--------------}
 -- is initiative affected by the armor penalty in 4E? NO.
 -- add other mods, feats, powers, equipment
 initiative :: Character -> Int
@@ -341,10 +385,9 @@ hp :: Character -> Int
 hp c = con c
        + (hpAtFirstLevel . characterClass) c
        + ((hpPerLevelGained . characterClass) c * (Character.level c - 1))
-       + (sum $ map value (hpMods c))
+       + (modForTarget HitPoints $ Modifier.modifiers c)
 
-hpMods c = filter hpFilter  (Modifier.modifiers c)
-  where hpFilter = (\mod -> Modifier.target mod == HitPoints)
+hpMods c = modsForTarget HitPoints $ Modifier.modifiers c
 
 bloodied :: Character -> Int
 bloodied c = hp c `div` 2
@@ -356,24 +399,6 @@ healingSurgesPerDay :: Character -> Int
 healingSurgesPerDay c = conMod c
                         + (CC.healingSurgesPerDay . characterClass) c
 
-
-armorSpeedMod c = sum $ map value $ filter (\mod -> Modifier.target mod == Speed) (concatMap Equipment.modifiers (gear c)) -- not entirely accurate, add a filter for tagged with armor I guess?
-itemSpeedMod c
-  | length mods > 0 = value $ maximum mods
-  | otherwise = 0
-  where
-    nonArmor = filter (\gear -> isTaggedWith gear armorTag == False) $ gear c
-    mods = concat [modsByTarget Speed $ Modifier.modifiers x | x <- nonArmor]
-
-
-speed c = sum $ map value $ speedMods c
-
-nonMiscSpeedModTypes = [ArmorMod]
-miscSpeedMod c
-  | length mods > 0 = value $ maximum $ mods
-  | otherwise = 0
-  where speedMods = modsByTarget Speed c
-        mods = filter (\mod -> modType mod `notElem` nonMiscSpeedModTypes) speedMods
 
 seventeenFeats c = buildSeventeenFeats $ map Feat.name $ Character.feats c
 buildSeventeenFeats f
@@ -400,37 +425,17 @@ buildEightUtilityPowers p
   | length p < 8 = buildEightUtilityPowers (p ++ [""])
   | otherwise = p
 
-instance Modifiable Character where
-  modifiers c = concat [(Modifier.modifiers . race) c,
-                        (CC.modifiers . characterClass) c,
-                        (concatMap Feat.modifiers (Character.feats c)),
-                        (concatMap Equipment.modifiers (gear c)),
-                        (concatMap Level.modifiers (Character.levels c))]
 
+basicMeleeAttack c w = basicAttack c w + strMod c
+basicAttack c w = halfLevel c + (weaponProficiencyBonus c w)
+basicRangedAttack c w = basicAttack c w + dexMod c
 
-instance Skilled Character where
-  skill c name = trainedBonus c name +
-                 halfLevel c +
-                 (skillAbilMod name) c +
-                 skillArmorCheckPenalty c name
-  skillMods c name = []
-  skillArmorCheckPenalty c name
-    | skillArmorCheckPenaltyApplies name (not (wearingLightOrNoArmor c)) = armorCheckPenalty c
-    | otherwise = 0
-  trainedSkills c = concat [(CC.trainedSkills . characterClass) c
-                            -- feats that train in skills
-                           ]
-  trainedSkill c s = s `elem` Skill.trainedSkills c
-  skillAbilModPlusHalfLevel c s = halfLevel c + ((skillAbilMod s) c)
 
 
 
 armorCheckPenalty c = sum $ (map value (armorCheckPenaltyMods c))
 armorCheckPenaltyMods c = filter (\mod -> Modifier.target mod == Modifier.Skill) (Modifier.modifiers c)
-basicMeleeAttack c w = basicAttack c w + strMod c
-basicRangedAttack c w = basicAttack c w + dexMod c
 
-basicAttack c w = halfLevel c + (weaponProficiencyBonus c w)
 
 weaponProficiencyBonus c w
   | isProficientWith c w == True = Weapon.proficiencyBonus w
@@ -487,13 +492,3 @@ classModifierFor c p =
 
 featModifierFor c p =
   maximum $ 0:(map value $ filter (\mod -> (show $ Modifier.target mod) == Power.name p) $ concatMap Feat.modifiers $ Character.feats c)
-
--- nonMiscAttackModTypes = [AbilityMod, ClassMod, ProficiencyMod, FeatMod, EnhancementMod]
--- miscAttackMods c =
---   filter (\mod -> modType mod `notElem` nonMiscAttackModTypes) $ attackMods c
---   where attackMods = Character.attackMods c
-
--- attackMods c a =
---   [halfLevel c, (abilityMod a) c, (weaponProficiencyBonus c weapon),
---   where weapon = primaryWeapon c
-

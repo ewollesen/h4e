@@ -1,6 +1,5 @@
 module Character.Race where
 
-import Modifier
 import Character
 import Race
 
