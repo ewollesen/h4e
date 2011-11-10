@@ -1,6 +1,7 @@
 module Character where
 
 import Data.List
+import Data.Maybe
 import Modifier
 import Taggable
 import Race
@@ -490,6 +491,93 @@ language i c
     langs = languages c
 
 
+{-----------}
+{- Attacks -}
+{-----------}
+{- Overkill? -}
+attackMod :: Power -> Character -> Int
+attackMod p c = halfLevel c
+                + attackAbilMod p c
+                + attackClassMod p c
+                + attackProfMod p c
+                + attackFeatMod p c
+                + attackMiscMod p c
+
+attackAbilMod :: Power -> Character -> Int
+attackAbilMod p c
+  | Power.attackAbility p == Nothing = 0
+  | otherwise = (abilityMod $ (fromJust (Power.attackAbility p))) c
+
+attackClassMod :: Power -> Character -> Int
+attackClassMod p c = 0 -- TODO
+
+attackProfMod :: Power -> Character -> Int
+attackProfMod = (profModToPower)
+
+attackFeatMod :: Power -> Character -> Int
+attackFeatMod p c = 0 -- TODO
+
+attackEnhMod :: Power -> Character -> Int
+attackEnhMod p c = 0 -- TODO
+
+attackMiscMod :: Power -> Character -> Int
+attackMiscMod p c = 0 -- TODO
+
+attack1Name :: Character -> String
+attack1Name c = Power.name $ attack1Power c
+
+attack1Power :: Character -> Power
+attack1Power c = head $ atWillPowers $ attackPowers $ Character.powers c
+
+attack1Mod :: Character -> Int
+attack1Mod c = attackMod (attack1Power c) c
+
+attack1AbilMod :: Character -> Int
+attack1AbilMod c = attackAbilMod (attack1Power c) c
+
+attack1ClassMod :: Character -> Int
+attack1ClassMod c = attackClassMod (attack1Power c) c
+
+attack1ProfMod :: Character -> Int
+attack1ProfMod c = attackProfMod (attack1Power c) c
+
+attack1FeatMod :: Character -> Int
+attack1FeatMod c = attackFeatMod (attack1Power c) c
+
+attack1EnhMod :: Character -> Int
+attack1EnhMod c = attackEnhMod (attack1Power c) c
+
+attack1MiscMod :: Character -> Int
+attack1MiscMod c = attackMiscMod (attack1Power c) c
+
+attack2Name :: Character -> String
+attack2Name c = Power.name $ attack2Power c
+
+attack2Power :: Character -> Power
+attack2Power c = head $ tail $ atWillPowers $ attackPowers $ Character.powers c
+
+attack2Mod :: Character -> Int
+attack2Mod c = attackMod (attack2Power c) c
+
+attack2AbilMod :: Character -> Int
+attack2AbilMod c = attackAbilMod (attack2Power c) c
+
+attack2ClassMod :: Character -> Int
+attack2ClassMod c = attackClassMod (attack2Power c) c
+
+attack2ProfMod :: Character -> Int
+attack2ProfMod c = attackProfMod (attack2Power c) c
+
+attack2FeatMod :: Character -> Int
+attack2FeatMod c = attackFeatMod (attack2Power c) c
+
+attack2EnhMod :: Character -> Int
+attack2EnhMod c = attackEnhMod (attack2Power c) c
+
+attack2MiscMod :: Character -> Int
+attack2MiscMod c = attackMiscMod (attack2Power c) c
+
+
 {----------------------}
 {- Looking for a home -}
 {----------------------}
@@ -523,7 +611,8 @@ isArmed c
 
 isProficientWith c w = grantsProficiencyWith (characterClass c) w -- TODO feats
 
-proficiencyModToPower c p
+profModToPower :: Power -> Character -> Int
+profModToPower p c
   | powerHasKeyword p "Weapon" == True && isArmed c = Weapon.proficiencyBonus $ Character.primaryWeapon c
   | otherwise = 0
 
@@ -535,9 +624,5 @@ featModifierFor c p =
 
 attackBonus :: Character -> AbilityName -> Int
 attackBonus c a = (basicAttack c (primaryWeapon c)) + ((abilityMod a) c)
-
-firstAttack c = head $ attackPowers $ atWillPowers $ Character.powers c
-
-secondAttack c = head $ tail $ attackPowers $ atWillPowers $ Character.powers c
 
 className c = (CC.name . characterClass) c

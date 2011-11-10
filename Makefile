@@ -5,10 +5,13 @@ tags:
 	find . -iname "*.hs" -print | xargs hasktags
 	rm -f tags
 
+pontus.pl: Form.hs
+	runghc Form.hs > $@
+
 .fdf.pdf:
 	pdftk CSheet.pdf fill_form $< output $@ 
 
-.pl.fdf:
+.pl.fdf: $<
 	./genfdf.pl $< > $@
 
 #pontus.pl:
