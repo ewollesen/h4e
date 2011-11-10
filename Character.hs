@@ -450,14 +450,13 @@ isArmed c
 isProficientWith c w = grantsProficiencyWith (characterClass c) w -- TODO feats
 
 powers c = concatMap Level.powers (levels c) -- TODO racial & class
-powersByUses powers uses =
-  filter (\p -> Power.uses p == uses) powers
-atWillPowers powers = powersByUses powers "At-Will"
-attackPowers powers =
-  filter (\p -> Power.attackFeatureOrUtility p == "Attack") powers
-encounterPowers powers = powersByUses powers "Encounter"
-dailyPowers powers = powersByUses powers "Daily"
-utilityPowers powers = powersByUses powers "Utility"
+powersByUses u p = filter (\p -> Power.uses p == u) p
+powersByType t p = filter (\p -> Power.powerType p == t) p
+atWillPowers p = powersByUses AtWill p
+attackPowers p = filter (\p -> Power.powerType p == Attack) p
+encounterPowers p = powersByUses Encounter p
+dailyPowers p = powersByUses Daily p
+utilityPowers p = powersByType Utility p
 
 attackBonus :: Character -> AbilityName -> Int
 attackBonus c a = (basicAttack c (primaryWeapon c)) + ((abilityMod a) c)
