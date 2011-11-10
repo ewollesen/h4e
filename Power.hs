@@ -42,7 +42,16 @@ data Power = Power { name :: String
                    , action :: Action
                    , attackAbility :: (Maybe AbilityName)
                    , attackVsDefense :: (Maybe String) -- DefenseName enum
-                   } deriving (Show)
+                   , level :: Int
+                   } deriving (Show, Eq)
+
+instance Ord Power where
+  compare p1 p2
+    | levelsMatch == False = compare (Power.level p2) (Power.level p1)
+    | usesMatch == False = compare (uses p2) (uses p1)
+    | otherwise = compare (Power.name p1) (Power.name p2)
+    where levelsMatch = (Power.level p2) == (Power.level p1)
+          usesMatch = (uses p2) == (uses p1)
 
 
 powerHasKeyword power keyword = keyword `elem` (Power.keywords power)

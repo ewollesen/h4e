@@ -17,7 +17,7 @@ data AbilityName = Strength
                  | Intelligence
                  | Wisdom
                  | Charisma
-                 deriving (Show, Eq, Enum)
+                 deriving (Show, Eq, Ord, Enum)
 
 $(derive[''AbilityName])
 

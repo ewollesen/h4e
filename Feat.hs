@@ -5,7 +5,7 @@ import Modifier
 
 data Feat = Feat { name :: String
                  , modifiers :: [Modifier]
-                 } deriving (Show)
+                 } deriving (Show, Ord, Eq)
 
 
 featFactory n m = Feat { Feat.name=n

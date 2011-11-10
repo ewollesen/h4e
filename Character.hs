@@ -1,5 +1,6 @@
 module Character where
 
+import Data.List
 import Modifier
 import Taggable
 import Race
@@ -316,9 +317,6 @@ misc2ModToAC c
   where mods = miscModsToAC c
 
 
-className c = (CC.name . characterClass) c
-
-
 {---------}
 {- Speed -}
 {---------}
@@ -374,8 +372,15 @@ miscModToInit c = modForTarget Initiative $ Modifier.modifiers c
 {---------}
 {- Feats -}
 {---------}
+feat :: Int -> Character -> String
+feat i c
+  | length feats > i = feats !! i
+  | otherwise = ""
+  where
+    feats = map Feat.name $ sort $ Character.feats c
+
 feats :: Character -> [Feat]
-feats c = concatMap Level.feats (levels c)
+feats c = concatMap Level.feats $ levels c
 
 
 {--------------}
@@ -400,87 +405,109 @@ healingSurgesPerDay c = conMod c
                         + (CC.healingSurgesPerDay . characterClass) c
 
 
-seventeenFeats c = buildSeventeenFeats $ map Feat.name $ Character.feats c
-buildSeventeenFeats f
-  | length f < 17 = buildSeventeenFeats (f ++ [""])
-  | otherwise = f
+{----------}
+{- Powers -}
+{----------}
+powers :: Character -> [Power]
+powers c = concatMap Level.powers (levels c) -- TODO racial & class
 
-sixAtWillPowers c = buildSixAtWillPowers $ map Power.name $ atWillPowers $ Character.powers c
-buildSixAtWillPowers p
-  | length p < 6 = buildSixAtWillPowers (p ++ [""])
-  | otherwise = p
+powersByType :: PowerType -> [Power] -> [Power]
+powersByType t p = filter (\p -> Power.powerType p == t) p
 
-sixEncounterPowers c = buildSixEncounterPowers $ map Power.name $ encounterPowers $ Character.powers c
-buildSixEncounterPowers p
-  | length p < 6 = buildSixEncounterPowers (p ++ [""])
-  | otherwise = p
+attackPowers :: [Power] -> [Power]
+attackPowers p = filter (\p -> Power.powerType p == Attack) p
 
-sixDailyPowers c = buildSixDailyPowers $ map Power.name $ dailyPowers $ Character.powers c
-buildSixDailyPowers p
-  | length p < 6 = buildSixDailyPowers (p ++ [""])
-  | otherwise = p
+featurePower :: Int -> Character -> String
+featurePower i c
+  | length powers > i = powers !! i
+  | otherwise = ""
+  where
+    powers = map Power.name $ sort $ featurePowers $ Character.powers c
 
-eightUtilityPowers c = buildEightUtilityPowers $ map Power.name $ utilityPowers $ Character.powers c
-buildEightUtilityPowers p
-  | length p < 8 = buildEightUtilityPowers (p ++ [""])
-  | otherwise = p
+featurePowers :: [Power] -> [Power]
+featurePowers p = filter (\p -> Power.powerType p == Feature) p
+
+utilityPower :: Int -> Character -> String
+utilityPower i c
+  | length powers > i = powers !! i
+  | otherwise = ""
+  where
+    powers = map Power.name $ sort $ utilityPowers $ Character.powers c
+
+utilityPowers :: [Power] -> [Power]
+utilityPowers p = powersByType Utility p
+
+powersByUses :: PowerUses -> [Power] -> [Power]
+powersByUses u p = filter (\p -> Power.uses p == u) p
+
+atWillPower :: Int -> Character -> String
+atWillPower i c
+  | length powers > i = powers !! i
+  | otherwise = ""
+  where
+    powers = map Power.name $ sort $ atWillPowers $ Character.powers c
+
+atWillPowers :: [Power] -> [Power]
+atWillPowers p = powersByUses AtWill p
+
+encounterPower :: Int -> Character -> String
+encounterPower i c
+  | length powers > i = powers !! i
+  | otherwise = ""
+  where
+    powers = map Power.name $ sort $ encounterPowers $ Character.powers c
+
+encounterPowers :: [Power] -> [Power]
+encounterPowers p = powersByUses Encounter p
+
+dailyPower :: Int -> Character -> String
+dailyPower i c
+  | length powers > i = powers !! i
+  | otherwise = ""
+  where
+    powers = map Power.name $ sort $ dailyPowers $ Character.powers c
+
+dailyPowers :: [Power] -> [Power]
+dailyPowers p = powersByUses Daily p
 
 
+{-------------}
+{- Languages -}
+{-------------}
+language :: Int -> Character -> String
+language i c
+  | length langs > i = langs !! i
+  | otherwise = ""
+  where
+    langs = languages c
+
+
+{----------------------}
+{- Looking for a home -}
+{----------------------}
 basicMeleeAttack c w = basicAttack c w + strMod c
+
 basicAttack c w = halfLevel c + (weaponProficiencyBonus c w)
+
 basicRangedAttack c w = basicAttack c w + dexMod c
 
-
-
-
 armorCheckPenalty c = sum $ (map value (armorCheckPenaltyMods c))
-armorCheckPenaltyMods c = filter (\mod -> Modifier.target mod == Modifier.Skill) (Modifier.modifiers c)
 
+armorCheckPenaltyMods c = filter (\mod -> Modifier.target mod == Modifier.Skill) (Modifier.modifiers c)
 
 weaponProficiencyBonus c w
   | isProficientWith c w == True = Weapon.proficiencyBonus w
   | otherwise = 0
 
 primaryWeapon c = head $ weapons c
+
 secondaryWeapon c = head $ tail $ weapons c
+
 isArmed c
   | length (weapons c) == 0 = False
   | otherwise = True
 
 isProficientWith c w = grantsProficiencyWith (characterClass c) w -- TODO feats
-
-powers c = concatMap Level.powers (levels c) -- TODO racial & class
-powersByUses u p = filter (\p -> Power.uses p == u) p
-powersByType t p = filter (\p -> Power.powerType p == t) p
-atWillPowers p = powersByUses AtWill p
-attackPowers p = filter (\p -> Power.powerType p == Attack) p
-encounterPowers p = powersByUses Encounter p
-dailyPowers p = powersByUses Daily p
-utilityPowers p = powersByType Utility p
-
-attackBonus :: Character -> AbilityName -> Int
-attackBonus c a = (basicAttack c (primaryWeapon c)) + ((abilityMod a) c)
-
-firstLanguage c
-  | length langs == 0 = ""
-  | otherwise = langs !! 0
-  where
-    langs = languages c
-
-secondLanguage c
-  | length langs < 2 = ""
-  | otherwise = langs !! 1
-  where
-    langs = languages c
-
-thirdLanguage c
-  | length langs < 3 = ""
-  | otherwise = langs !! 2
-  where
-    langs = languages c
-
-firstAttack c = head $ attackPowers $ atWillPowers $ Character.powers c
-secondAttack c = head $ tail $ attackPowers $ atWillPowers $ Character.powers c
 
 proficiencyModForPower c p
   | powerHasKeyword p "Weapon" == True && isArmed c = Weapon.proficiencyBonus $ Character.primaryWeapon c
@@ -491,3 +518,12 @@ classModifierFor c p =
 
 featModifierFor c p =
   maximum $ 0:(map value $ filter (\mod -> (show $ Modifier.target mod) == Power.name p) $ concatMap Feat.modifiers $ Character.feats c)
+
+attackBonus :: Character -> AbilityName -> Int
+attackBonus c a = (basicAttack c (primaryWeapon c)) + ((abilityMod a) c)
+
+firstAttack c = head $ attackPowers $ atWillPowers $ Character.powers c
+
+secondAttack c = head $ tail $ attackPowers $ atWillPowers $ Character.powers c
+
+className c = (CC.name . characterClass) c

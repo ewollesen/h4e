@@ -26,6 +26,7 @@ ironFist = Power { Power.name="Iron Fist"
                  , Power.keywords=["Augmentable", "Psionic", "Weapon"]
                  , Power.action=StandardAction
                  , Power.powerType=Attack
+                 , Power.level=1
                  }
 
 bullsStrength = Power { Power.name="Bull's Strength"
@@ -35,6 +36,7 @@ bullsStrength = Power { Power.name="Bull's Strength"
                       , Power.action=StandardAction
                       , Power.keywords=["Augmentable", "Psionic", "Weapon"]
                       , Power.powerType=Attack
+                      , Power.level=1
                       }
 
 whirlingDefense = Power { Power.name="Whirling Defense"
@@ -44,6 +46,7 @@ whirlingDefense = Power { Power.name="Whirling Defense"
                         , Power.action=StandardAction
                         , Power.keywords=["Augmentable", "Psionic", "Weapon"]
                         , Power.powerType=Attack
+                        , Power.level=1
                         }
 
 aspectOfElevatedHarmony = Power { Power.name="Aspect of Elevated Harmony"
@@ -53,6 +56,7 @@ aspectOfElevatedHarmony = Power { Power.name="Aspect of Elevated Harmony"
                                 , Power.action=StandardAction
                                 , Power.keywords=["Psionic", "Weapon", "Healing", "Polymorph"]
                                 , Power.powerType=Attack
+                                , Power.level=1
                                 }
 
 battlemindsDemand = Power { Power.name="Battlemind's Demand"
@@ -62,6 +66,7 @@ battlemindsDemand = Power { Power.name="Battlemind's Demand"
                           , Power.action=MinorAction
                           , Power.keywords=["Augmentable", "Psionic"]
                           , Power.powerType=Feature
+                          , Power.level=1
                           }
 
 battleResilience = Power { Power.name="Battle Resilience"
@@ -71,6 +76,7 @@ battleResilience = Power { Power.name="Battle Resilience"
                          , Power.action=FreeAction
                          , Power.keywords=["Psionic"]
                          , Power.powerType=Feature
+                         , Power.level=1
                          }
 
 blurredStep = Power { Power.name="Blurred Step"
@@ -80,6 +86,7 @@ blurredStep = Power { Power.name="Blurred Step"
                     , Power.action=Opportunity
                     , Power.keywords=["Psionic"]
                     , Power.powerType=Feature
+                    , Power.level=1
                     }
 
 mindSpike = Power { Power.name="Mind Spike"
@@ -89,6 +96,7 @@ mindSpike = Power { Power.name="Mind Spike"
                   , Power.action=ImmediateReaction
                   , Power.keywords=["Force", "Psionic", "Psychic"]
                   , Power.powerType=Feature
+                  , Power.level=1
                   }
 
 dimensionSlide = Power { Power.name="Dimension Slide"
@@ -98,4 +106,5 @@ dimensionSlide = Power { Power.name="Dimension Slide"
                        , Power.action=MoveAction
                        , Power.keywords=["Psionic", "Teleportation"]
                        , Power.powerType=Utility
+                       , Power.level=2
                        }
