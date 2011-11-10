@@ -21,10 +21,10 @@ pontus = Character { Character.name = "Pontus"
                    , baseInt=10
                    , baseWis=14
                    , baseCha=12
-                   , characterClass=battlemind [] [Heal,
-                                                   Diplomacy,
-                                                   Endurance,
-                                                   Insight]
+                   , characterClass=battlemind [] [Skill.Heal,
+                                                   Skill.Diplomacy,
+                                                   Skill.Endurance,
+                                                   Skill.Insight]
                    , race=human Wisdom
                    , levels=[
                      Level.level [] [bullsStrength, ironFist, whirlingDefense, aspectOfElevatedHarmony, battlemindsDemand, battleResilience, blurredStep, mindSpike] [deceptiveMind, lureOfIron],

@@ -48,19 +48,19 @@ instance Modifiable Character where
                         (concatMap Level.modifiers (Character.levels c))]
 
 instance Skilled Character where
-  skill c name = trainedBonus c name +
-                 halfLevel c +
-                 (skillAbilMod name) c +
-                 skillArmorCheckPenalty c name
-  skillMods c name = []
-  skillArmorCheckPenalty c name
-    | skillArmorCheckPenaltyApplies name (not (wearingLightOrNoArmor c)) = armorCheckPenalty c
+  skill s c = trainedBonus s c +
+              halfLevel c +
+              (skillAbilMod s) c +
+              skillArmorCheckPenalty s c +
+              miscModToSkill s c
+  skillArmorCheckPenalty s c
+    | skillArmorCheckPenaltyApplies s (not (wearingLightOrNoArmor c)) = armorCheckPenalty c
     | otherwise = 0
   trainedSkills c = concat [(CC.trainedSkills . characterClass) c
                             -- feats that train in skills
                            ]
-  trainedSkill c s = s `elem` Skill.trainedSkills c
-  skillAbilModPlusHalfLevel c s = halfLevel c + ((skillAbilMod s) c)
+  trainedSkill s c = s `elem` Skill.trainedSkills c
+  skillAbilModPlusHalfLevel s c = halfLevel c + ((skillAbilMod s) c)
 
 
 {--------------------}
@@ -150,26 +150,31 @@ chaMods = (abilityMods Modifier.Charisma)
 skillAbilMod = (abilityMod . skillAbil)
 
 skillTakeTen :: SkillName -> Character -> Int
-skillTakeTen s c = 10 + skill c s
+skillTakeTen s c = 10 + skill s c
 
 passiveInsight :: Character -> Int
-passiveInsight = (skillTakeTen Insight)
+passiveInsight = (skillTakeTen Skill.Insight)
 
 passivePerception :: Character -> Int
-passivePerception = (skillTakeTen Perception)
+passivePerception = (skillTakeTen Skill.Perception)
 
+miscModToSkill :: SkillName -> Character -> Int
+miscModToSkill s c = modToTarget (skillNameToModTarget s) $ Modifier.modifiers c
+
+miscSkillMods :: SkillName -> [Modifier] -> [Modifier]
+miscSkillMods s m = modsToTarget (skillNameToModTarget s) m
 
 {------------}
 {- Defenses -}
 {------------}
 {- Fortitude -}
 fortitude :: Character -> Int
-fortitude c = abilModForFort c
+fortitude c = abilModToFort c
               + tenPlusHalfLevel c
-              + (modForTarget Fortitude $ Modifier.modifiers c)
+              + (modToTarget Fortitude $ Modifier.modifiers c)
 
-abilModForFort :: Character -> Int
-abilModForFort c = maximum [strMod c, conMod c]
+abilModToFort :: Character -> Int
+abilModToFort c = maximum [strMod c, conMod c]
 
 classModToFort :: Character -> Int
 classModToFort c = Modifier.mod Fortitude ClassMod c
@@ -201,12 +206,12 @@ misc2ModToFort c
 
 {- Reflex -}
 reflex :: Character -> Int
-reflex c = abilModForRef c
+reflex c = abilModToRef c
          + tenPlusHalfLevel c
-         + (modForTarget Reflex $ Modifier.modifiers c)
+         + (modToTarget Reflex $ Modifier.modifiers c)
 
-abilModForRef :: Character -> Int
-abilModForRef c = maximum [dexMod c, intMod c]
+abilModToRef :: Character -> Int
+abilModToRef c = maximum [dexMod c, intMod c]
 
 classModToRef :: Character -> Int
 classModToRef c = Modifier.mod Reflex ClassMod c
@@ -238,12 +243,12 @@ misc2ModToRef c
 
 {- Will -}
 will :: Character -> Int
-will c = abilModForWill c
+will c = abilModToWill c
          + tenPlusHalfLevel c
-         + (modForTarget Will $ Modifier.modifiers c)
+         + (modToTarget Will $ Modifier.modifiers c)
 
-abilModForWill :: Character -> Int
-abilModForWill c = maximum [wisMod c, chaMod c]
+abilModToWill :: Character -> Int
+abilModToWill c = maximum [wisMod c, chaMod c]
 
 classModToWill :: Character -> Int
 classModToWill c = Modifier.mod Will ClassMod c
@@ -276,15 +281,15 @@ misc2ModToWill c
 {- Armor Class -}
 ac :: Character -> Int
 ac c = tenPlusHalfLevel c
-       + abilModForAC c
-       + (modForTarget ArmorClass $ Modifier.modifiers c)
+       + abilModToAC c
+       + (modToTarget ArmorClass $ Modifier.modifiers c)
 
 armorAndAbilityModToAC :: Character -> Int
-armorAndAbilityModToAC c = abilModForAC c +
+armorAndAbilityModToAC c = abilModToAC c +
                            Modifier.mod ArmorClass ArmorMod c
 
-abilModForAC :: Character -> Int
-abilModForAC c
+abilModToAC :: Character -> Int
+abilModToAC c
   | wearingLightOrNoArmor c == True = maximum [intMod c, dexMod c]
   | otherwise = 0
 
@@ -320,8 +325,11 @@ misc2ModToAC c
 {---------}
 {- Speed -}
 {---------}
-speed c = (Race.baseSpeed $ Character.race c)
-          + (modForTarget Speed $ Modifier.modifiers c)
+speed c = Character.baseSpeed c
+          + (modToTarget Speed $ Modifier.modifiers c)
+
+baseSpeed :: Character -> Int
+baseSpeed = (Race.baseSpeed .Character.race)
 
 armorSpeedMod c = Modifier.mod Speed ArmorMod  c
 
@@ -366,7 +374,7 @@ initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
 -- initiative mods called out: 1/2 level, dex mod, and misc. Since this is
 -- less detailed than many other fields, I am going to sum all valid mods and
 -- use that for the misc field.
-miscModToInit c = modForTarget Initiative $ Modifier.modifiers c
+miscModToInit c = modToTarget Initiative $ Modifier.modifiers c
 
 
 {---------}
@@ -390,9 +398,9 @@ hp :: Character -> Int
 hp c = con c
        + (hpAtFirstLevel . characterClass) c
        + ((hpPerLevelGained . characterClass) c * (Character.level c - 1))
-       + (modForTarget HitPoints $ Modifier.modifiers c)
+       + (modToTarget HitPoints $ Modifier.modifiers c)
 
-hpMods c = modsForTarget HitPoints $ Modifier.modifiers c
+hpMods c = modsToTarget HitPoints $ Modifier.modifiers c
 
 bloodied :: Character -> Int
 bloodied c = hp c `div` 2
@@ -485,6 +493,12 @@ language i c
 {----------------------}
 {- Looking for a home -}
 {----------------------}
+size :: Character -> String
+size = (Race.size . Character.race)
+
+raceName :: Character -> String
+raceName = (Race.name . Character.race)
+
 basicMeleeAttack c w = basicAttack c w + strMod c
 
 basicAttack c w = halfLevel c + (weaponProficiencyBonus c w)
@@ -509,7 +523,7 @@ isArmed c
 
 isProficientWith c w = grantsProficiencyWith (characterClass c) w -- TODO feats
 
-proficiencyModForPower c p
+proficiencyModToPower c p
   | powerHasKeyword p "Weapon" == True && isArmed c = Weapon.proficiencyBonus $ Character.primaryWeapon c
   | otherwise = 0
 

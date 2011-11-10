@@ -33,55 +33,51 @@ data SkillName = Acrobatics
                | Thievery
                deriving (Show, Eq, Enum)
 
-skillNames = [Acrobatics .. Thievery]
+skillNames = [Skill.Acrobatics .. Skill.Thievery]
 
 class Skilled a where
-  skill :: a -> SkillName -> Int
-  skillMods :: a -> SkillName -> [Modifier]
-  skillArmorCheckPenalty :: a -> SkillName -> Int
-  trainedSkills :: a -> [SkillName]
-  trainedSkill :: a -> SkillName -> Bool
-  skillAbilModPlusHalfLevel :: a -> SkillName -> Int
+  skill :: Skilled a => SkillName -> a -> Int
+  skillMods :: Skilled a => SkillName -> a -> [Modifier]
+  skillMods s c = [] -- TODO
+  skillArmorCheckPenalty :: Skilled a => SkillName -> a -> Int
+  trainedSkills :: Skilled a => a -> [SkillName]
+  trainedSkill :: Skilled a => SkillName -> a -> Bool
+  skillAbilModPlusHalfLevel :: Skilled a => SkillName -> a -> Int
 
-skillAbil Acrobatics = Ability.Dexterity
-skillAbil Arcana = Ability.Intelligence
-skillAbil Athletics = Ability.Strength
-skillAbil Bluff = Ability.Charisma
-skillAbil Diplomacy = Ability.Charisma
-skillAbil Dungeoneering = Ability.Wisdom
-skillAbil Endurance = Ability.Constitution
-skillAbil Heal = Ability.Wisdom
-skillAbil History = Ability.Intelligence
-skillAbil Insight = Ability.Wisdom
-skillAbil Intimidate = Ability.Charisma
-skillAbil Nature = Ability.Wisdom
-skillAbil Perception = Ability.Wisdom
-skillAbil Religion = Ability.Intelligence
-skillAbil Stealth = Ability.Dexterity
-skillAbil Streetwise = Ability.Charisma
-skillAbil Thievery = Ability.Dexterity
+skillAbil Skill.Acrobatics = Ability.Dexterity
+skillAbil Skill.Arcana = Ability.Intelligence
+skillAbil Skill.Athletics = Ability.Strength
+skillAbil Skill.Bluff = Ability.Charisma
+skillAbil Skill.Diplomacy = Ability.Charisma
+skillAbil Skill.Dungeoneering = Ability.Wisdom
+skillAbil Skill.Endurance = Ability.Constitution
+skillAbil Skill.Heal = Ability.Wisdom
+skillAbil Skill.History = Ability.Intelligence
+skillAbil Skill.Insight = Ability.Wisdom
+skillAbil Skill.Intimidate = Ability.Charisma
+skillAbil Skill.Nature = Ability.Wisdom
+skillAbil Skill.Perception = Ability.Wisdom
+skillAbil Skill.Religion = Ability.Intelligence
+skillAbil Skill.Stealth = Ability.Dexterity
+skillAbil Skill.Streetwise = Ability.Charisma
+skillAbil Skill.Thievery = Ability.Dexterity
 
-skillHasArmorCheckPenalty Acrobatics = True
-skillHasArmorCheckPenalty Athletics = True
-skillHasArmorCheckPenalty Endurance = True
-skillHasArmorCheckPenalty Stealth = True
-skillHasArmorCheckPenalty Thievery = True
+skillHasArmorCheckPenalty Skill.Acrobatics = True
+skillHasArmorCheckPenalty Skill.Athletics = True
+skillHasArmorCheckPenalty Skill.Endurance = True
+skillHasArmorCheckPenalty Skill.Stealth = True
+skillHasArmorCheckPenalty Skill.Thievery = True
 skillHasArmorCheckPenalty n = False
 
 skillArmorCheckPenaltyApplies name True
   | skillHasArmorCheckPenalty name == True = True
   | otherwise = False
 
-skillPassiveInsight :: (Skilled c) => c -> Int
-skillPassiveInsight c = 10 + skill c Insight
-skillPassivePerception :: (Skilled c) => c -> Int
-skillPassivePerception c = 10 + skill c Perception
-
 skillTrainingBonus = 5 :: Int
 
-trainedBonus :: (Skilled c) => c -> SkillName -> Int
-trainedBonus c s
-  | trainedSkill c s == True = skillTrainingBonus
+trainedBonus :: (Skilled c) => SkillName -> c -> Int
+trainedBonus s c
+  | trainedSkill s c == True = skillTrainingBonus
   | otherwise            = 0
 
 $(derive[''SkillName])
@@ -94,3 +90,22 @@ instance Data ToJsonD SkillName => ToJson SkillName where
 
 instance (Data FromJsonD SkillName, TranslateField SkillName) => FromJson SkillName where
   fromJson = (enumFromJson skillNameToString)
+
+skillNameToModTarget :: SkillName -> ModTarget
+skillNameToModTarget Skill.Acrobatics = Modifier.Acrobatics
+skillNameToModTarget Skill.Arcana = Modifier.Arcana
+skillNameToModTarget Skill.Athletics = Modifier.Athletics
+skillNameToModTarget Skill.Bluff = Modifier.Bluff
+skillNameToModTarget Skill.Diplomacy = Modifier.Diplomacy
+skillNameToModTarget Skill.Dungeoneering = Modifier.Dungeoneering
+skillNameToModTarget Skill.Endurance = Modifier.Endurance
+skillNameToModTarget Skill.Heal = Modifier.Heal
+skillNameToModTarget Skill.History = Modifier.History
+skillNameToModTarget Skill.Insight = Modifier.Insight
+skillNameToModTarget Skill.Intimidate = Modifier.Intimidate
+skillNameToModTarget Skill.Nature = Modifier.Nature
+skillNameToModTarget Skill.Perception = Modifier.Perception
+skillNameToModTarget Skill.Religion = Modifier.Religion
+skillNameToModTarget Skill.Stealth = Modifier.Stealth
+skillNameToModTarget Skill.Streetwise = Modifier.Streetwise
+skillNameToModTarget Skill.Thievery = Modifier.Thievery

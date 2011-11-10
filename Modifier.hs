@@ -40,7 +40,7 @@ data ModTarget = ArmorClass
                | HitPoints
                | Initiative
                | Speed
-               {- skills
+               {- skills -}
                | Acrobatics
                | Arcana
                | Athletics
@@ -58,7 +58,6 @@ data ModTarget = ArmorClass
                | Stealth
                | Streetwise
                | Thievery
-               -}
                deriving (Show, Eq)
 $(derive[''ModTarget])
 
@@ -93,23 +92,23 @@ mod a y c
 
 -- Return a list of mods, where each mod has the largest value for its target
 -- type pair.
-modsForTarget :: ModTarget -> [Modifier] -> [Modifier]
-modsForTarget t m = concatMap stack $ groupSortMods $ modsByTarget t m
+modsToTarget :: ModTarget -> [Modifier] -> [Modifier]
+modsToTarget t m = concatMap stack $ groupSortMods $ modsByTarget t m
 
 -- Return an integer value which is the sum of the values of each unique
 -- target type pair of modifications.
-modForTarget :: ModTarget -> [Modifier] -> Int
-modForTarget t m = sum $ map value $ modsForTarget t m
+modToTarget :: ModTarget -> [Modifier] -> Int
+modToTarget t m = sum $ map value $ modsToTarget t m
 
 -- Return a list of mods (max size 1), where each mod has the largest value
 -- for its target type pair.
-modsForTargetType :: ModTarget -> ModType -> [Modifier] -> [Modifier]
-modsForTargetType a y m = modsByType y $ modsForTarget a m
+modsToTargetType :: ModTarget -> ModType -> [Modifier] -> [Modifier]
+modsToTargetType a y m = modsByType y $ modsToTarget a m
 
 -- Return an integer value which is the value of the largest mod for the given
 -- target type pair.
-modForTargetType :: ModTarget -> ModType -> [Modifier] -> Int
-modForTargetType a y m = sum $ map value $ modsForTargetType a y m
+modToTargetType :: ModTarget -> ModType -> [Modifier] -> Int
+modToTargetType a y m = sum $ map value $ modsToTargetType a y m
 
 stack :: [Modifier] -> [Modifier]
 stack m
