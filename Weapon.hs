@@ -46,3 +46,6 @@ bastardsword = weaponFactory "Bastard sword"
                []
                [weaponTag, meleeWeaponTag, exoticWeaponTag]
                (-99) -- so I know this value is not verified
+
+instance Modifiable Weapon where
+  modifiers w = Weapon.modifiers w

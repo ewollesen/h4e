@@ -45,6 +45,7 @@ instance Modifiable Character where
   modifiers c = concat [(Modifier.modifiers . race) c,
                         (CC.modifiers . characterClass) c,
                         (concatMap Feat.modifiers (Character.feats c)),
+                        (concatMap Modifier.modifiers (weapons c)),
                         (concatMap Equipment.modifiers (gear c)),
                         (concatMap Level.modifiers (Character.levels c))]
 
@@ -424,7 +425,7 @@ powersByType :: PowerType -> [Power] -> [Power]
 powersByType t p = filter (\p -> Power.powerType p == t) p
 
 attackPowers :: [Power] -> [Power]
-attackPowers p = filter (\p -> Power.powerType p == Attack) p
+attackPowers p = filter (\p -> Power.powerType p == Power.Attack) p
 
 featurePower :: Int -> Character -> String
 featurePower i c
@@ -501,6 +502,7 @@ attackMod p c = halfLevel c
                 + attackClassMod p c
                 + attackProfMod p c
                 + attackFeatMod p c
+                + attackEnhMod p c
                 + attackMiscMod p c
 
 attackAbilMod :: Power -> Character -> Int
@@ -518,7 +520,7 @@ attackFeatMod :: Power -> Character -> Int
 attackFeatMod p c = 0 -- TODO
 
 attackEnhMod :: Power -> Character -> Int
-attackEnhMod p c = 0 -- TODO
+attackEnhMod p c = Modifier.mod Modifier.Attack EnhancementMod c
 
 attackMiscMod :: Power -> Character -> Int
 attackMiscMod p c = 0 -- TODO

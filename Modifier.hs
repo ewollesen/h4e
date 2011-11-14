@@ -30,6 +30,8 @@ data ModTarget = ArmorClass
                | Fortitude
                | Reflex
                | Will
+               | Attack
+               | Damage
                | Strength
                | Constitution
                | Dexterity

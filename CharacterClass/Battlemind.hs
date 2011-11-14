@@ -25,7 +25,7 @@ ironFist = Power { Power.name="Iron Fist"
                  , Power.uses=AtWill
                  , Power.keywords=["Augmentable", "Psionic", "Weapon"]
                  , Power.action=StandardAction
-                 , Power.powerType=Attack
+                 , Power.powerType=Power.Attack
                  , Power.level=1
                  }
 
@@ -35,7 +35,7 @@ bullsStrength = Power { Power.name="Bull's Strength"
                       , Power.uses=AtWill
                       , Power.action=StandardAction
                       , Power.keywords=["Augmentable", "Psionic", "Weapon"]
-                      , Power.powerType=Attack
+                      , Power.powerType=Power.Attack
                       , Power.level=1
                       }
 
@@ -45,7 +45,7 @@ whirlingDefense = Power { Power.name="Whirling Defense"
                         , Power.uses=AtWill
                         , Power.action=StandardAction
                         , Power.keywords=["Augmentable", "Psionic", "Weapon"]
-                        , Power.powerType=Attack
+                        , Power.powerType=Power.Attack
                         , Power.level=1
                         }
 
@@ -55,7 +55,7 @@ aspectOfElevatedHarmony = Power { Power.name="Aspect of Elevated Harmony"
                                 , Power.uses=Daily
                                 , Power.action=StandardAction
                                 , Power.keywords=["Psionic", "Weapon", "Healing", "Polymorph"]
-                                , Power.powerType=Attack
+                                , Power.powerType=Power.Attack
                                 , Power.level=1
                                 }
 
