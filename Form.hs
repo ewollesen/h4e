@@ -224,20 +224,22 @@ printFormData c = do
   printf "  'Enhancement mod to attack 2' => q{%d},\n" $ attack2EnhMod c
   printf "  'Misc. mod to attack 2' => q{%d},\n" $ attack2MiscMod c
 
-  -- printf "  'Damage workspace ability 1' => q{%s},\n" ""
-  -- printf "  'Damage workspace ability 2' => q{%s},\n" ""
-  -- printf "  'Damage to ability 1' => q{%s},\n" ""
-  -- printf "  'Ability mod to damage to ability 1' => q{%d},\n" (0 :: Int)
-  -- printf "  'Feat mod to damage to ability 1' => q{%d},\n" (0 :: Int)
-  -- printf "  'Enhancement mod to damage to ability 1' => q{%d},\n" (0 :: Int)
-  -- printf "  'Misc. mod 1 to damage to ability 1' => q{%d},\n" (0 :: Int)
-  -- printf "  'Misc. mod 2 to damage to ability 1' => q{%d},\n" (0 :: Int)
-  -- printf "  'Damage to ability 2' => q{%s},\n" ""
-  -- printf "  'Ability mod to damage to ability 2' => q{%d},\n" (0 :: Int)
-  -- printf "  'Feat mod to damage to ability 2' => q{%d},\n" (0 :: Int)
-  -- printf "  'Enhancement mod to damage to ability 2' => q{%d},\n" (0 :: Int)
-  -- printf "  'Misc. mod 1 to damage to ability 2' => q{%d},\n" (0 :: Int)
-  -- printf "  'Misc. mod 2 to damage to ability 2' => q{%d},\n" (0 :: Int)
+  printf "  'Damage workspace ability 1' => q{%s},\n" $ attack1Name c
+  printf "  'Damage to ability 1' => q{%s},\n" $ damage1Desc c
+  printf "  'Ability mod to damage to ability 1' => q{%d},\n" $ damage1AbilMod c
+  printf "  'Feat mod to damage to ability 1' => q{%d},\n" $ damage1FeatMod c
+  printf "  'Enhancement mod to damage to ability 1' => q{%d},\n" $ damage1EnhMod c
+  printf "  'Misc. mod 1 to damage to ability 1' => q{%d},\n" $ damage1Misc1Mod c
+  printf "  'Misc. mod 2 to damage to ability 1' => q{%d},\n" $ damage1Misc2Mod c
+
+  printf "  'Damage workspace ability 2' => q{%s},\n" $ attack2Name c
+  printf "  'Damage to ability 2' => q{%s},\n" $ damage2Desc c
+  printf "  'Ability mod to damage to ability 2' => q{%d},\n" $ damage2AbilMod c
+  printf "  'Feat mod to damage to ability 2' => q{%d},\n" $ damage2FeatMod c
+  printf "  'Enhancement mod to damage to ability 2' => q{%d},\n" $ damage2EnhMod c
+  printf "  'Misc. mod 1 to damage to ability 2' => q{%d},\n" $ damage2Misc1Mod c
+  printf "  'Misc. mod 2 to damage to ability 2' => q{%d},\n" $ damage2Misc2Mod c
+
   -- printf "  'Basic attack 1 attack' => q{%d},\n" (0 :: Int)
   -- printf "  'Basic attack 1 defense' => q{%s},\n" ""
   -- printf "  'Basic attack 2 attack' => q{%s},\n" ""

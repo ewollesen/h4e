@@ -580,6 +580,82 @@ attack2MiscMod :: Character -> Int
 attack2MiscMod c = attackMiscMod (attack2Power c) c
 
 
+{----------}
+{- Damage -}
+{----------}
+{- Overkill? -}
+damageMod :: Power -> Character -> Int
+damageMod p c = damageAbilMod p c
+                + damageFeatMod p c
+                + damageEnhMod p c
+                + damageMiscMod p c
+
+damageDesc :: Power -> Character -> String
+damageDesc p c
+  | Power.damage p == Nothing = ""
+  | otherwise = (fromJust $ Power.damage p) ++ " + " ++ (show $ damageMod p c)
+
+damageAbilMod :: Power -> Character -> Int
+damageAbilMod p c = attackAbilMod p c
+
+damageFeatMod :: Power -> Character -> Int
+damageFeatMod p c = 0 -- TODO
+
+damageEnhMod :: Power -> Character -> Int
+damageEnhMod p c = Modifier.mod Modifier.Damage EnhancementMod c
+
+damageMiscMod :: Power -> Character -> Int
+damageMiscMod p c = 0 -- TODO
+
+damageMisc1Mod :: Power -> Character -> Int
+damageMisc1Mod p c = 0 -- TODO
+
+damageMisc2Mod :: Power -> Character -> Int
+damageMisc2Mod p c = 0 -- TODO
+
+damage1Desc :: Character -> String
+damage1Desc c = damageDesc (attack1Power c) c
+
+damage1Mod :: Character -> Int
+damage1Mod c = damageMod (attack1Power c) c
+
+damage1AbilMod :: Character -> Int
+damage1AbilMod c = damageAbilMod (attack1Power c) c
+
+damage1FeatMod :: Character -> Int
+damage1FeatMod c = damageFeatMod (attack1Power c) c
+
+damage1EnhMod :: Character -> Int
+damage1EnhMod c = damageEnhMod (attack1Power c) c
+
+damage1Misc1Mod :: Character -> Int
+damage1Misc1Mod c = damageMisc1Mod (attack1Power c) c
+
+damage1Misc2Mod :: Character -> Int
+damage1Misc2Mod c = damageMisc2Mod (attack1Power c) c
+
+damage2Desc :: Character -> String
+damage2Desc c = damageDesc (attack1Power c) c
+
+damage2Mod :: Character -> Int
+damage2Mod c = damageMod (attack1Power c) c
+
+damage2AbilMod :: Character -> Int
+damage2AbilMod c = damageAbilMod (attack1Power c) c
+
+damage2FeatMod :: Character -> Int
+damage2FeatMod c = damageFeatMod (attack1Power c) c
+
+damage2EnhMod :: Character -> Int
+damage2EnhMod c = damageEnhMod (attack1Power c) c
+
+damage2Misc1Mod :: Character -> Int
+damage2Misc1Mod c = damageMisc1Mod (attack1Power c) c
+
+damage2Misc2Mod :: Character -> Int
+damage2Misc2Mod c = damageMisc2Mod (attack1Power c) c
+
+
 {----------------------}
 {- Looking for a home -}
 {----------------------}

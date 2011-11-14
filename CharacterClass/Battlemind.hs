@@ -24,9 +24,10 @@ ironFist = Power { Power.name="Iron Fist"
                  , Power.attackVsDefense=Just "AC"
                  , Power.uses=AtWill
                  , Power.keywords=["Augmentable", "Psionic", "Weapon"]
+                 , Power.level=1
                  , Power.action=StandardAction
                  , Power.powerType=Power.Attack
-                 , Power.level=1
+                 , Power.damage=Just "1[W]"
                  }
 
 bullsStrength = Power { Power.name="Bull's Strength"
@@ -35,8 +36,9 @@ bullsStrength = Power { Power.name="Bull's Strength"
                       , Power.uses=AtWill
                       , Power.action=StandardAction
                       , Power.keywords=["Augmentable", "Psionic", "Weapon"]
-                      , Power.powerType=Power.Attack
                       , Power.level=1
+                      , Power.powerType=Power.Attack
+                      , Power.damage=Just "1[W]"
                       }
 
 whirlingDefense = Power { Power.name="Whirling Defense"
@@ -47,7 +49,8 @@ whirlingDefense = Power { Power.name="Whirling Defense"
                         , Power.keywords=["Augmentable", "Psionic", "Weapon"]
                         , Power.powerType=Power.Attack
                         , Power.level=1
-                        }
+                        , Power.damage=Just "1[W]"
+                       }
 
 aspectOfElevatedHarmony = Power { Power.name="Aspect of Elevated Harmony"
                                 , Power.attackAbility=Just Ability.Constitution
@@ -57,6 +60,7 @@ aspectOfElevatedHarmony = Power { Power.name="Aspect of Elevated Harmony"
                                 , Power.keywords=["Psionic", "Weapon", "Healing", "Polymorph"]
                                 , Power.powerType=Power.Attack
                                 , Power.level=1
+                                , Power.damage=Just "2[W]"
                                 }
 
 battlemindsDemand = Power { Power.name="Battlemind's Demand"
@@ -67,6 +71,7 @@ battlemindsDemand = Power { Power.name="Battlemind's Demand"
                           , Power.keywords=["Augmentable", "Psionic"]
                           , Power.powerType=Feature
                           , Power.level=1
+                          , Power.damage=Nothing
                           }
 
 battleResilience = Power { Power.name="Battle Resilience"
@@ -77,6 +82,7 @@ battleResilience = Power { Power.name="Battle Resilience"
                          , Power.keywords=["Psionic"]
                          , Power.powerType=Feature
                          , Power.level=1
+                         , Power.damage=Nothing
                          }
 
 blurredStep = Power { Power.name="Blurred Step"
@@ -87,6 +93,7 @@ blurredStep = Power { Power.name="Blurred Step"
                     , Power.keywords=["Psionic"]
                     , Power.powerType=Feature
                     , Power.level=1
+                    , Power.damage=Nothing
                     }
 
 mindSpike = Power { Power.name="Mind Spike"
@@ -97,6 +104,7 @@ mindSpike = Power { Power.name="Mind Spike"
                   , Power.keywords=["Force", "Psionic", "Psychic"]
                   , Power.powerType=Feature
                   , Power.level=1
+                  , Power.damage=Nothing
                   }
 
 dimensionSlide = Power { Power.name="Dimension Slide"
@@ -107,4 +115,5 @@ dimensionSlide = Power { Power.name="Dimension Slide"
                        , Power.keywords=["Psionic", "Teleportation"]
                        , Power.powerType=Utility
                        , Power.level=2
+                       , Power.damage=Nothing
                        }

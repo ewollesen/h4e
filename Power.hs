@@ -40,9 +40,10 @@ data Power = Power { name :: String
                    , keywords :: [String] -- possibly an enum
                    , uses :: PowerUses
                    , action :: Action
+                   , level :: Int
                    , attackAbility :: (Maybe AbilityName)
                    , attackVsDefense :: (Maybe String) -- DefenseName enum
-                   , level :: Int
+                   , damage :: (Maybe String)
                    } deriving (Show, Eq)
 
 instance Ord Power where
