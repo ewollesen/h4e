@@ -1,10 +1,8 @@
-module Race (Race.Race,
-             Race.name,
-             Race.size,
-             Race.baseSpeed,
-             Race.human) where
+module Race where
 
+import Data.List
 import Modifier
+
 
 data Race = Race { name :: String
                  , baseSpeed :: Int
@@ -31,3 +29,14 @@ abilModFactory a = modFactory desc a 2 UntypedMod
 plusOneFortitude = modFactory "+1 Fortitude (Racial)" Fortitude 1 UntypedMod
 plusOneReflex = modFactory "+1 Reflex (Racial)" Reflex 1 UntypedMod
 plusOneWill = modFactory "+1 Will (Racial)" Will 1 UntypedMod
+
+abilModifiers :: Race -> String
+abilModifiers r = concat $ intersperse ", " $ map abilModToShortDesc $ filter isAbilModifier $ Modifier.modifiers r
+
+isAbilModifier :: Modifier -> Bool
+isAbilModifier m
+  | target m `elem` [Strength, Constitution, Dexterity, Intelligence, Wisdom, Charisma] = True
+  | otherwise = False
+
+abilModToShortDesc :: Modifier -> String
+abilModToShortDesc m = "+" ++ (show $ value m) ++ " " ++ (take 3 $ show $ target m)

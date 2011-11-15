@@ -41,12 +41,11 @@ pontus = Character { Character.name = "Pontus"
                    , race=human Wisdom
                    , levels=[
                      Level.level [] [bullsStrength, ironFist, whirlingDefense, aspectOfElevatedHarmony, battlemindsDemand, battleResilience, blurredStep, mindSpike] [deceptiveMind, lureOfIron],
-                     Level.level [] [dimensionSlide] [psionicToughness],
-                     Level.level [] [lodestoneLure] []
+                     Level.level [] [dimensionSlide] [psionicToughness]
                      ]
-                   , gear=[chainmail1Dwarven, lightShield]
-                   , weapons=[battleaxe1, dagger]
-                   , xp=2925
+                   , gear=[scaleMail, lightShield]
+                   , weapons=[longsword, dagger]
+                   , xp=1675
                    , age=24
                    , gender="Male"
                    , height="5' 9\""

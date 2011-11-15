@@ -427,15 +427,57 @@ powersByType t p = filter (\p -> Power.powerType p == t) p
 attackPowers :: [Power] -> [Power]
 attackPowers p = filter (\p -> Power.powerType p == Power.Attack) p
 
-featurePower :: Int -> Character -> String
-featurePower i c
+racialFeature :: Int -> Character -> String
+racialFeature i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ featurePowers $ Character.powers c
+    powers = map Power.name $ sort $ racialFeatures $ Character.powers c
 
-featurePowers :: [Power] -> [Power]
-featurePowers p = filter (\p -> Power.powerType p == Feature) p
+racialFeatures :: [Power] -> [Power]
+racialFeatures p = filter (\p -> Power.powerType p == RacialFeature) p
+
+classFeature :: Int -> Character -> String
+classFeature i c
+  | length powers > i = powers !! i
+  | otherwise = ""
+  where
+    powers = map Power.name $ sort $ classFeatures $ Character.powers c
+
+classFeatures :: [Power] -> [Power]
+classFeatures p = filter (\p -> Power.powerType p == ClassFeature) p
+
+pathFeature :: Int -> Character -> String
+pathFeature i c
+  | length powers > i = powers !! i
+  | otherwise = ""
+  where
+    powers = map Power.name $ sort $ pathFeatures $ Character.powers c
+
+pathFeatures :: [Power] -> [Power]
+pathFeatures p = filter (\p -> Power.powerType p == PathFeature) p
+
+destinyFeature :: Int -> Character -> String
+destinyFeature i c
+  | length powers > i = powers !! i
+  | otherwise = ""
+  where
+    powers = map Power.name $ sort $ destinyFeatures $ Character.powers c
+
+destinyFeatures :: [Power] -> [Power]
+destinyFeatures p = filter (\p -> Power.powerType p == DestinyFeature) p
+
+classPathOrDestinyFeature :: Int -> Character -> String
+classPathOrDestinyFeature i c
+  | length powers > i = powers !! i
+  | otherwise = ""
+  where
+    powers = map Power.name $ sort $ classPathOrDestinyFeatures $ Character.powers c
+
+classPathOrDestinyFeatures :: [Power] -> [Power]
+classPathOrDestinyFeatures p = destinyFeatures p
+                               ++ pathFeatures p
+                               ++ classFeatures p
 
 utilityPower :: Int -> Character -> String
 utilityPower i c
@@ -664,6 +706,9 @@ size = (Race.size . Character.race)
 
 raceName :: Character -> String
 raceName = (Race.name . Character.race)
+
+racialAbilModifiers :: Character -> String
+racialAbilModifiers c = Race.abilModifiers $ Character.race c
 
 basicMeleeAttack c w = basicAttack c w + strMod c
 

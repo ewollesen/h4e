@@ -30,7 +30,10 @@ data Action = FreeAction
 $(derive[''Action])
 
 data PowerType = Attack
-               | Feature
+               | ClassFeature
+               | RacialFeature
+               | PathFeature
+               | DestinyFeature
                | Utility
                deriving (Show, Eq, Ord)
 $(derive[''PowerType])

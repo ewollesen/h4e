@@ -69,7 +69,7 @@ battlemindsDemand = Power { Power.name="Battlemind's Demand"
                           , Power.uses=AtWill
                           , Power.action=MinorAction
                           , Power.keywords=["Augmentable", "Psionic"]
-                          , Power.powerType=Feature
+                          , Power.powerType=ClassFeature
                           , Power.level=1
                           , Power.damage=Nothing
                           }
@@ -80,7 +80,7 @@ battleResilience = Power { Power.name="Battle Resilience"
                          , Power.uses=Encounter
                          , Power.action=FreeAction
                          , Power.keywords=["Psionic"]
-                         , Power.powerType=Feature
+                         , Power.powerType=ClassFeature
                          , Power.level=1
                          , Power.damage=Nothing
                          }
@@ -91,7 +91,7 @@ blurredStep = Power { Power.name="Blurred Step"
                     , Power.uses=AtWill
                     , Power.action=Opportunity
                     , Power.keywords=["Psionic"]
-                    , Power.powerType=Feature
+                    , Power.powerType=ClassFeature
                     , Power.level=1
                     , Power.damage=Nothing
                     }
@@ -102,7 +102,7 @@ mindSpike = Power { Power.name="Mind Spike"
                   , Power.uses=AtWill
                   , Power.action=ImmediateReaction
                   , Power.keywords=["Force", "Psionic", "Psychic"]
-                  , Power.powerType=Feature
+                  , Power.powerType=ClassFeature
                   , Power.level=1
                   , Power.damage=Nothing
                   }
@@ -117,3 +117,14 @@ dimensionSlide = Power { Power.name="Dimension Slide"
                        , Power.level=2
                        , Power.damage=Nothing
                        }
+
+lodestoneLure = Power { Power.name="Lodestone Lure"
+                      , Power.attackAbility=Just Ability.Constitution
+                      , Power.attackVsDefense=Just "Will"
+                      , Power.uses=AtWill
+                      , Power.action=StandardAction
+                      , Power.keywords=["Augmentable", "Psionic", "Weapon"]
+                      , Power.powerType=Power.Attack
+                      , Power.level=3
+                      , Power.damage=Just "Constitution modifier"
+                      }
