@@ -9,11 +9,10 @@ import CharacterClass.Battlemind
 import Level
 import Skill
 import Equipment
-import Weapon
 import Feat
 
 
-battleaxe1 = weaponFactory "Battleaxe +1"
+battleaxe1 = equipFactory "Battleaxe +1"
              [modFactory "+1 Attack bonus (Enhancement)" Modifier.Attack 1 EnhancementMod,
              modFactory "+1 Damage bonus (Enhancement)" Damage 1 EnhancementMod]
              [weaponTag, martialWeaponTag, meleeWeaponTag]
@@ -43,8 +42,7 @@ pontus = Character { Character.name = "Pontus"
                      Level.level [] [bullsStrength, ironFist, whirlingDefense, aspectOfElevatedHarmony, battlemindsDemand, battleResilience, blurredStep, mindSpike] [deceptiveMind, lureOfIron],
                      Level.level [] [dimensionSlide] [psionicToughness]
                      ]
-                   , gear=[scaleMail, lightShield]
-                   , weapons=[longsword, dagger]
+                   , gear=[scaleMail, lightShield, longsword, dagger]
                    , xp=1675
                    , age=24
                    , gender="Male"

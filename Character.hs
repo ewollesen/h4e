@@ -12,8 +12,6 @@ import Skill
 import Ability
 import Equipment
 import Equippable
-import Weapon
-import Weaponlike
 import Feat
 
 
@@ -35,7 +33,6 @@ data Character = Character { name :: String
                            , alignment :: String
                            , deity :: String
                            , gear :: [Equipment]
-                           , weapons :: [Weapon]
                            , xp :: Int
                            , languages :: [String]
                            , adventuringCompanyOrOtherAffiliations :: String
@@ -45,7 +42,6 @@ instance Modifiable Character where
   modifiers c = concat [(Modifier.modifiers . race) c,
                         (CC.modifiers . characterClass) c,
                         (concatMap Feat.modifiers (Character.feats c)),
-                        (concatMap Modifier.modifiers (weapons c)),
                         (concatMap Equipment.modifiers (gear c)),
                         (concatMap Level.modifiers (Character.levels c))]
 
@@ -721,22 +717,31 @@ armorCheckPenalty c = sum $ (map value (armorCheckPenaltyMods c))
 armorCheckPenaltyMods c = filter (\mod -> Modifier.target mod == Modifier.Skill) (Modifier.modifiers c)
 
 weaponProficiencyBonus c w
-  | isProficientWith c w == True = Weapon.proficiencyBonus w
+  | isProficientWith c w == True = fromJust $ Equipment.proficiencyBonus w
   | otherwise = 0
 
-primaryWeapon c = head $ weapons c
+primaryWeapon c = head $ (weapons . gear) c
 
-secondaryWeapon c = head $ tail $ weapons c
+secondaryWeapon c = head $ tail $ (weapons . gear) c
+
+weapons :: [Equipment] -> [Equipment]
+weapons w = filter (hasTag (tagFactory "Weapon")) w
+
+magicItem :: Int -> Character -> String
+magicItem i c
+  | length gear > i = gear !! i
+  | otherwise = ""
+  where gear = map Equipment.name $ filter (hasTag (tagFactory "Magic")) $ Character.gear c
 
 isArmed c
-  | length (weapons c) == 0 = False
+  | length ((weapons . gear) c) == 0 = False
   | otherwise = True
 
 isProficientWith c w = grantsProficiencyWith (characterClass c) w -- TODO feats
 
 profModToPower :: Power -> Character -> Int
 profModToPower p c
-  | powerHasKeyword p "Weapon" == True && isArmed c = Weapon.proficiencyBonus $ Character.primaryWeapon c
+  | powerHasKeyword p "Weapon" == True && isArmed c = fromJust $ Equipment.proficiencyBonus $ Character.primaryWeapon c
   | otherwise = 0
 
 classModifierFor c p =

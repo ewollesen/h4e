@@ -9,22 +9,22 @@ import CharacterClass.Battlemind
 import Level
 import Skill
 import Equipment
-import Weapon
 import Feat
 
 
-battleaxe1 = weaponFactory "Battleaxe +1"
+battleaxe1 = equipFactory "Battleaxe +1"
              [modFactory "+1 Attack bonus (Enhancement)" Modifier.Attack 1 EnhancementMod,
              modFactory "+1 Damage bonus (Enhancement)" Damage 1 EnhancementMod]
-             [weaponTag, martialWeaponTag, meleeWeaponTag]
-             2
+             [weaponTag, martialWeaponTag, meleeWeaponTag, magicItemTag]
+             (Just 2)
 
 chainmail1Dwarven = equipFactory "Chain mail +1 (Dwarven)"
             [modFactory "+6 AC bonus (Armor)" ArmorClass 6 ArmorMod,
              modFactory "+1 AC bonus (Enhancment)" ArmorClass 1 EnhancementMod,
              modFactory "-1 Skill penalty (Armor)" Skill (-1) ArmorMod,
              modFactory "-1 Speed penalty (Armor)" Speed (-1) ArmorMod]
-            [heavyArmorTag, armorTag]
+            [heavyArmorTag, armorTag, magicItemTag]
+            Nothing
 
 pontus = Character { Character.name = "Pontus"
                    , playerName = "Eric Wollesen"
@@ -44,8 +44,7 @@ pontus = Character { Character.name = "Pontus"
                      Level.level [] [dimensionSlide] [psionicToughness],
                      Level.level [] [lodestoneLure] []
                      ]
-                   , gear=[chainmail1Dwarven, lightShield]
-                   , weapons=[battleaxe1, dagger]
+                   , gear=[chainmail1Dwarven, lightShield, battleaxe1, dagger]
                    , xp=2925
                    , age=24
                    , gender="Male"

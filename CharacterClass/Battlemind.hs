@@ -3,9 +3,9 @@ module CharacterClass.Battlemind where
 import qualified CharacterClass as CC
 import Modifier
 import Skill
-import Weapon
 import Power
 import Ability
+import Equipment
 
 
 battlemind :: [Modifier] -> [SkillName] -> CC.Class
