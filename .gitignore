@@ -2,3 +2,6 @@
 *.hi
 dnd
 TAGS
+*.fdf
+*.json
+*.pdf
