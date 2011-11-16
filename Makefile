@@ -6,7 +6,7 @@ tags:
 	rm -f tags
 
 .fdf.pdf:
-	pdftk CSheet.pdf fill_form $< output $@ 
+	pdftk CharacterSheetFillable.pdf fill_form $< output $@ 
 
 pontus.pdf: pontus.fdf
 

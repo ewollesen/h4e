@@ -9,7 +9,7 @@ data Class = Class { name :: String
                    , hpAtFirstLevel :: Int
                    , hpPerLevelGained :: Int
                    , healingSurgesPerDay :: Int
-                   , trainedSkills :: [SkillName]
+                   , skillsTrained :: [SkillName]
                    , modifiers :: [Modifier]
                    , proficientWithWeaponsTaggedWith:: [Tag]
                    , proficientWithArmorTaggedWith :: [Tag]

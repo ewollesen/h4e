@@ -46,7 +46,7 @@ instance Modifiable Character where
                         (concatMap Level.modifiers (Character.levels c))]
 
 instance Skilled Character where
-  skill s c = trainedBonus s c +
+  skill s c = skillTrainedBonus s c +
               halfLevel c +
               (skillAbilMod s) c +
               skillArmorCheckPenalty s c +
@@ -54,10 +54,10 @@ instance Skilled Character where
   skillArmorCheckPenalty s c
     | skillArmorCheckPenaltyApplies s (not (wearingLightOrNoArmor c)) = armorCheckPenalty c
     | otherwise = 0
-  trainedSkills c = concat [(CC.trainedSkills . characterClass) c
+  skillsTrained c = concat [(CC.skillsTrained . characterClass) c
                             -- feats that train in skills
                            ]
-  trainedSkill s c = s `elem` Skill.trainedSkills c
+  skillTrained s c = s `elem` Skill.skillsTrained c
   skillAbilModPlusHalfLevel s c = halfLevel c + ((skillAbilMod s) c)
 
 
@@ -147,20 +147,171 @@ chaMods = (abilityMods Modifier.Charisma)
 {----------}
 skillAbilMod = (abilityMod . skillAbil)
 
-skillTakeTen :: SkillName -> Character -> Int
-skillTakeTen s c = 10 + skill s c
-
-passiveInsight :: Character -> Int
-passiveInsight = (skillTakeTen Skill.Insight)
-
-passivePerception :: Character -> Int
-passivePerception = (skillTakeTen Skill.Perception)
+skillTrainedBonus :: SkillName -> Character -> Int
+skillTrainedBonus s c
+  | trained == True = 5
+  | otherwise = 0
+  where trained = skillTrained s c
 
 miscModToSkill :: SkillName -> Character -> Int
 miscModToSkill s c = modToTarget (skillNameToModTarget s) $ Modifier.modifiers c
 
 miscSkillMods :: SkillName -> [Modifier] -> [Modifier]
 miscSkillMods s m = modsToTarget (skillNameToModTarget s) m
+
+acrobatics :: Character -> Int
+acrobatics c = skill Skill.Acrobatics c
+
+acrobaticsTrained :: Character -> String
+acrobaticsTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Acrobatics c
+
+arcana :: Character -> Int
+arcana c = skill Skill.Arcana c
+
+arcanaTrained :: Character -> String
+arcanaTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Arcana c
+
+athletics :: Character -> Int
+athletics c = skill Skill.Athletics c
+
+athleticsTrained :: Character -> String
+athleticsTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Athletics c
+
+bluff :: Character -> Int
+bluff c = skill Skill.Bluff c
+
+bluffTrained :: Character -> String
+bluffTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Bluff c
+
+diplomacy :: Character -> Int
+diplomacy c = skill Skill.Diplomacy c
+
+diplomacyTrained :: Character -> String
+diplomacyTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Diplomacy c
+
+dungeoneering :: Character -> Int
+dungeoneering c = skill Skill.Dungeoneering c
+
+dungeoneeringTrained :: Character -> String
+dungeoneeringTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Dungeoneering c
+
+endurance :: Character -> Int
+endurance c = skill Skill.Endurance c
+
+enduranceTrained :: Character -> String
+enduranceTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Endurance c
+
+heal :: Character -> Int
+heal c = skill Skill.Heal c
+
+healTrained :: Character -> String
+healTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Heal c
+
+history :: Character -> Int
+history c = skill Skill.History c
+
+historyTrained :: Character -> String
+historyTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.History c
+
+insight :: Character -> Int
+insight c = skill Skill.Insight c
+
+insightTrained :: Character -> String
+insightTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Insight c
+
+intimidate :: Character -> Int
+intimidate c = skill Skill.Intimidate c
+
+intimidateTrained :: Character -> String
+intimidateTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Intimidate c
+
+nature :: Character -> Int
+nature c = skill Skill.Nature c
+
+natureTrained :: Character -> String
+natureTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Nature c
+
+perception :: Character -> Int
+perception c = skill Skill.Perception c
+
+perceptionTrained :: Character -> String
+perceptionTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Perception c
+
+religion :: Character -> Int
+religion c = skill Skill.Religion c
+
+religionTrained :: Character -> String
+religionTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Religion c
+
+stealth :: Character -> Int
+stealth c = skill Skill.Stealth c
+
+stealthTrained :: Character -> String
+stealthTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Stealth c
+
+streetwise :: Character -> Int
+streetwise c = skill Skill.Streetwise c
+
+streetwiseTrained :: Character -> String
+streetwiseTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Streetwise c
+
+thievery :: Character -> Int
+thievery c = skill Skill.Thievery c
+
+thieveryTrained :: Character -> String
+thieveryTrained c
+  | trained == True = "Yes"
+  | otherwise = "Off"
+  where trained = skillTrained Skill.Thievery c
+
 
 {------------}
 {- Defenses -}
@@ -279,45 +430,44 @@ misc2ModToWill c
 {- Armor Class -}
 ac :: Character -> Int
 ac c = tenPlusHalfLevel c
-       + abilModToAC c
+       + acAbil c
        + (modToTarget ArmorClass $ Modifier.modifiers c)
 
-armorAndAbilityModToAC :: Character -> Int
-armorAndAbilityModToAC c = abilModToAC c +
-                           Modifier.mod ArmorClass ArmorMod c
+acArmorAbility :: Character -> Int
+acArmorAbility c = acAbil c + Modifier.mod ArmorClass ArmorMod c
 
-abilModToAC :: Character -> Int
-abilModToAC c
+acAbil :: Character -> Int
+acAbil c
   | wearingLightOrNoArmor c == True = maximum [intMod c, dexMod c]
   | otherwise = 0
 
-classModToAC :: Character -> Int
-classModToAC c = Modifier.mod ArmorClass ClassMod c
+acClass :: Character -> Int
+acClass c = Modifier.mod ArmorClass ClassMod c
 
-enhModToAC :: Character -> Int
-enhModToAC c = Modifier.mod ArmorClass EnhancementMod c
+acEnh :: Character -> Int
+acEnh c = Modifier.mod ArmorClass EnhancementMod c
 
-featModToAC :: Character -> Int
-featModToAC c = Modifier.mod ArmorClass FeatMod c
+acFeat :: Character -> Int
+acFeat c = Modifier.mod ArmorClass FeatMod c
 
-miscModsToAC :: Character -> [Modifier]
-miscModsToAC c = filter (\m -> modType m `notElem` specificTypes) $ acMods c
+acMiscMods :: Character -> [Modifier]
+acMiscMods c = filter (\m -> modType m `notElem` specificTypes) $ acMods c
   where specificTypes = [ArmorMod, ClassMod, EnhancementMod, FeatMod]
 
 acMods :: (Modifiable a) => a -> [Modifier]
 acMods = (characterModsByTarget ArmorClass)
 
-misc1ModToAC :: Character -> Int
-misc1ModToAC c
+acMisc1 :: Character -> Int
+acMisc1 c
   | length mods > 0 = value $ last $ sortByValue mods
   | otherwise = 0
-  where mods = miscModsToAC c
+  where mods = acMiscMods c
 
-misc2ModToAC :: Character -> Int
-misc2ModToAC c
+acMisc2 :: Character -> Int
+acMisc2 c
   | length mods > 1 = value $ last $ init $ sortByValue mods
   | otherwise = 0
-  where mods = miscModsToAC c
+  where mods = acMiscMods c
 
 
 {---------}

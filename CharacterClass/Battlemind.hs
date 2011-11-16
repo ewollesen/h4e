@@ -14,7 +14,7 @@ battlemind x y = CC.Class { CC.name="Battlemind"
                           , CC.hpPerLevelGained=6
                           , CC.healingSurgesPerDay=9
                           , CC.modifiers=CC.classWillPlus2:x
-                          , CC.trainedSkills=y
+                          , CC.skillsTrained=y
                           , CC.proficientWithWeaponsTaggedWith=[martialWeaponTag, simpleWeaponTag]
                           , CC.proficientWithArmorTaggedWith=[]
                           }

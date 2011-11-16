@@ -40,8 +40,8 @@ class Skilled a where
   skillMods :: Skilled a => SkillName -> a -> [Modifier]
   skillMods s c = [] -- TODO
   skillArmorCheckPenalty :: Skilled a => SkillName -> a -> Int
-  trainedSkills :: Skilled a => a -> [SkillName]
-  trainedSkill :: Skilled a => SkillName -> a -> Bool
+  skillsTrained :: Skilled a => a -> [SkillName]
+  skillTrained :: Skilled a => SkillName -> a -> Bool
   skillAbilModPlusHalfLevel :: Skilled a => SkillName -> a -> Int
 
 skillAbil Skill.Acrobatics = Ability.Dexterity
@@ -72,13 +72,6 @@ skillHasArmorCheckPenalty n = False
 skillArmorCheckPenaltyApplies name True
   | skillHasArmorCheckPenalty name == True = True
   | otherwise = False
-
-skillTrainingBonus = 5 :: Int
-
-trainedBonus :: (Skilled c) => SkillName -> c -> Int
-trainedBonus s c
-  | trainedSkill s c == True = skillTrainingBonus
-  | otherwise            = 0
 
 $(derive[''SkillName])
 
