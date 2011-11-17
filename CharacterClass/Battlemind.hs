@@ -12,7 +12,7 @@ battlemind :: [Modifier] -> [SkillName] -> CC.Class
 battlemind x y = CC.Class { CC.name="Battlemind"
                           , CC.hpAtFirstLevel=15
                           , CC.hpPerLevelGained=6
-                          , CC.healingSurgesPerDay=9
+                          , CC.surgesDay=9
                           , CC.modifiers=CC.classWillPlus2:x
                           , CC.skillsTrained=y
                           , CC.proficientWithWeaponsTaggedWith=[martialWeaponTag, simpleWeaponTag]

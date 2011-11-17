@@ -8,7 +8,7 @@ import Taggable
 data Class = Class { name :: String
                    , hpAtFirstLevel :: Int
                    , hpPerLevelGained :: Int
-                   , healingSurgesPerDay :: Int
+                   , surgesDay :: Int
                    , skillsTrained :: [SkillName]
                    , modifiers :: [Modifier]
                    , proficientWithWeaponsTaggedWith:: [Tag]

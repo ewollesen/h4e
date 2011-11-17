@@ -74,12 +74,12 @@ wearingLightOrNoArmor c = taggedWith (gear c) heavyArmorTag == False
 {-------------}
 {- Abilities -}
 {-------------}
-abilityMod Ability.Strength = (strMod)
-abilityMod Ability.Dexterity = (dexMod)
-abilityMod Ability.Constitution = (conMod)
-abilityMod Ability.Intelligence = (intMod)
-abilityMod Ability.Wisdom = (wisMod)
-abilityMod Ability.Charisma = (chaMod)
+abilityMod Ability.Strength = (strAbilMod)
+abilityMod Ability.Dexterity = (dexAbilMod)
+abilityMod Ability.Constitution = (conAbilMod)
+abilityMod Ability.Intelligence = (intAbilMod)
+abilityMod Ability.Wisdom = (wisAbilMod)
+abilityMod Ability.Charisma = (chaAbilMod)
 
 str :: Character -> Int
 str c = sum $ baseStr c:(map value $ strMods c)
@@ -102,23 +102,23 @@ cha c = sum $ baseCha c:(map value $ chaMods c)
 abilMod :: Int -> Int
 abilMod x = x `div` 2 - 5
 
-wisMod :: Character -> Int
-wisMod c = (abilMod . wis) c
+wisAbilMod :: Character -> Int
+wisAbilMod c = (abilMod . wis) c
 
-dexMod :: Character -> Int
-dexMod c = (abilMod . dex) c
+dexAbilMod :: Character -> Int
+dexAbilMod c = (abilMod . dex) c
 
-conMod :: Character -> Int
-conMod c = (abilMod . con) c
+conAbilMod :: Character -> Int
+conAbilMod c = (abilMod . con) c
 
-intMod :: Character -> Int
-intMod c = (abilMod . int) c
+intAbilMod :: Character -> Int
+intAbilMod c = (abilMod . int) c
 
-strMod :: Character -> Int
-strMod c = (abilMod . str) c
+strAbilMod :: Character -> Int
+strAbilMod c = (abilMod . str) c
 
-chaMod :: Character -> Int
-chaMod c = (abilMod . cha) c
+chaAbilMod :: Character -> Int
+chaAbilMod c = (abilMod . cha) c
 
 abilityMods :: (Modifiable a) => ModTarget -> a -> [Modifier]
 abilityMods t c = modsByTarget t $ Modifier.modifiers c
@@ -153,6 +153,9 @@ skillTrainedBonus s c
   | otherwise = 0
   where trained = skillTrained s c
 
+skillArmorPenalty :: Character -> Int
+skillArmorPenalty c = (-1)
+
 miscModToSkill :: SkillName -> Character -> Int
 miscModToSkill s c = modToTarget (skillNameToModTarget s) $ Modifier.modifiers c
 
@@ -168,6 +171,10 @@ acrobaticsTrained c
   | otherwise = "Off"
   where trained = skillTrained Skill.Acrobatics c
 
+acrobaticsAbil :: Character -> Int
+acrobaticsAbil c = halfLevel c
+                   + (skillAbilMod Skill.Acrobatics) c
+
 arcana :: Character -> Int
 arcana c = skill Skill.Arcana c
 
@@ -176,6 +183,10 @@ arcanaTrained c
   | trained == True = "Yes"
   | otherwise = "Off"
   where trained = skillTrained Skill.Arcana c
+
+arcanaAbil :: Character -> Int
+arcanaAbil c = halfLevel c
+               + (skillAbilMod Skill.Arcana) c
 
 athletics :: Character -> Int
 athletics c = skill Skill.Athletics c
@@ -186,6 +197,10 @@ athleticsTrained c
   | otherwise = "Off"
   where trained = skillTrained Skill.Athletics c
 
+athleticsAbil :: Character -> Int
+athleticsAbil c = halfLevel c
+                  + (skillAbilMod Skill.Athletics) c
+
 bluff :: Character -> Int
 bluff c = skill Skill.Bluff c
 
@@ -194,6 +209,10 @@ bluffTrained c
   | trained == True = "Yes"
   | otherwise = "Off"
   where trained = skillTrained Skill.Bluff c
+
+bluffAbil :: Character -> Int
+bluffAbil c = halfLevel c
+              + (skillAbilMod Skill.Bluff) c
 
 diplomacy :: Character -> Int
 diplomacy c = skill Skill.Diplomacy c
@@ -204,6 +223,10 @@ diplomacyTrained c
   | otherwise = "Off"
   where trained = skillTrained Skill.Diplomacy c
 
+diplomacyAbil :: Character -> Int
+diplomacyAbil c = halfLevel c
+                  + (skillAbilMod Skill.Diplomacy) c
+
 dungeoneering :: Character -> Int
 dungeoneering c = skill Skill.Dungeoneering c
 
@@ -212,6 +235,10 @@ dungeoneeringTrained c
   | trained == True = "Yes"
   | otherwise = "Off"
   where trained = skillTrained Skill.Dungeoneering c
+
+dungeoneeringAbil :: Character -> Int
+dungeoneeringAbil c = halfLevel c
+                      + (skillAbilMod Skill.Dungeoneering) c
 
 endurance :: Character -> Int
 endurance c = skill Skill.Endurance c
@@ -222,6 +249,10 @@ enduranceTrained c
   | otherwise = "Off"
   where trained = skillTrained Skill.Endurance c
 
+enduranceAbil :: Character -> Int
+enduranceAbil c = halfLevel c
+                  + (skillAbilMod Skill.Endurance) c
+
 heal :: Character -> Int
 heal c = skill Skill.Heal c
 
@@ -230,6 +261,10 @@ healTrained c
   | trained == True = "Yes"
   | otherwise = "Off"
   where trained = skillTrained Skill.Heal c
+
+healAbil :: Character -> Int
+healAbil c = halfLevel c
+             + (skillAbilMod Skill.Heal) c
 
 history :: Character -> Int
 history c = skill Skill.History c
@@ -240,6 +275,10 @@ historyTrained c
   | otherwise = "Off"
   where trained = skillTrained Skill.History c
 
+historyAbil :: Character -> Int
+historyAbil c = halfLevel c
+                + (skillAbilMod Skill.History) c
+
 insight :: Character -> Int
 insight c = skill Skill.Insight c
 
@@ -248,6 +287,10 @@ insightTrained c
   | trained == True = "Yes"
   | otherwise = "Off"
   where trained = skillTrained Skill.Insight c
+
+insightAbil :: Character -> Int
+insightAbil c = halfLevel c
+                + (skillAbilMod Skill.Insight) c
 
 intimidate :: Character -> Int
 intimidate c = skill Skill.Intimidate c
@@ -258,6 +301,10 @@ intimidateTrained c
   | otherwise = "Off"
   where trained = skillTrained Skill.Intimidate c
 
+intimidateAbil :: Character -> Int
+intimidateAbil c = halfLevel c
+                   + (skillAbilMod Skill.Intimidate) c
+
 nature :: Character -> Int
 nature c = skill Skill.Nature c
 
@@ -266,6 +313,10 @@ natureTrained c
   | trained == True = "Yes"
   | otherwise = "Off"
   where trained = skillTrained Skill.Nature c
+
+natureAbil :: Character -> Int
+natureAbil c = halfLevel c
+               + (skillAbilMod Skill.Nature) c
 
 perception :: Character -> Int
 perception c = skill Skill.Perception c
@@ -276,6 +327,10 @@ perceptionTrained c
   | otherwise = "Off"
   where trained = skillTrained Skill.Perception c
 
+perceptionAbil :: Character -> Int
+perceptionAbil c = halfLevel c
+                   + (skillAbilMod Skill.Perception) c
+
 religion :: Character -> Int
 religion c = skill Skill.Religion c
 
@@ -284,6 +339,10 @@ religionTrained c
   | trained == True = "Yes"
   | otherwise = "Off"
   where trained = skillTrained Skill.Religion c
+
+religionAbil :: Character -> Int
+religionAbil c = halfLevel c
+                 + (skillAbilMod Skill.Religion) c
 
 stealth :: Character -> Int
 stealth c = skill Skill.Stealth c
@@ -294,6 +353,10 @@ stealthTrained c
   | otherwise = "Off"
   where trained = skillTrained Skill.Stealth c
 
+stealthAbil :: Character -> Int
+stealthAbil c = halfLevel c
+                + (skillAbilMod Skill.Stealth) c
+
 streetwise :: Character -> Int
 streetwise c = skill Skill.Streetwise c
 
@@ -303,6 +366,10 @@ streetwiseTrained c
   | otherwise = "Off"
   where trained = skillTrained Skill.Streetwise c
 
+streetwiseAbil :: Character -> Int
+streetwiseAbil c = halfLevel c
+                   + (skillAbilMod Skill.Streetwise) c
+
 thievery :: Character -> Int
 thievery c = skill Skill.Thievery c
 
@@ -311,6 +378,10 @@ thieveryTrained c
   | trained == True = "Yes"
   | otherwise = "Off"
   where trained = skillTrained Skill.Thievery c
+
+thieveryAbil :: Character -> Int
+thieveryAbil c = halfLevel c
+                 + (skillAbilMod Skill.Thievery) c
 
 
 {------------}
@@ -323,7 +394,7 @@ fortitude c = abilModToFort c
               + (modToTarget Fortitude $ Modifier.modifiers c)
 
 abilModToFort :: Character -> Int
-abilModToFort c = maximum [strMod c, conMod c]
+abilModToFort c = maximum [strAbilMod c, conAbilMod c]
 
 classModToFort :: Character -> Int
 classModToFort c = Modifier.mod Fortitude ClassMod c
@@ -360,7 +431,7 @@ reflex c = abilModToRef c
          + (modToTarget Reflex $ Modifier.modifiers c)
 
 abilModToRef :: Character -> Int
-abilModToRef c = maximum [dexMod c, intMod c]
+abilModToRef c = maximum [dexAbilMod c, intAbilMod c]
 
 classModToRef :: Character -> Int
 classModToRef c = Modifier.mod Reflex ClassMod c
@@ -392,40 +463,40 @@ misc2ModToRef c
 
 {- Will -}
 will :: Character -> Int
-will c = abilModToWill c
+will c = willAbil c
          + tenPlusHalfLevel c
          + (modToTarget Will $ Modifier.modifiers c)
 
-abilModToWill :: Character -> Int
-abilModToWill c = maximum [wisMod c, chaMod c]
+willAbil :: Character -> Int
+willAbil c = maximum [wisAbilMod c, chaAbilMod c]
 
-classModToWill :: Character -> Int
-classModToWill c = Modifier.mod Will ClassMod c
+willClass :: Character -> Int
+willClass c = Modifier.mod Will ClassMod c
 
-enhModToWill :: Character -> Int
-enhModToWill c = Modifier.mod Will EnhancementMod c
+willEnh :: Character -> Int
+willEnh c = Modifier.mod Will EnhancementMod c
 
-featModToWill :: Character -> Int
-featModToWill c = Modifier.mod Will FeatMod c
+willFeat :: Character -> Int
+willFeat c = Modifier.mod Will FeatMod c
 
-miscModsToWill :: Character -> [Modifier]
-miscModsToWill c = filter (\m -> modType m `notElem` specificTypes) $ willMods c
+willMiscMods :: Character -> [Modifier]
+willMiscMods c = filter (\m -> modType m `notElem` specificTypes) $ willMods c
   where specificTypes = [ClassMod, EnhancementMod, FeatMod]
 
 willMods :: (Modifiable a) => a -> [Modifier]
 willMods = (characterModsByTarget Will)
 
-misc1ModToWill :: Character -> Int
-misc1ModToWill c
+willMisc1 :: Character -> Int
+willMisc1 c
   | length mods > 0 = value $ last $ sortByValue mods
   | otherwise = 0
-  where mods = miscModsToWill c
+  where mods = willMiscMods c
 
-misc2ModToWill :: Character -> Int
-misc2ModToWill c
+willMisc2 :: Character -> Int
+willMisc2 c
   | length mods > 1 = value $ last $ init $ sortByValue mods
   | otherwise = 0
-  where mods = miscModsToWill c
+  where mods = willMiscMods c
 
 {- Armor Class -}
 ac :: Character -> Int
@@ -438,7 +509,7 @@ acArmorAbility c = acAbil c + Modifier.mod ArmorClass ArmorMod c
 
 acAbil :: Character -> Int
 acAbil c
-  | wearingLightOrNoArmor c == True = maximum [intMod c, dexMod c]
+  | wearingLightOrNoArmor c == True = maximum [intAbilMod c, dexAbilMod c]
   | otherwise = 0
 
 acClass :: Character -> Int
@@ -473,15 +544,17 @@ acMisc2 c
 {---------}
 {- Speed -}
 {---------}
-speed c = Character.baseSpeed c
+speed c = Character.speedBase c
           + (modToTarget Speed $ Modifier.modifiers c)
 
-baseSpeed :: Character -> Int
-baseSpeed = (Race.baseSpeed .Character.race)
+speedBase :: Character -> Int
+speedBase = (Race.baseSpeed .Character.race)
 
-armorSpeedMod c = Modifier.mod Speed ArmorMod  c
+speedArmor :: Character -> Int
+speedArmor c = Modifier.mod Speed ArmorMod  c
 
-itemSpeedMod c = Modifier.mod Speed ItemMod c
+speedItem :: Character -> Int
+speedItem c = Modifier.mod Speed ItemMod c
 
 miscModToSpeed :: Character -> Int
 miscModToSpeed c
@@ -517,7 +590,7 @@ tenPlusHalfLevel c = 10 + halfLevel c
 -- is initiative affected by the armor penalty in 4E? NO.
 -- add other mods, feats, powers, equipment
 initiative :: Character -> Int
-initiative c = maximum [(intMod c), (dexMod c)] + (halfLevel c)
+initiative c = maximum [(intAbilMod c), (dexAbilMod c)] + (halfLevel c)
 
 -- initiative mods called out: 1/2 level, dex mod, and misc. Since this is
 -- less detailed than many other fields, I am going to sum all valid mods and
@@ -553,12 +626,12 @@ hpMods c = modsToTarget HitPoints $ Modifier.modifiers c
 bloodied :: Character -> Int
 bloodied c = hp c `div` 2
 
-healingSurgeValue :: Character -> Int
-healingSurgeValue c = hp c `div` 4
+surgeValue :: Character -> Int
+surgeValue c = hp c `div` 4
 
-healingSurgesPerDay :: Character -> Int
-healingSurgesPerDay c = conMod c
-                        + (CC.healingSurgesPerDay . characterClass) c
+surgesDay :: Character -> Int
+surgesDay c = conAbilMod c
+              + (CC.surgesDay . characterClass) c
 
 
 {----------}
@@ -856,11 +929,11 @@ raceName = (Race.name . Character.race)
 racialAbilModifiers :: Character -> String
 racialAbilModifiers c = Race.abilModifiers $ Character.race c
 
-basicMeleeAttack c w = basicAttack c w + strMod c
+basicMeleeAttack c w = basicAttack c w + strAbilMod c
 
 basicAttack c w = halfLevel c + (weaponProficiencyBonus c w)
 
-basicRangedAttack c w = basicAttack c w + dexMod c
+basicRangedAttack c w = basicAttack c w + dexAbilMod c
 
 armorCheckPenalty c = sum $ (map value (armorCheckPenaltyMods c))
 
