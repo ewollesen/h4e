@@ -1,6 +1,6 @@
 module Character where
 
-import Data.List
+import qualified Data.List as L
 import Data.Maybe
 import Modifier
 import Taggable
@@ -495,7 +495,7 @@ fortMisc1 c
 
 fortMisc2 :: Character -> Int
 fortMisc2 c
-  | length mods > 1 = value $ last $ init $ sortByValue mods
+  | length mods > 1 = value $ last $ L.init $ sortByValue mods
   | otherwise = 0
   where mods = fortMiscMods c
 
@@ -532,7 +532,7 @@ refMisc1 c
 
 refMisc2 :: Character -> Int
 refMisc2 c
-  | length mods > 1 = value $ last $ init $ sortByValue mods
+  | length mods > 1 = value $ last $ L.init $ sortByValue mods
   | otherwise = 0
   where mods = refMiscMods c
 
@@ -569,7 +569,7 @@ willMisc1 c
 
 willMisc2 :: Character -> Int
 willMisc2 c
-  | length mods > 1 = value $ last $ init $ sortByValue mods
+  | length mods > 1 = value $ last $ L.init $ sortByValue mods
   | otherwise = 0
   where mods = willMiscMods c
 
@@ -611,7 +611,7 @@ acMisc1 c
 
 acMisc2 :: Character -> Int
 acMisc2 c
-  | length mods > 1 = value $ last $ init $ sortByValue mods
+  | length mods > 1 = value $ last $ L.init $ sortByValue mods
   | otherwise = 0
   where mods = acMiscMods c
 
@@ -664,13 +664,13 @@ tenPlusHalfLevel c = 10 + halfLevel c
 {--------------}
 -- is initiative affected by the armor penalty in 4E? NO.
 -- add other mods, feats, powers, equipment
-initiative :: Character -> Int
-initiative c = maximum [(intAbilMod c), (dexAbilMod c)] + (halfLevel c)
+init :: Character -> Int
+init c = maximum [(intAbilMod c), (dexAbilMod c)] + (halfLevel c)
 
 -- initiative mods called out: 1/2 level, dex mod, and misc. Since this is
 -- less detailed than many other fields, I am going to sum all valid mods and
 -- use that for the misc field.
-miscModToInit c = modToTarget Initiative $ Modifier.modifiers c
+initMisc c = modToTarget Initiative $ Modifier.modifiers c
 
 
 {---------}
@@ -681,7 +681,7 @@ feat i c
   | length feats > i = feats !! i
   | otherwise = ""
   where
-    feats = map Feat.name $ sort $ Character.feats c
+    feats = map Feat.name $ L.sort $ Character.feats c
 
 feats :: Character -> [Feat]
 feats c = concatMap Level.feats $ levels c
@@ -726,7 +726,7 @@ racialFeature i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ racialFeatures $ Character.powers c
+    powers = map Power.name $ L.sort $ racialFeatures $ Character.powers c
 
 racialFeatures :: [Power] -> [Power]
 racialFeatures p = filter (\p -> Power.powerType p == RacialFeature) p
@@ -736,7 +736,7 @@ classFeature i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ classFeatures $ Character.powers c
+    powers = map Power.name $ L.sort $ classFeatures $ Character.powers c
 
 classFeatures :: [Power] -> [Power]
 classFeatures p = filter (\p -> Power.powerType p == ClassFeature) p
@@ -746,7 +746,7 @@ pathFeature i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ pathFeatures $ Character.powers c
+    powers = map Power.name $ L.sort $ pathFeatures $ Character.powers c
 
 pathFeatures :: [Power] -> [Power]
 pathFeatures p = filter (\p -> Power.powerType p == PathFeature) p
@@ -756,7 +756,7 @@ destinyFeature i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ destinyFeatures $ Character.powers c
+    powers = map Power.name $ L.sort $ destinyFeatures $ Character.powers c
 
 destinyFeatures :: [Power] -> [Power]
 destinyFeatures p = filter (\p -> Power.powerType p == DestinyFeature) p
@@ -766,7 +766,7 @@ classPathOrDestinyFeature i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ classPathOrDestinyFeatures $ Character.powers c
+    powers = map Power.name $ L.sort $ classPathOrDestinyFeatures $ Character.powers c
 
 classPathOrDestinyFeatures :: [Power] -> [Power]
 classPathOrDestinyFeatures p = destinyFeatures p
@@ -778,7 +778,7 @@ utilityPower i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ utilityPowers $ Character.powers c
+    powers = map Power.name $ L.sort $ utilityPowers $ Character.powers c
 
 utilityPowers :: [Power] -> [Power]
 utilityPowers p = powersByType Utility p
@@ -791,7 +791,7 @@ atWillPower i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ atWillPowers $ Character.powers c
+    powers = map Power.name $ L.sort $ atWillPowers $ Character.powers c
 
 atWillPowers :: [Power] -> [Power]
 atWillPowers p = powersByUses AtWill p
@@ -801,7 +801,7 @@ encounterPower i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ encounterPowers $ Character.powers c
+    powers = map Power.name $ L.sort $ encounterPowers $ Character.powers c
 
 encounterPowers :: [Power] -> [Power]
 encounterPowers p = powersByUses Encounter p
@@ -811,7 +811,7 @@ dailyPower i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ sort $ dailyPowers $ Character.powers c
+    powers = map Power.name $ L.sort $ dailyPowers $ Character.powers c
 
 dailyPowers :: [Power] -> [Power]
 dailyPowers p = powersByUses Daily p
@@ -831,35 +831,35 @@ language i c
 {-----------}
 {- Attacks -}
 {-----------}
-{- Overkill? -}
-attackMod :: Power -> Character -> Int
-attackMod p c = halfLevel c
-                + attackAbilMod p c
-                + attackClassMod p c
-                + attackProfMod p c
-                + attackFeatMod p c
-                + attackEnhMod p c
-                + attackMiscMod p c
+{- Overkill? Macro? -}
+attackBonus :: Power -> Character -> Int
+attackBonus p c = halfLevel c
+                + attackAbil p c
+                + attackClass p c
+                + attackProf p c
+                + attackFeat p c
+                + attackEnh p c
+                + attackMisc p c
 
-attackAbilMod :: Power -> Character -> Int
-attackAbilMod p c
+attackAbil :: Power -> Character -> Int
+attackAbil p c
   | Power.attackAbility p == Nothing = 0
   | otherwise = (abilityMod $ (fromJust (Power.attackAbility p))) c
 
-attackClassMod :: Power -> Character -> Int
-attackClassMod p c = 0 -- TODO
+attackClass :: Power -> Character -> Int
+attackClass p c = 0 -- TODO
 
-attackProfMod :: Power -> Character -> Int
-attackProfMod = (profModToPower)
+attackProf :: Power -> Character -> Int
+attackProf = (profModToPower)
 
-attackFeatMod :: Power -> Character -> Int
-attackFeatMod p c = 0 -- TODO
+attackFeat :: Power -> Character -> Int
+attackFeat p c = 0 -- TODO
 
-attackEnhMod :: Power -> Character -> Int
-attackEnhMod p c = Modifier.mod Modifier.Attack EnhancementMod c
+attackEnh :: Power -> Character -> Int
+attackEnh p c = Modifier.mod Modifier.Attack EnhancementMod c
 
-attackMiscMod :: Power -> Character -> Int
-attackMiscMod p c = 0 -- TODO
+attackMisc :: Power -> Character -> Int
+attackMisc p c = 0 -- TODO
 
 attack1Name :: Character -> String
 attack1Name c = Power.name $ attack1Power c
@@ -867,26 +867,26 @@ attack1Name c = Power.name $ attack1Power c
 attack1Power :: Character -> Power
 attack1Power c = head $ atWillPowers $ attackPowers $ Character.powers c
 
-attack1Mod :: Character -> Int
-attack1Mod c = attackMod (attack1Power c) c
+attack1Bonus :: Character -> Int
+attack1Bonus c = attackBonus (attack1Power c) c
 
-attack1AbilMod :: Character -> Int
-attack1AbilMod c = attackAbilMod (attack1Power c) c
+attack1Abil :: Character -> Int
+attack1Abil c = attackAbil (attack1Power c) c
 
-attack1ClassMod :: Character -> Int
-attack1ClassMod c = attackClassMod (attack1Power c) c
+attack1Class :: Character -> Int
+attack1Class c = attackClass (attack1Power c) c
 
-attack1ProfMod :: Character -> Int
-attack1ProfMod c = attackProfMod (attack1Power c) c
+attack1Prof :: Character -> Int
+attack1Prof c = attackProf (attack1Power c) c
 
-attack1FeatMod :: Character -> Int
-attack1FeatMod c = attackFeatMod (attack1Power c) c
+attack1Feat :: Character -> Int
+attack1Feat c = attackFeat (attack1Power c) c
 
-attack1EnhMod :: Character -> Int
-attack1EnhMod c = attackEnhMod (attack1Power c) c
+attack1Enh :: Character -> Int
+attack1Enh c = attackEnh (attack1Power c) c
 
-attack1MiscMod :: Character -> Int
-attack1MiscMod c = attackMiscMod (attack1Power c) c
+attack1Misc :: Character -> Int
+attack1Misc c = attackMisc (attack1Power c) c
 
 attack2Name :: Character -> String
 attack2Name c = Power.name $ attack2Power c
@@ -894,26 +894,26 @@ attack2Name c = Power.name $ attack2Power c
 attack2Power :: Character -> Power
 attack2Power c = head $ tail $ atWillPowers $ attackPowers $ Character.powers c
 
-attack2Mod :: Character -> Int
-attack2Mod c = attackMod (attack2Power c) c
+attack2Bonus :: Character -> Int
+attack2Bonus c = attackBonus (attack2Power c) c
 
-attack2AbilMod :: Character -> Int
-attack2AbilMod c = attackAbilMod (attack2Power c) c
+attack2Abil :: Character -> Int
+attack2Abil c = attackAbil (attack2Power c) c
 
-attack2ClassMod :: Character -> Int
-attack2ClassMod c = attackClassMod (attack2Power c) c
+attack2Class :: Character -> Int
+attack2Class c = attackClass (attack2Power c) c
 
-attack2ProfMod :: Character -> Int
-attack2ProfMod c = attackProfMod (attack2Power c) c
+attack2Prof :: Character -> Int
+attack2Prof c = attackProf (attack2Power c) c
 
-attack2FeatMod :: Character -> Int
-attack2FeatMod c = attackFeatMod (attack2Power c) c
+attack2Feat :: Character -> Int
+attack2Feat c = attackFeat (attack2Power c) c
 
-attack2EnhMod :: Character -> Int
-attack2EnhMod c = attackEnhMod (attack2Power c) c
+attack2Enh :: Character -> Int
+attack2Enh c = attackEnh (attack2Power c) c
 
-attack2MiscMod :: Character -> Int
-attack2MiscMod c = attackMiscMod (attack2Power c) c
+attack2Misc :: Character -> Int
+attack2Misc c = attackMisc (attack2Power c) c
 
 
 {----------}
@@ -932,7 +932,7 @@ damageDesc p c
   | otherwise = (fromJust $ Power.damage p) ++ " + " ++ (show $ damageMod p c)
 
 damageAbilMod :: Power -> Character -> Int
-damageAbilMod p c = attackAbilMod p c
+damageAbilMod p c = attackAbil p c
 
 damageFeatMod :: Power -> Character -> Int
 damageFeatMod p c = 0 -- TODO
@@ -1047,8 +1047,5 @@ classModifierFor c p =
 
 featModifierFor c p =
   maximum $ 0:(map value $ filter (\mod -> (show $ Modifier.target mod) == Power.name p) $ concatMap Feat.modifiers $ Character.feats c)
-
-attackBonus :: Character -> AbilityName -> Int
-attackBonus c a = (basicAttack c (primaryWeapon c)) + ((abilityMod a) c)
 
 className c = (CC.name . characterClass) c

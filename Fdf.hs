@@ -52,24 +52,30 @@ printFdfData c = do
   printf "<</T(Athletics \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ athleticsAbil c
   printf "<</T(Athletics \\(Misc\\))/V(%d)>>" $ athleticsMisc c
   printf "<</T(Athletics \\(Trained\\))/V/%s>>" $ athleticsTrained c
-  printf "<</T(Attack 1 \\(Abil\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Attack 1 \\(Ability\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Attack 1 \\(Att Bonus\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Attack 1 \\(Enh\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Attack 1 \\(Prof\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Attack 2 \\(Abil\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Attack 2 \\(Ability\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Attack 2 \\(Att Bonus\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Attack 2 \\(Enh\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Attack 2 \\(Prof\\))/V(%d)>>" (0 :: Int)
+  printf "<</T(Attack 1 \\(Abil\\))/V(%d)>>" $ attack1Abil c
+  printf "<</T(Attack 1 \\(Ability\\))/V(%s)>>" $ attack1Name c
+  printf "<</T(Attack 1 \\(Att Bonus\\))/V(%d)>>" $ attack1Bonus c
+  printf "<</T(Attack 1 \\(Class\\))/V(%d)>>" $ attack1Class c
+  printf "<</T(Attack 1 \\(Enh\\))/V(%d)>>" $ attack1Enh c
+  printf "<</T(Attack 1 \\(Feat\\))/V(%d)>>" $ attack1Feat c
+  printf "<</T(Attack 1 \\(Misc\\))/V(%d)>>" $ attack1Misc c
+  printf "<</T(Attack 1 \\(Prof\\))/V(%d)>>" $ attack1Prof c
+  printf "<</T(Attack 2 \\(Abil\\))/V(%d)>>" $ attack2Abil c
+  printf "<</T(Attack 2 \\(Ability\\))/V(%s)>>" $ attack2Name c
+  printf "<</T(Attack 2 \\(Att Bonus\\))/V(%d)>>" $ attack2Bonus c
+  printf "<</T(Attack 2 \\(Class\\))/V(%d)>>" $ attack2Class c
+  printf "<</T(Attack 2 \\(Enh\\))/V(%d)>>" $ attack2Enh c
+  printf "<</T(Attack 2 \\(Feat\\))/V(%d)>>" $ attack2Feat c
+  printf "<</T(Attack 2 \\(Misc\\))/V(%d)>>" $ attack2Misc c
+  printf "<</T(Attack 2 \\(Prof\\))/V(%d)>>" $ attack2Prof c
   printf "<</T(Basic Attack 1 \\(Attack\\))/V(%d)>>" (0 :: Int)
   printf "<</T(Basic Attack 1 \\(Damage\\))/V(%d)>>" (0 :: Int)
   printf "<</T(Basic Attack 1 \\(Defense\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Basic Attack 1 \\(Weapon or Power\\))/V(%d)>>" (0 :: Int)
+  printf "<</T(Basic Attack 1 \\(Weapon or Power\\))/V(%s)>>" ""
   printf "<</T(Basic Attack 2 \\(Attack\\))/V(%d)>>" (0 :: Int)
   printf "<</T(Basic Attack 2 \\(Damage\\))/V(%d)>>" (0 :: Int)
   printf "<</T(Basic Attack 2 \\(Defense\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Basic Attack 2 \\(Weapon or Power\\))/V(%d)>>" (0 :: Int)
+  printf "<</T(Basic Attack 2 \\(Weapon or Power\\))/V(%s)>>" ""
   printf "<</T(Bloodied)/V(%d)>>" $ bloodied c
   printf "<</T(Bluff)/V(%d)>>" $ bluff c
   printf "<</T(Bluff \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ bluffAbil c
@@ -80,11 +86,11 @@ printFdfData c = do
   printf "<</T(Cha \\(Mod + 1 / 2 Level\\))/V(%d)>>" $ chaAbilLevel c
   printf "<</T(Character Name)/V(%s)>>" $ name c
   printf "<</T(Class)/V(%s)>>" $ className c
-  printf "<</T(Class / Path / Destiny Features 1)/V(%d)>>" (0 :: Int)
+  mapM (\x -> printf "<</T(Class / Path / Destiny Features %d)/V(%s)>>" x $ classFeature (x-1) c) [1..14]
   printf "<</RV(<?xml version=\"1.0\"?><body xfa:APIVersion=\"Acroform:2.7.0.0\" xfa:spec=\"2.1\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\"><p dir=\"ltr\" style=\"margin-top:0pt;margin-bottom:0pt;font-family:Helvetica;font-size:12pt\"\\>This is a test of putting a lot of text in the coins and other wealth box. Yay, it wraps!</p></body>)/T(Coins and Other Wealth)/V(%s)>>" ""
   printf "<</T(Con)/V(%d)>>" $ con c
-  printf "<</T(Con \\(Abil Mod\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Con \\(Mod + 1 / 2 Level\\))/V(%d)>>" (0 :: Int)
+  printf "<</T(Con \\(Abil Mod\\))/V(%d)>>" $ conAbilMod c
+  printf "<</T(Con \\(Mod + 1 / 2 Level\\))/V(%d)>>" $ conAbilLevel c
   printf "<</T(Damage 1)/V(%d)>>" (0 :: Int)
   printf "<</T(Damage 1 \\(Abil\\))/V(%d)>>" (0 :: Int)
   printf "<</T(Damage 1 \\(Ability\\))/V(%d)>>" (0 :: Int)
@@ -93,9 +99,9 @@ printFdfData c = do
   printf "<</T(Damage 2 \\(Abil\\))/V(%d)>>" (0 :: Int)
   printf "<</T(Damage 2 \\(Ability\\))/V(%d)>>" (0 :: Int)
   printf "<</T(Dex)/V(%d)>>" $ dex c
-  printf "<</T(Dex \\(Abil Mod\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Dex \\(Mod + 1 / 2 Level\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Diplomacy)/V(%d)>>" (0 :: Int)
+  printf "<</T(Dex \\(Abil Mod\\))/V(%d)>>" $ dexAbilMod c
+  printf "<</T(Dex \\(Mod + 1 / 2 Level\\))/V(%d)>>" $ dexAbilLevel c
+  printf "<</T(Diplomacy)/V(%d)>>" $ diplomacy c
   printf "<</T(Diplomacy \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ diplomacyAbil c
   printf "<</T(Diplomacy \\(Misc\\))/V(%d)>>" $ diplomacyMisc c
   printf "<</T(Diplomacy \\(Trained\\))/V/%s>>" $ diplomacyTrained c
@@ -103,7 +109,7 @@ printFdfData c = do
   printf "<</T(Dungeoneering \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ dungeoneeringAbil c
   printf "<</T(Dungeoneering \\(Misc\\))/V(%d)>>" $ dungeoneeringMisc c
   printf "<</T(Dungeoneering \\(Trained\\))/V/%s>>" $ dungeoneeringTrained c
-  printf "<</T(Endurance)/V(%d)>>" (0 :: Int)
+  printf "<</T(Endurance)/V(%d)>>" $ endurance c
   printf "<</T(Endurance \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ enduranceAbil c
   printf "<</T(Endurance \\(Misc\\))/V(%d)>>" $ enduranceMisc c
   printf "<</T(Endurance \\(Trained\\))/V/%s>>" $ enduranceTrained c
@@ -116,30 +122,31 @@ printFdfData c = do
   printf "<</T(Fort \\(Feat\\))/V(%d)>>" $ fortFeat c
   printf "<</T(Fort \\(Misc 1\\))/V(%d)>>" $ fortMisc1 c
   printf "<</T(Fort \\(Misc 2\\))/V(%d)>>" $ fortMisc2 c
-  printf "<</T(Gender)/V(%d)>>" (0 :: Int)
+  printf "<</T(Gender)/V(%s)>>" $ gender c
   printf "<</T(Heal)/V(%d)>>" $ heal c
   printf "<</T(Heal \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ healAbil c
   printf "<</T(Heal \\(Misc\\))/V(%d)>>" $ healMisc c
   printf "<</T(Heal \\(Trained\\))/V/%s>>" $ healTrained c
   printf "<</T(Height)/V(%s)>>" "5' 9\""
-  printf "<</T(History)/V(%d)>>" (0 :: Int)
+  printf "<</T(History)/V(%d)>>" $ history c
   printf "<</T(History \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ historyAbil c
   printf "<</T(History \\(Misc\\))/V(%d)>>" $ historyMisc c
   printf "<</T(History \\(Trained\\))/V/%s>>" $ historyTrained c
-  printf "<</T(Initiative)/V(%d)>>" (0 :: Int)
-  printf "<</T(Initiative \\(Dex\\))/V(%d)>>" (0 :: Int)
+  printf "<</T(Initiative)/V(%d)>>" $ C.init c
+  printf "<</T(Initiative \\(Dex\\))/V(%d)>>" $ dexAbilMod c
+  printf "<</T(Initiative \\(Misc\\))/V(%d)>>" $ initMisc c
   printf "<</T(Insight)/V(%d)>>" $ insight c
   printf "<</T(Insight \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ insightAbil c
   printf "<</T(Insight \\(Misc\\))/V(%d)>>" $ insightMisc c
   printf "<</T(Insight \\(Trained\\))/V/%s>>" $ insightTrained c
   printf "<</T(Int)/V(%d)>>" $ int c
-  printf "<</T(Int \\(Abil Mod\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Int \\(Mod + 1 / 2 Level\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Intimidate)/V(%d)>>" (0 :: Int)
+  printf "<</T(Int \\(Abil Mod\\))/V(%d)>>" $ intAbilMod c
+  printf "<</T(Int \\(Mod + 1 / 2 Level\\))/V(%d)>>" $ intAbilLevel c
+  printf "<</T(Intimidate)/V(%d)>>" $ intimidate c
   printf "<</T(Intimidate \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ intimidateAbil c
   printf "<</T(Intimidate \\(Misc\\))/V(%d)>>" $ intimidateMisc c
   printf "<</T(Intimidate \\(Trained\\))/V/%s>>" $ intimidateTrained c
-  printf "<</T(Languages Known 1)/V(%d)>>" (0 :: Int)
+  mapM (\x -> printf "<</T(Languages Known %d)/V(%s)>>" x $ language (x-1) c) [1..3]
   printf "<</T(Level)/V(%d)>>" $ level c
   printf "<</T(Max HP)/V(%d)>>" $ hp c
   printf "<</T(Nature)/V(%d)>>" $ nature c
@@ -152,11 +159,10 @@ printFdfData c = do
   printf "<</T(Perception \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ perceptionAbil c
   printf "<</T(Perception \\(Misc\\))/V(%d)>>" $ perceptionMisc c
   printf "<</T(Perception \\(Trained\\))/V/%s>>" $ perceptionTrained c
-  printf "<</T(Player Name)/V(%d)>>" (0 :: Int)
+  printf "<</T(Player Name)/V(%s)>>" $ playerName c
   printf "<</T(Race)/V(%s)>>" $ raceName c
-  printf "<</T(Race Features \\(Ability Score Mods\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Race Features 1)/V(%d)>>" (0 :: Int)
-  printf "<</T(Race Features 2)/V(%d)>>" (0 :: Int)
+  printf "<</T(Race Features \\(Ability Score Mods\\))/V(%s)>>" $ racialAbilModifiers c
+  mapM (\x -> printf "<</T(Race Features %d)/V(%s)>>" x $ racialFeature (x-1) c) [1..8]
   printf "<</T(Ref)/V(%d)>>" $ ref c
   printf "<</T(Ref \\(Abil\\))/V(%d)>>" $ refAbil c
   printf "<</T(Ref \\(Class\\))/V(%d)>>" $ refClass c
@@ -168,7 +174,7 @@ printFdfData c = do
   printf "<</T(Religion \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ religionAbil c
   printf "<</T(Religion \\(Misc\\))/V(%d)>>" $ religionMisc c
   printf "<</T(Religion \\(Trained\\))/V/%s>>" $ religionTrained c
-  printf "<</T(Saving Throw Mods)/V(%d)>>" (0 :: Int)
+  printf "<</T(Saving Throw Mods)/V(%s)>>" "" -- TODO
   printf "<</T(Size)/V(%s)>>" $ size c
   printf "<</T(Skill Armor Penalty)/V(%d)>>" $ skillArmorPenalty c
   printf "<</T(Speed)/V(%d)>>" $ speed c
@@ -180,7 +186,7 @@ printFdfData c = do
   printf "<</T(Stealth \\(Trained\\))/V/%s>>" $ stealthTrained c
   printf "<</T(Str)/V(%d)>>" $ str c
   printf "<</T(Str \\(Abil Mod\\))/V(%d)>>" $ strAbilMod c
-  printf "<</T(Str \\(Mod + 1 / 2 Level\\))/V(%d)>>" (0 :: Int)
+  printf "<</T(Str \\(Mod + 1 / 2 Level\\))/V(%d)>>" $ strAbilLevel c
   printf "<</T(Streetwise)/V(%d)>>" $ streetwise c
   printf "<</T(Streetwise \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ streetwiseAbil c
   printf "<</T(Streetwise \\(Misc\\))/V(%d)>>" $ streetwiseMisc c
@@ -202,7 +208,7 @@ printFdfData c = do
   printf "<</T(Will \\(Misc 2\\))/V(%d)>>" $ willMisc2 c
   printf "<</T(Wis)/V(%d)>>" $ wis c
   printf "<</T(Wis \\(Abil Mod\\))/V(%d)>>" $ wisAbilMod c
-  printf "<</T(Wis \\(Mod + 1 / 2 Level\\))/V(%d)>>" (0 :: Int)
+  printf "<</T(Wis \\(Mod + 1 / 2 Level\\))/V(%d)>>" $ wisAbilLevel c
 
 
 main = do
