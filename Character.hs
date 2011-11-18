@@ -50,7 +50,7 @@ instance Skilled Character where
               halfLevel c +
               (skillAbilMod s) c +
               skillArmorCheckPenalty s c +
-              miscModToSkill s c
+              skillMisc s c
   skillArmorCheckPenalty s c
     | skillArmorCheckPenaltyApplies s (not (wearingLightOrNoArmor c)) = armorCheckPenalty c
     | otherwise = 0
@@ -141,6 +141,30 @@ wisMods = (abilityMods Modifier.Wisdom)
 chaMods :: (Modifiable a) => a -> [Modifier]
 chaMods = (abilityMods Modifier.Charisma)
 
+strAbilLevel :: Character -> Int
+strAbilLevel c = halfLevel c
+                 + strAbilMod c
+
+conAbilLevel :: Character -> Int
+conAbilLevel c = halfLevel c
+                 + conAbilMod c
+
+dexAbilLevel :: Character -> Int
+dexAbilLevel c = halfLevel c
+                 + dexAbilMod c
+
+intAbilLevel :: Character -> Int
+intAbilLevel c = halfLevel c
+                 + intAbilMod c
+
+wisAbilLevel :: Character -> Int
+wisAbilLevel c = halfLevel c
+                 + wisAbilMod c
+
+chaAbilLevel :: Character -> Int
+chaAbilLevel c = halfLevel c
+                 + chaAbilMod c
+
 
 {----------}
 {- Skills -}
@@ -156,8 +180,8 @@ skillTrainedBonus s c
 skillArmorPenalty :: Character -> Int
 skillArmorPenalty c = (-1)
 
-miscModToSkill :: SkillName -> Character -> Int
-miscModToSkill s c = modToTarget (skillNameToModTarget s) $ Modifier.modifiers c
+skillMisc :: SkillName -> Character -> Int
+skillMisc s c = modToTarget (skillNameToModTarget s) $ Modifier.modifiers c
 
 miscSkillMods :: SkillName -> [Modifier] -> [Modifier]
 miscSkillMods s m = modsToTarget (skillNameToModTarget s) m
@@ -175,6 +199,9 @@ acrobaticsAbil :: Character -> Int
 acrobaticsAbil c = halfLevel c
                    + (skillAbilMod Skill.Acrobatics) c
 
+acrobaticsMisc :: Character -> Int
+acrobaticsMisc c = skillMisc Skill.Acrobatics c
+
 arcana :: Character -> Int
 arcana c = skill Skill.Arcana c
 
@@ -187,6 +214,9 @@ arcanaTrained c
 arcanaAbil :: Character -> Int
 arcanaAbil c = halfLevel c
                + (skillAbilMod Skill.Arcana) c
+
+arcanaMisc :: Character -> Int
+arcanaMisc c = skillMisc Skill.Arcana c
 
 athletics :: Character -> Int
 athletics c = skill Skill.Athletics c
@@ -201,6 +231,9 @@ athleticsAbil :: Character -> Int
 athleticsAbil c = halfLevel c
                   + (skillAbilMod Skill.Athletics) c
 
+athleticsMisc :: Character -> Int
+athleticsMisc c = skillMisc Skill.Athletics c
+
 bluff :: Character -> Int
 bluff c = skill Skill.Bluff c
 
@@ -213,6 +246,9 @@ bluffTrained c
 bluffAbil :: Character -> Int
 bluffAbil c = halfLevel c
               + (skillAbilMod Skill.Bluff) c
+
+bluffMisc :: Character -> Int
+bluffMisc c = skillMisc Skill.Bluff c
 
 diplomacy :: Character -> Int
 diplomacy c = skill Skill.Diplomacy c
@@ -227,6 +263,9 @@ diplomacyAbil :: Character -> Int
 diplomacyAbil c = halfLevel c
                   + (skillAbilMod Skill.Diplomacy) c
 
+diplomacyMisc :: Character -> Int
+diplomacyMisc c = skillMisc Skill.Diplomacy c
+
 dungeoneering :: Character -> Int
 dungeoneering c = skill Skill.Dungeoneering c
 
@@ -239,6 +278,9 @@ dungeoneeringTrained c
 dungeoneeringAbil :: Character -> Int
 dungeoneeringAbil c = halfLevel c
                       + (skillAbilMod Skill.Dungeoneering) c
+
+dungeoneeringMisc :: Character -> Int
+dungeoneeringMisc c = skillMisc Skill.Dungeoneering c
 
 endurance :: Character -> Int
 endurance c = skill Skill.Endurance c
@@ -253,6 +295,9 @@ enduranceAbil :: Character -> Int
 enduranceAbil c = halfLevel c
                   + (skillAbilMod Skill.Endurance) c
 
+enduranceMisc :: Character -> Int
+enduranceMisc c = skillMisc Skill.Endurance c
+
 heal :: Character -> Int
 heal c = skill Skill.Heal c
 
@@ -265,6 +310,9 @@ healTrained c
 healAbil :: Character -> Int
 healAbil c = halfLevel c
              + (skillAbilMod Skill.Heal) c
+
+healMisc :: Character -> Int
+healMisc c = skillMisc Skill.Heal c
 
 history :: Character -> Int
 history c = skill Skill.History c
@@ -279,6 +327,9 @@ historyAbil :: Character -> Int
 historyAbil c = halfLevel c
                 + (skillAbilMod Skill.History) c
 
+historyMisc :: Character -> Int
+historyMisc c = skillMisc Skill.History c
+
 insight :: Character -> Int
 insight c = skill Skill.Insight c
 
@@ -291,6 +342,9 @@ insightTrained c
 insightAbil :: Character -> Int
 insightAbil c = halfLevel c
                 + (skillAbilMod Skill.Insight) c
+
+insightMisc :: Character -> Int
+insightMisc c = skillMisc Skill.Insight c
 
 intimidate :: Character -> Int
 intimidate c = skill Skill.Intimidate c
@@ -305,6 +359,9 @@ intimidateAbil :: Character -> Int
 intimidateAbil c = halfLevel c
                    + (skillAbilMod Skill.Intimidate) c
 
+intimidateMisc :: Character -> Int
+intimidateMisc c = skillMisc Skill.Intimidate c
+
 nature :: Character -> Int
 nature c = skill Skill.Nature c
 
@@ -317,6 +374,9 @@ natureTrained c
 natureAbil :: Character -> Int
 natureAbil c = halfLevel c
                + (skillAbilMod Skill.Nature) c
+
+natureMisc :: Character -> Int
+natureMisc c = skillMisc Skill.Nature c
 
 perception :: Character -> Int
 perception c = skill Skill.Perception c
@@ -331,6 +391,9 @@ perceptionAbil :: Character -> Int
 perceptionAbil c = halfLevel c
                    + (skillAbilMod Skill.Perception) c
 
+perceptionMisc :: Character -> Int
+perceptionMisc c = skillMisc Skill.Perception c
+
 religion :: Character -> Int
 religion c = skill Skill.Religion c
 
@@ -343,6 +406,9 @@ religionTrained c
 religionAbil :: Character -> Int
 religionAbil c = halfLevel c
                  + (skillAbilMod Skill.Religion) c
+
+religionMisc :: Character -> Int
+religionMisc c = skillMisc Skill.Religion c
 
 stealth :: Character -> Int
 stealth c = skill Skill.Stealth c
@@ -357,6 +423,9 @@ stealthAbil :: Character -> Int
 stealthAbil c = halfLevel c
                 + (skillAbilMod Skill.Stealth) c
 
+stealthMisc :: Character -> Int
+stealthMisc c = skillMisc Skill.Stealth c
+
 streetwise :: Character -> Int
 streetwise c = skill Skill.Streetwise c
 
@@ -369,6 +438,9 @@ streetwiseTrained c
 streetwiseAbil :: Character -> Int
 streetwiseAbil c = halfLevel c
                    + (skillAbilMod Skill.Streetwise) c
+
+streetwiseMisc :: Character -> Int
+streetwiseMisc c = skillMisc Skill.Streetwise c
 
 thievery :: Character -> Int
 thievery c = skill Skill.Thievery c
@@ -383,83 +455,86 @@ thieveryAbil :: Character -> Int
 thieveryAbil c = halfLevel c
                  + (skillAbilMod Skill.Thievery) c
 
+thieveryMisc :: Character -> Int
+thieveryMisc c = skillMisc Skill.Thievery c
+
 
 {------------}
 {- Defenses -}
 {------------}
 {- Fortitude -}
-fortitude :: Character -> Int
-fortitude c = abilModToFort c
-              + tenPlusHalfLevel c
-              + (modToTarget Fortitude $ Modifier.modifiers c)
+fort :: Character -> Int
+fort c = fortAbil c
+         + tenPlusHalfLevel c
+         + (modToTarget Fortitude $ Modifier.modifiers c)
 
-abilModToFort :: Character -> Int
-abilModToFort c = maximum [strAbilMod c, conAbilMod c]
+fortAbil :: Character -> Int
+fortAbil c = maximum [strAbilMod c, conAbilMod c]
 
-classModToFort :: Character -> Int
-classModToFort c = Modifier.mod Fortitude ClassMod c
+fortClass :: Character -> Int
+fortClass c = Modifier.mod Fortitude ClassMod c
 
-enhModToFort :: Character -> Int
-enhModToFort c = Modifier.mod Fortitude EnhancementMod c
+fortEnh :: Character -> Int
+fortEnh c = Modifier.mod Fortitude EnhancementMod c
 
-featModToFort :: Character -> Int
-featModToFort c = Modifier.mod Fortitude FeatMod c
+fortFeat :: Character -> Int
+fortFeat c = Modifier.mod Fortitude FeatMod c
 
-miscModsToFort :: Character -> [Modifier]
-miscModsToFort c = filter (\m -> modType m `notElem` specificTypes) $ fortMods c
+fortMiscMods :: Character -> [Modifier]
+fortMiscMods c = filter (\m -> modType m `notElem` specificTypes) $ fortMods c
   where specificTypes = [ClassMod, EnhancementMod, FeatMod]
 
 fortMods :: (Modifiable a) => a -> [Modifier]
 fortMods = (characterModsByTarget Fortitude)
 
-misc1ModToFort :: Character -> Int
-misc1ModToFort c
+fortMisc1 :: Character -> Int
+fortMisc1 c
   | length mods > 0 = value $ last $ sortByValue mods
   | otherwise = 0
-  where mods = miscModsToFort c
+  where mods = fortMiscMods c
 
-misc2ModToFort :: Character -> Int
-misc2ModToFort c
+fortMisc2 :: Character -> Int
+fortMisc2 c
   | length mods > 1 = value $ last $ init $ sortByValue mods
   | otherwise = 0
-  where mods = miscModsToFort c
+  where mods = fortMiscMods c
 
 {- Reflex -}
-reflex :: Character -> Int
-reflex c = abilModToRef c
-         + tenPlusHalfLevel c
-         + (modToTarget Reflex $ Modifier.modifiers c)
+ref :: Character -> Int
+ref c = refAbil c
+        + tenPlusHalfLevel c
+        + (modToTarget Reflex $ Modifier.modifiers c)
 
-abilModToRef :: Character -> Int
-abilModToRef c = maximum [dexAbilMod c, intAbilMod c]
+refAbil :: Character -> Int
+refAbil c = maximum [dexAbilMod c, intAbilMod c]
 
-classModToRef :: Character -> Int
-classModToRef c = Modifier.mod Reflex ClassMod c
+refClass :: Character -> Int
+refClass c = Modifier.mod Reflex ClassMod c
 
-enhModToRef :: Character -> Int
-enhModToRef c = Modifier.mod Reflex EnhancementMod c
+refEnh :: Character -> Int
+refEnh c = Modifier.mod Reflex EnhancementMod c
 
-featModToRef :: Character -> Int
-featModToRef c = Modifier.mod Reflex FeatMod c
+refFeat :: Character -> Int
+refFeat c = Modifier.mod Reflex FeatMod c
 
-miscModsToRef :: Character -> [Modifier]
-miscModsToRef c = filter (\m -> modType m `notElem` specificTypes) $ refMods c
+refMiscMods :: Character -> [Modifier]
+refMiscMods c = filter (\m -> modType m `notElem` specificTypes) $ refMods c
   where specificTypes = [ClassMod, EnhancementMod, FeatMod]
 
 refMods :: (Modifiable a) => a -> [Modifier]
 refMods = (characterModsByTarget Reflex)
 
-misc1ModToRef :: Character -> Int
-misc1ModToRef c
+refMisc1 :: Character -> Int
+refMisc1 c
   | length mods > 0 = value $ last $ sortByValue mods
   | otherwise = 0
-  where mods = miscModsToRef c
+  where mods = refMiscMods c
 
-misc2ModToRef :: Character -> Int
-misc2ModToRef c
+refMisc2 :: Character -> Int
+refMisc2 c
   | length mods > 1 = value $ last $ init $ sortByValue mods
   | otherwise = 0
-  where mods = miscModsToRef c
+  where mods = refMiscMods c
 
 {- Will -}
 will :: Character -> Int
