@@ -832,14 +832,14 @@ language i c
 {- Attacks -}
 {-----------}
 {- Overkill? Macro? -}
-attackBonus :: Power -> Character -> Int
-attackBonus p c = halfLevel c
-                + attackAbil p c
-                + attackClass p c
-                + attackProf p c
-                + attackFeat p c
-                + attackEnh p c
-                + attackMisc p c
+attackBonus :: Power -> Equipment -> Character -> Int
+attackBonus p e c = halfLevel c
+                    + attackAbil p c
+                    + attackClass p c
+                    + attackProf p e c
+                    + attackFeat p c
+                    + attackEnh p e c
+                    + attackMisc p c
 
 attackAbil :: Power -> Character -> Int
 attackAbil p c
@@ -849,14 +849,14 @@ attackAbil p c
 attackClass :: Power -> Character -> Int
 attackClass p c = 0 -- TODO
 
-attackProf :: Power -> Character -> Int
-attackProf = (profModToPower)
+attackProf :: Power -> Equipment -> Character -> Int
+attackProf p e c = powerProf p e c
 
 attackFeat :: Power -> Character -> Int
 attackFeat p c = 0 -- TODO
 
-attackEnh :: Power -> Character -> Int
-attackEnh p c = Modifier.mod Modifier.Attack EnhancementMod c
+attackEnh :: Power -> Equipment -> Character -> Int
+attackEnh p e c = Modifier.mod Modifier.Attack EnhancementMod e
 
 attackMisc :: Power -> Character -> Int
 attackMisc p c = 0 -- TODO
@@ -868,7 +868,7 @@ attack1Power :: Character -> Power
 attack1Power c = head $ atWillPowers $ attackPowers $ Character.powers c
 
 attack1Bonus :: Character -> Int
-attack1Bonus c = attackBonus (attack1Power c) c
+attack1Bonus c = attackBonus (attack1Power c) (primaryWeapon c) c
 
 attack1Abil :: Character -> Int
 attack1Abil c = attackAbil (attack1Power c) c
@@ -877,13 +877,13 @@ attack1Class :: Character -> Int
 attack1Class c = attackClass (attack1Power c) c
 
 attack1Prof :: Character -> Int
-attack1Prof c = attackProf (attack1Power c) c
+attack1Prof c = attackProf (attack1Power c) (primaryWeapon c) c
 
 attack1Feat :: Character -> Int
 attack1Feat c = attackFeat (attack1Power c) c
 
 attack1Enh :: Character -> Int
-attack1Enh c = attackEnh (attack1Power c) c
+attack1Enh c = attackEnh (attack1Power c) (primaryWeapon c) c
 
 attack1Misc :: Character -> Int
 attack1Misc c = attackMisc (attack1Power c) c
@@ -895,7 +895,7 @@ attack2Power :: Character -> Power
 attack2Power c = head $ tail $ atWillPowers $ attackPowers $ Character.powers c
 
 attack2Bonus :: Character -> Int
-attack2Bonus c = attackBonus (attack2Power c) c
+attack2Bonus c = attackBonus (attack2Power c) (primaryWeapon c) c
 
 attack2Abil :: Character -> Int
 attack2Abil c = attackAbil (attack2Power c) c
@@ -904,13 +904,13 @@ attack2Class :: Character -> Int
 attack2Class c = attackClass (attack2Power c) c
 
 attack2Prof :: Character -> Int
-attack2Prof c = attackProf (attack2Power c) c
+attack2Prof c = attackProf (attack2Power c) (primaryWeapon c) c
 
 attack2Feat :: Character -> Int
 attack2Feat c = attackFeat (attack2Power c) c
 
 attack2Enh :: Character -> Int
-attack2Enh c = attackEnh (attack2Power c) c
+attack2Enh c = attackEnh (attack2Power c) (primaryWeapon c) c
 
 attack2Misc :: Character -> Int
 attack2Misc c = attackMisc (attack2Power c) c
@@ -995,6 +995,27 @@ damage2Misc2Mod c = damageMisc2Mod (attack1Power c) c
 {----------------------}
 {- Looking for a home -}
 {----------------------}
+basicMeleePower = Power { Power.name="Melee Basic Attack"
+                        , Power.attackAbility=Just Ability.Strength
+                        , Power.attackVsDefense=Just "AC"
+                        , Power.uses=AtWill
+                        , Power.keywords=["Weapon"]
+                        , Power.level=1
+                        , Power.action=StandardAction
+                        , Power.powerType=Power.Attack
+                        , Power.damage=Just "1[W]"
+                        }
+basicRangedPower = Power { Power.name="Ranged Basic Attack"
+                         , Power.attackAbility=Just Ability.Dexterity
+                         , Power.attackVsDefense=Just "AC"
+                         , Power.uses=AtWill
+                         , Power.keywords=["Weapon"]
+                         , Power.level=1
+                         , Power.action=StandardAction
+                         , Power.powerType=Power.Attack
+                         , Power.damage=Just "1[W]"
+                         }
+
 size :: Character -> String
 size = (Race.size . Character.race)
 
@@ -1004,7 +1025,41 @@ raceName = (Race.name . Character.race)
 racialAbilModifiers :: Character -> String
 racialAbilModifiers c = Race.abilModifiers $ Character.race c
 
+basic1MeleeAttack :: Character -> Int
+basic1MeleeAttack c = attackBonus basicMeleePower (primaryWeapon c) c
+
+basic1MeleeDamage :: Character -> String
+basic1MeleeDamage c = basicMeleeDamage c $ primaryWeapon c
+
+basic1MeleeDefense :: Character -> String
+basic1MeleeDefense c = basicDefense basicMeleePower c
+
+basic1MeleeWeaponOrPower :: Character -> String
+basic1MeleeWeaponOrPower c = Equipment.name $ primaryWeapon c
+
+basic2RangedAttack :: Character -> Int
+basic2RangedAttack c = attackBonus basicRangedPower (secondaryWeapon c) c
+
+basic2RangedDamage :: Character -> String
+basic2RangedDamage c = basicRangedDamage c $ secondaryWeapon c
+
+basic2RangedDefense :: Character -> String
+basic2RangedDefense c = "AC"
+
+basic2RangedWeaponOrPower :: Character -> String
+basic2RangedWeaponOrPower c = Equipment.name $ secondaryWeapon c
+
+
 basicMeleeAttack c w = basicAttack c w + strAbilMod c
+
+basicMeleeDamage :: Character -> Equipment -> String
+basicMeleeDamage c w = "1d8+" ++ (show $ strAbilMod c)
+
+basicRangedDamage :: Character -> Equipment -> String
+basicRangedDamage c w = "1d4+" ++ (show $ strAbilMod c)
+
+basicDefense :: Power -> Character -> String
+basicDefense p c = fromJust $ Power.attackVsDefense p
 
 basicAttack c w = halfLevel c + (weaponProficiencyBonus c w)
 
@@ -1037,10 +1092,11 @@ isArmed c
 
 isProficientWith c w = grantsProficiencyWith (characterClass c) w -- TODO feats
 
-profModToPower :: Power -> Character -> Int
-profModToPower p c
-  | powerHasKeyword p "Weapon" == True && isArmed c = fromJust $ Equipment.proficiencyBonus $ Character.primaryWeapon c
+powerProf :: Power -> Equipment -> Character -> Int
+powerProf p e c
+  | powerHasKeyword p "Weapon" == True = prof
   | otherwise = 0
+  where prof = fromJust $ proficiencyBonus e
 
 classModifierFor c p =
   maximum $ 0:(map value $ filter (\mod -> (show $ Modifier.target mod) == Power.name p) $ CC.modifiers $ characterClass c)

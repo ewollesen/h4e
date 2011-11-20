@@ -68,14 +68,14 @@ printFdfData c = do
   printf "<</T(Attack 2 \\(Feat\\))/V(%d)>>" $ attack2Feat c
   printf "<</T(Attack 2 \\(Misc\\))/V(%d)>>" $ attack2Misc c
   printf "<</T(Attack 2 \\(Prof\\))/V(%d)>>" $ attack2Prof c
-  printf "<</T(Basic Attack 1 \\(Attack\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Basic Attack 1 \\(Damage\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Basic Attack 1 \\(Defense\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Basic Attack 1 \\(Weapon or Power\\))/V(%s)>>" ""
-  printf "<</T(Basic Attack 2 \\(Attack\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Basic Attack 2 \\(Damage\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Basic Attack 2 \\(Defense\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Basic Attack 2 \\(Weapon or Power\\))/V(%s)>>" ""
+  printf "<</T(Basic Attack 1 \\(Attack\\))/V(%d)>>" $ basic1MeleeAttack c
+  printf "<</T(Basic Attack 1 \\(Damage\\))/V(%s)>>" $ basic1MeleeDamage c
+  printf "<</T(Basic Attack 1 \\(Defense\\))/V(%s)>>" $ basic1MeleeDefense c
+  printf "<</T(Basic Attack 1 \\(Weapon or Power\\))/V(%s)>>" $ basic1MeleeWeaponOrPower c
+  printf "<</T(Basic Attack 2 \\(Attack\\))/V(%d)>>" $ basic2RangedAttack c
+  printf "<</T(Basic Attack 2 \\(Damage\\))/V(%s)>>" $ basic2RangedDamage c
+  printf "<</T(Basic Attack 2 \\(Defense\\))/V(%s)>>" $ basic2RangedDefense c
+  printf "<</T(Basic Attack 2 \\(Weapon or Power\\))/V(%s)>>" $ basic2RangedWeaponOrPower c
   printf "<</T(Bloodied)/V(%d)>>" $ bloodied c
   printf "<</T(Bluff)/V(%d)>>" $ bluff c
   printf "<</T(Bluff \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ bluffAbil c
