@@ -91,13 +91,20 @@ printFdfData c = do
   printf "<</T(Con)/V(%d)>>" $ con c
   printf "<</T(Con \\(Abil Mod\\))/V(%d)>>" $ conAbilMod c
   printf "<</T(Con \\(Mod + 1 / 2 Level\\))/V(%d)>>" $ conAbilLevel c
-  printf "<</T(Damage 1)/V(%d)>>" (0 :: Int)
-  printf "<</T(Damage 1 \\(Abil\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Damage 1 \\(Ability\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Damage 1 \\(Enh\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Damage 2)/V(%d)>>" (0 :: Int)
-  printf "<</T(Damage 2 \\(Abil\\))/V(%d)>>" (0 :: Int)
-  printf "<</T(Damage 2 \\(Ability\\))/V(%d)>>" (0 :: Int)
+  printf "<</T(Damage 1)/V(%s)>>" $ damage1Desc c
+  printf "<</T(Damage 1 \\(Abil\\))/V(%d)>>" $ damage1Abil c
+  printf "<</T(Damage 1 \\(Ability\\))/V(%s)>>" $ attack1Name c
+  printf "<</T(Damage 1 \\(Enh\\))/V(%d)>>" $ damage1Enh c
+  printf "<</T(Damage 1 \\(Feat\\))/V(%d)>>" $ damage1Feat c
+  printf "<</T(Damage 1 \\(Misc 1\\))/V(%d)>>" $ damage1Misc1 c
+  printf "<</T(Damage 1 \\(Misc 2\\))/V(%d)>>" $ damage1Misc2 c
+  printf "<</T(Damage 2)/V(%s)>>" $ damage2Desc c
+  printf "<</T(Damage 2 \\(Abil\\))/V(%d)>>" $ damage2Abil c
+  printf "<</T(Damage 2 \\(Ability\\))/V(%s)>>" $ attack2Name c
+  printf "<</T(Damage 2 \\(Enh\\))/V(%d)>>" $ damage2Enh c
+  printf "<</T(Damage 2 \\(Feat\\))/V(%d)>>" $ damage2Feat c
+  printf "<</T(Damage 2 \\(Misc 1\\))/V(%d)>>" $ damage2Misc1 c
+  printf "<</T(Damage 2 \\(Misc 2\\))/V(%d)>>" $ damage2Misc2 c
   printf "<</T(Dex)/V(%d)>>" $ dex c
   printf "<</T(Dex \\(Abil Mod\\))/V(%d)>>" $ dexAbilMod c
   printf "<</T(Dex \\(Mod + 1 / 2 Level\\))/V(%d)>>" $ dexAbilLevel c
@@ -174,7 +181,7 @@ printFdfData c = do
   printf "<</T(Religion \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>" $ religionAbil c
   printf "<</T(Religion \\(Misc\\))/V(%d)>>" $ religionMisc c
   printf "<</T(Religion \\(Trained\\))/V/%s>>" $ religionTrained c
-  printf "<</T(Saving Throw Mods)/V(%s)>>" "" -- TODO
+  printf "<</T(Saving Throw Mods)/V(%s)>>" $ savingThrowMods c
   printf "<</T(Size)/V(%s)>>" $ size c
   printf "<</T(Skill Armor Penalty)/V(%d)>>" $ skillArmorPenalty c
   printf "<</T(Speed)/V(%d)>>" $ speed c

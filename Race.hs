@@ -20,7 +20,8 @@ human a = Race { Race.name="Human"
                , Race.modifiers=[abilModFactory a,
                                  plusOneFortitude,
                                  plusOneReflex,
-                                 plusOneWill]
+                                 plusOneWill,
+                                 plusOneSaveIfBloodied]
                }
 
 abilModFactory a = modFactory desc a 2 UntypedMod
@@ -29,6 +30,8 @@ abilModFactory a = modFactory desc a 2 UntypedMod
 plusOneFortitude = modFactory "+1 Fortitude (Racial)" Fortitude 1 UntypedMod
 plusOneReflex = modFactory "+1 Reflex (Racial)" Reflex 1 UntypedMod
 plusOneWill = modFactory "+1 Will (Racial)" Will 1 UntypedMod
+
+plusOneSaveIfBloodied = modFactory "+1 when bloodied" SavingThrow 1 UntypedMod
 
 abilModifiers :: Race -> String
 abilModifiers r = concat $ intersperse ", " $ map abilModToShortDesc $ filter isAbilModifier $ Modifier.modifiers r
@@ -40,3 +43,4 @@ isAbilModifier m
 
 abilModToShortDesc :: Modifier -> String
 abilModToShortDesc m = "+" ++ (show $ value m) ++ " " ++ (take 3 $ show $ target m)
+

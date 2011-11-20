@@ -921,33 +921,33 @@ attack2Misc c = attackMisc (attack2Power c) c
 {----------}
 {- Overkill? -}
 damageMod :: Power -> Character -> Int
-damageMod p c = damageAbilMod p c
-                + damageFeatMod p c
-                + damageEnhMod p c
-                + damageMiscMod p c
+damageMod p c = damageAbil p c
+                + damageFeat p c
+                + damageEnh p c
+                + damageMisc p c
 
 damageDesc :: Power -> Character -> String
 damageDesc p c
   | Power.damage p == Nothing = ""
   | otherwise = (fromJust $ Power.damage p) ++ " + " ++ (show $ damageMod p c)
 
-damageAbilMod :: Power -> Character -> Int
-damageAbilMod p c = attackAbil p c
+damageAbil :: Power -> Character -> Int
+damageAbil p c = attackAbil p c
 
-damageFeatMod :: Power -> Character -> Int
-damageFeatMod p c = 0 -- TODO
+damageFeat :: Power -> Character -> Int
+damageFeat p c = 0 -- TODO
 
-damageEnhMod :: Power -> Character -> Int
-damageEnhMod p c = Modifier.mod Modifier.Damage EnhancementMod c
+damageEnh :: Power -> Character -> Int
+damageEnh p c = Modifier.mod Modifier.Damage EnhancementMod c
 
-damageMiscMod :: Power -> Character -> Int
-damageMiscMod p c = 0 -- TODO
+damageMisc :: Power -> Character -> Int
+damageMisc p c = 0 -- TODO
 
-damageMisc1Mod :: Power -> Character -> Int
-damageMisc1Mod p c = 0 -- TODO
+damageMisc1 :: Power -> Character -> Int
+damageMisc1 p c = 0 -- TODO
 
-damageMisc2Mod :: Power -> Character -> Int
-damageMisc2Mod p c = 0 -- TODO
+damageMisc2 :: Power -> Character -> Int
+damageMisc2 p c = 0 -- TODO
 
 damage1Desc :: Character -> String
 damage1Desc c = damageDesc (attack1Power c) c
@@ -955,20 +955,20 @@ damage1Desc c = damageDesc (attack1Power c) c
 damage1Mod :: Character -> Int
 damage1Mod c = damageMod (attack1Power c) c
 
-damage1AbilMod :: Character -> Int
-damage1AbilMod c = damageAbilMod (attack1Power c) c
+damage1Abil :: Character -> Int
+damage1Abil c = damageAbil (attack1Power c) c
 
-damage1FeatMod :: Character -> Int
-damage1FeatMod c = damageFeatMod (attack1Power c) c
+damage1Feat :: Character -> Int
+damage1Feat c = damageFeat (attack1Power c) c
 
-damage1EnhMod :: Character -> Int
-damage1EnhMod c = damageEnhMod (attack1Power c) c
+damage1Enh :: Character -> Int
+damage1Enh c = damageEnh (attack1Power c) c
 
-damage1Misc1Mod :: Character -> Int
-damage1Misc1Mod c = damageMisc1Mod (attack1Power c) c
+damage1Misc1 :: Character -> Int
+damage1Misc1 c = damageMisc1 (attack1Power c) c
 
-damage1Misc2Mod :: Character -> Int
-damage1Misc2Mod c = damageMisc2Mod (attack1Power c) c
+damage1Misc2 :: Character -> Int
+damage1Misc2 c = damageMisc2 (attack1Power c) c
 
 damage2Desc :: Character -> String
 damage2Desc c = damageDesc (attack1Power c) c
@@ -976,20 +976,20 @@ damage2Desc c = damageDesc (attack1Power c) c
 damage2Mod :: Character -> Int
 damage2Mod c = damageMod (attack1Power c) c
 
-damage2AbilMod :: Character -> Int
-damage2AbilMod c = damageAbilMod (attack1Power c) c
+damage2Abil :: Character -> Int
+damage2Abil c = damageAbil (attack1Power c) c
 
-damage2FeatMod :: Character -> Int
-damage2FeatMod c = damageFeatMod (attack1Power c) c
+damage2Feat :: Character -> Int
+damage2Feat c = damageFeat (attack1Power c) c
 
-damage2EnhMod :: Character -> Int
-damage2EnhMod c = damageEnhMod (attack1Power c) c
+damage2Enh :: Character -> Int
+damage2Enh c = damageEnh (attack1Power c) c
 
-damage2Misc1Mod :: Character -> Int
-damage2Misc1Mod c = damageMisc1Mod (attack1Power c) c
+damage2Misc1 :: Character -> Int
+damage2Misc1 c = damageMisc1 (attack1Power c) c
 
-damage2Misc2Mod :: Character -> Int
-damage2Misc2Mod c = damageMisc2Mod (attack1Power c) c
+damage2Misc2 :: Character -> Int
+damage2Misc2 c = damageMisc2 (attack1Power c) c
 
 
 {----------------------}
@@ -1105,3 +1105,10 @@ featModifierFor c p =
   maximum $ 0:(map value $ filter (\mod -> (show $ Modifier.target mod) == Power.name p) $ concatMap Feat.modifiers $ Character.feats c)
 
 className c = (CC.name . characterClass) c
+
+savingThrowMods :: Character -> String
+savingThrowMods c = unwords' $ map Modifier.name mods
+  where mods = modsByTarget SavingThrow $ Modifier.modifiers c
+
+unwords' :: [String] -> String
+unwords' ws = foldr1 (\w s -> w ++ ", " ++ s) ws

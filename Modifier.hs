@@ -42,6 +42,7 @@ data ModTarget = ArmorClass
                | HitPoints
                | Initiative
                | Speed
+               | SavingThrow
                {- skills -}
                | Acrobatics
                | Arcana
