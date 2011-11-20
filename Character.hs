@@ -1053,10 +1053,10 @@ basic2RangedWeaponOrPower c = Equipment.name $ secondaryWeapon c
 basicMeleeAttack c w = basicAttack c w + strAbilMod c
 
 basicMeleeDamage :: Character -> Equipment -> String
-basicMeleeDamage c w = "1d8+" ++ (show $ strAbilMod c)
+basicMeleeDamage c w = "1[W]+" ++ (show $ strAbilMod c)
 
 basicRangedDamage :: Character -> Equipment -> String
-basicRangedDamage c w = "1d4+" ++ (show $ strAbilMod c)
+basicRangedDamage c w = "1[W]+" ++ (show $ strAbilMod c)
 
 basicDefense :: Power -> Character -> String
 basicDefense p c = fromJust $ Power.attackVsDefense p
@@ -1080,11 +1080,41 @@ secondaryWeapon c = head $ tail $ (weapons . gear) c
 weapons :: [Equipment] -> [Equipment]
 weapons w = filter (hasTag (tagFactory "Weapon")) w
 
+escapeParen :: String -> String
+escapeParen s = concatMap (\x -> (ep x)) s
+  where ep = (\x -> if x `elem` "()" then "\\" ++ [x] else [x])
+
 magicItem :: Int -> Character -> String
 magicItem i c
-  | length gear > i = gear !! i
+  | length eligItems > i = eligItems !! i
   | otherwise = ""
-  where gear = map Equipment.name $ filter (hasTag (tagFactory "Magic")) $ Character.gear c
+  where eligItems = filter (\x -> x `notElem` slotItems) items
+        slotItems = map (\x -> magicItemInSlot (0 :: Int) x c) magicItemSlots
+        items = map (escapeParen . Equipment.name) $ magicItems $ Character.gear c
+
+magicItemSlots :: [String]
+magicItemSlots = ["Armor",
+                  "Arms",
+                  "Feet",
+                  "Hands",
+                  "Head",
+                  "Neck",
+                  "Ring",
+                  "Waist",
+                  "Weapon"
+                 ]
+
+magicItemInSlot :: Int -> String -> Character -> String
+magicItemInSlot x s c
+  | length items > x = (escapeParen . Equipment.name) $ items !! x
+  | otherwise = ""
+  where items = gearInSlot s $ magicItems $ Character.gear c
+
+magicItems :: [Equipment] -> [Equipment]
+magicItems e = filter (hasTag (tagFactory "Magic")) e
+
+gearInSlot :: String -> [Equipment] -> [Equipment]
+gearInSlot s g = filter (hasTag (tagFactory s)) g
 
 isArmed c
   | length ((weapons . gear) c) == 0 = False
@@ -1112,3 +1142,10 @@ savingThrowMods c = unwords' $ map Modifier.name mods
 
 unwords' :: [String] -> String
 unwords' ws = foldr1 (\w s -> w ++ ", " ++ s) ws
+
+otherEquipment :: Int -> Character -> String
+otherEquipment i c
+  | length items > i = (escapeParen . Equipment.name) $ items !! i
+  | otherwise = ""
+  where items = filter (\x -> x `notElem` mi) $ gear c
+        mi = magicItems $ gear c

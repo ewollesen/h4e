@@ -9,7 +9,7 @@ data Equipment = Equipment { name :: String
                            , modifiers :: [Modifier]
                            , tags :: [Tag]
                            , proficiencyBonus :: Maybe Int
-                           } deriving (Show)
+                           } deriving (Show, Eq)
 
 
 instance Taggable Equipment where
