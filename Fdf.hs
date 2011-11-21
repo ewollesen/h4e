@@ -1,9 +1,9 @@
 module Fdf where
 
+import System.IO
 import Text.Printf
 import Skill
 import Character as C
-import Pontus4
 
 
 f0 :: Int -> String
@@ -239,8 +239,7 @@ printFdfData c = do
   printf "<</T(Wis \\(Abil Mod\\))/V(%d)>>\n" $ wisAbilMod c
   printf "<</T(Wis \\(Mod + 1 / 2 Level\\))/V(%d)>>\n" $ wisAbilLevel c
 
-
-main = do
+printFdf c = do
   printFdfHeader
-  printFdfData pontus
+  printFdfData c
   printFdfFooter

@@ -6,7 +6,7 @@ tags:
 	rm -f tags
 
 .fdf.pdf: $<
-	pdftk CharacterSheetFillable.pdf fill_form $< output $@ 
+	pdftk CharacterSheetFillable.pdf fill_form $< output $@
 
 %.fdf: *.hs
-	runghc Fdf.hs > $@
+	runghc $*.hs > $@

@@ -10,6 +10,7 @@ import Level
 import Skill
 import Equipment
 import Feat
+import Fdf
 
 
 battleaxe1 = equipFactory "Battleaxe +1"
@@ -60,3 +61,6 @@ pontus = Character { Character.name = "Pontus"
 
 plus1Con = modFactory "+1 Con (Level)" Constitution 1 UntypedMod
 plus1Wis = modFactory "+1 Wis (Level)" Wisdom 1 UntypedMod
+
+main = do
+  printFdf pontus

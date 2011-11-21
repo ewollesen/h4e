@@ -10,6 +10,7 @@ import Level
 import Skill
 import Equipment
 import Feat
+import Fdf
 
 
 battleaxe1 = equipFactory "Battleaxe +1"
@@ -56,3 +57,6 @@ pontus = Character { Character.name = "Pontus"
                    , adventuringCompanyOrOtherAffiliations=""
                    , coinAndOtherWealth="19 GP"
                    }
+
+main = do
+  printFdf pontus
