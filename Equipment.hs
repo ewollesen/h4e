@@ -9,7 +9,7 @@ data Equipment = Equipment { name :: String
                            , modifiers :: [Modifier]
                            , tags :: [Tag]
                            , proficiencyBonus :: Maybe Int
-                           } deriving (Show, Eq)
+                           } deriving (Show, Ord, Eq)
 
 
 instance Taggable Equipment where
@@ -73,3 +73,8 @@ lightShield = equipFactory "Shield (light)"
                modFactory "+1 Reflex bonus (Shield)" Reflex 1 ShieldMod]
               [lightArmorTag]
               Nothing
+
+advKit = equipFactory "Adventurer's Kit"
+         []
+         []
+         Nothing

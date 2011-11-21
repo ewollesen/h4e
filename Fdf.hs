@@ -3,7 +3,7 @@ module Fdf where
 import Text.Printf
 import Skill
 import Character as C
-import Pontus
+import Pontus4
 
 
 f0 :: Int -> String
@@ -46,7 +46,7 @@ printFdfData c = do
   printf "<</T(AC \\(Misc 2\\))/V(%s)>>\n" $ f0 $ acMisc2 c
   printf "<</T(Acrobatics)/V(%d)>>\n" $ acrobatics c
   printf "<</T(Acrobatics \\(Abil Mod + 1 / 2 Level\\))/V(%s)>>\n" $ f0 $ acrobaticsAbil c
-  printf "<</T(Arcobatics \\(Misc\\))/V(%s)>>\n" $ f0 $ acrobaticsMisc c -- field does not exist?? Typo! Arcobatics
+  printf "<</T(Acrobatics \\(Misc\\))/V(%s)>>\n" $ f0 $ acrobaticsMisc c
   printf "<</T(Acrobatics \\(Trained\\))/V/%s>>\n" $ acrobaticsTrained c
   printf "<</T(Age)/V(%d)>>\n" $ age c
   printf "<</T(Alignment)/V(%s)>>\n" $ alignment c
@@ -94,7 +94,7 @@ printFdfData c = do
   printf "<</T(Character Name)/V(%s)>>\n" $ name c
   printf "<</T(Class)/V(%s)>>\n" $ className c
   mapM (\x -> printf "<</T(Class / Path / Destiny Features %d)/V(%s)>>\n" x $ classFeature (x-1) c) [1..14]
-  printf "<</RV(<?xml version=\"1.0\"?><body xfa:APIVersion=\"Acroform:2.7.0.0\" xfa:spec=\"2.1\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:xfa=\"http://www.xfa.org/schema/xfa-data/1.0/\"><p dir=\"ltr\" style=\"margin-top:0pt;margin-bottom:0pt;font-family:Helvetica;font-size:12pt\"\\>This is a test of putting a lot of text in the coins and other wealth box. Yay, it wraps!</p></body>)/T(Coins and Other Wealth)/V(%s)>>\n" ""
+  printf "<</T(Coins and Other Wealth)/V(%s)>>\n" $ coinAndOtherWealth c
   printf "<</T(Con)/V(%d)>>\n" $ con c
   printf "<</T(Con \\(Abil Mod\\))/V(%d)>>\n" $ conAbilMod c
   printf "<</T(Con \\(Mod + 1 / 2 Level\\))/V(%d)>>\n" $ conAbilLevel c

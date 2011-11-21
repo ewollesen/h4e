@@ -5,10 +5,8 @@ tags:
 	find . -iname "*.hs" -print | xargs hasktags
 	rm -f tags
 
-.fdf.pdf:
+.fdf.pdf: $<
 	pdftk CharacterSheetFillable.pdf fill_form $< output $@ 
 
-pontus.pdf: pontus.fdf
-
-pontus.fdf: *.hs
+%.fdf: *.hs
 	runghc Fdf.hs > $@

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function build () {
-    make pontus.pdf
+    make Pontus4.pdf
 }
 
 build

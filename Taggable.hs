@@ -1,6 +1,6 @@
 module Taggable where
 
-data Tag = Tag { name :: String } deriving (Show, Eq)
+data Tag = Tag { name :: String } deriving (Show, Ord, Eq)
 
 class Taggable a where
   tags :: a -> [Tag]

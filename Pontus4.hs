@@ -1,4 +1,4 @@
-module Pontus where
+module Pontus4 where
 
 import qualified CharacterClass as CC
 import Modifier
@@ -42,7 +42,8 @@ pontus = Character { Character.name = "Pontus"
                    , levels=[
                      Level.level [] [bullsStrength, ironFist, whirlingDefense, aspectOfElevatedHarmony, battlemindsDemand, battleResilience, blurredStep, mindSpike] [deceptiveMind, lureOfIron],
                      Level.level [] [dimensionSlide] [psionicToughness],
-                     Level.level [] [lodestoneLure] []
+                     Level.level [] [lodestoneLure] [],
+                     Level.level [plus1Wis, plus1Con] [] [resilientDemand]
                      ]
                    , gear=[chainmail1Dwarven, lightShield, battleaxe1, dagger, advKit]
                    , xp=2925
@@ -56,3 +57,6 @@ pontus = Character { Character.name = "Pontus"
                    , adventuringCompanyOrOtherAffiliations=""
                    , coinAndOtherWealth="19 GP"
                    }
+
+plus1Con = modFactory "+1 Con (Level)" Constitution 1 UntypedMod
+plus1Wis = modFactory "+1 Wis (Level)" Wisdom 1 UntypedMod

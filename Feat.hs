@@ -17,3 +17,5 @@ psionicToughness = featFactory "Psionic Toughness"
 
 lureOfIron = featFactory "Lure of Iron" []
 deceptiveMind = featFactory "Deceptive Mind" []
+
+resilientDemand = featFactory "Resilient Demand" []

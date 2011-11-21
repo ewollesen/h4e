@@ -36,6 +36,7 @@ data Character = Character { name :: String
                            , xp :: Int
                            , languages :: [String]
                            , adventuringCompanyOrOtherAffiliations :: String
+                           , coinAndOtherWealth :: String
                            } deriving (Show)
 
 instance Modifiable Character where
@@ -1147,5 +1148,5 @@ otherEquipment :: Int -> Character -> String
 otherEquipment i c
   | length items > i = (escapeParen . Equipment.name) $ items !! i
   | otherwise = ""
-  where items = filter (\x -> x `notElem` mi) $ gear c
+  where items = L.sort $ filter (\x -> x `notElem` mi) $ gear c
         mi = magicItems $ gear c
