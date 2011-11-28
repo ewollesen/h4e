@@ -23,9 +23,23 @@ chainmail1Dwarven = equipFactory "Chain mail +1 (Dwarven)"
             [modFactory "+6 AC bonus (Armor)" ArmorClass 6 ArmorMod,
              modFactory "+1 AC bonus (Enhancment)" ArmorClass 1 EnhancementMod,
              modFactory "-1 Skill penalty (Armor)" Skill (-1) ArmorMod,
-             modFactory "-1 Speed penalty (Armor)" Speed (-1) ArmorMod]
+             modFactory "-1 Speed penalty (Armor)" Speed (-1) ArmorMod,
+             modFactory "+1 Endurance (Enhancement)" Modifier.Endurance 1 ItemMod]
             [heavyArmorTag, armorTag, magicItemTag]
             Nothing
+
+amuletOfHealth1 = equipFactory "Amulet of Health +1"
+                  [modFactory "+1 Fort bonus (Enhancment)" Fortitude 1 EnhancementMod,
+                   modFactory "+1 Reflex bonus (Enhancment)" Reflex 1 EnhancementMod,
+                   modFactory "+1 Will bonus (Enhancment)" Will 1 EnhancementMod,
+                   modFactory "5 Poison" Resistance 5 UntypedMod]
+                  [magicItemTag, neckTag]
+                  Nothing
+
+potionOfHealing = equipFactory "Potion of Healing"
+                  []
+                  [magicItemTag]
+                  Nothing
 
 pontus = Character { Character.name = "Pontus"
                    , playerName = "Eric Wollesen"
@@ -46,8 +60,8 @@ pontus = Character { Character.name = "Pontus"
                      Level.level [] [lodestoneLure] [],
                      Level.level [plus1Wis, plus1Con] [] [resilientDemand]
                      ]
-                   , gear=[chainmail1Dwarven, lightShield, battleaxe1, dagger, advKit]
-                   , xp=2925
+                   , gear=[chainmail1Dwarven, lightShield, battleaxe1, dagger, advKit, amuletOfHealth1, potionOfHealing]
+                   , xp=4124
                    , age=24
                    , gender="Male"
                    , height="5' 9\""

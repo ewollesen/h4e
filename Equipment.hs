@@ -39,6 +39,7 @@ simpleWeaponTag = tagFactory "Simple"
 meleeWeaponTag = tagFactory "Melee"
 rangedWeaponTag = tagFactory "Ranged"
 magicItemTag = tagFactory "Magic"
+neckTag = tagFactory "Neck"
 
 longsword = equipFactory "Longsword"
             []

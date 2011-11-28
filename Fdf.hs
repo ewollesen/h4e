@@ -55,7 +55,7 @@ printFdfData c = do
   printf "<</T(Arcana \\(Misc\\))/V(%s)>>\n" $ f0 $ arcanaMisc c
   printf "<</T(Arcana \\(Trained\\))/V/%s>>\n" $ arcanaTrained c
   mapM (\x -> printf "<</T(At-Will Powers %d)/V(%s)>>\n" x $ atWillPower (x-1) c) [1..6]
-  printf "<</T(Athletics)/V(%d)>>\n" $ arcana c
+  printf "<</T(Athletics)/V(%d)>>\n" $ athletics c
   printf "<</T(Athletics \\(Abil Mod + 1 / 2 Level\\))/V(%d)>>\n" $ athleticsAbil c
   printf "<</T(Athletics \\(Misc\\))/V(%s)>>\n" $ f0 $ athleticsMisc c
   printf "<</T(Athletics \\(Trained\\))/V/%s>>\n" $ athleticsTrained c
@@ -202,6 +202,7 @@ printFdfData c = do
   printf "<</T(Religion \\(Abil Mod + 1 / 2 Level\\))/V(%s)>>\n" $ f0 $ religionAbil c
   printf "<</T(Religion \\(Misc\\))/V(%s)>>\n" $ f0 $ religionMisc c
   printf "<</T(Religion \\(Trained\\))/V/%s>>\n" $ religionTrained c
+  printf "<</T(Resistances)/V(%s)>>\n" $ resistances c
   printf "<</T(Saving Throw Mods)/V(%s)>>\n" $ savingThrowMods c
   printf "<</T(Size)/V(%s)>>\n" $ size c
   printf "<</T(Skill Armor Penalty)/V(%s)>>\n" $ f0 $ skillArmorPenalty c

@@ -784,6 +784,10 @@ utilityPower i c
 utilityPowers :: [Power] -> [Power]
 utilityPowers p = powersByType Utility p
 
+nonUtilityPowers :: [Power] -> [Power]
+nonUtilityPowers p = filter (\x -> x `notElem` utils) p
+  where utils = utilityPowers p
+
 powersByUses :: PowerUses -> [Power] -> [Power]
 powersByUses u p = filter (\p -> Power.uses p == u) p
 
@@ -802,7 +806,7 @@ encounterPower i c
   | length powers > i = powers !! i
   | otherwise = ""
   where
-    powers = map Power.name $ L.sort $ encounterPowers $ Character.powers c
+    powers = map Power.name $ L.sort $ (nonUtilityPowers . encounterPowers) $ Character.powers c
 
 encounterPowers :: [Power] -> [Power]
 encounterPowers p = powersByUses Encounter p
@@ -930,7 +934,7 @@ damageMod p c = damageAbil p c
 damageDesc :: Power -> Character -> String
 damageDesc p c
   | Power.damage p == Nothing = ""
-  | otherwise = (fromJust $ Power.damage p) ++ " + " ++ (show $ damageMod p c)
+  | otherwise = (fromJust $ Power.damage p) ++ "+" ++ (show $ damageMod p c)
 
 damageAbil :: Power -> Character -> Int
 damageAbil p c = attackAbil p c
@@ -1054,7 +1058,8 @@ basic2RangedWeaponOrPower c = Equipment.name $ secondaryWeapon c
 basicMeleeAttack c w = basicAttack c w + strAbilMod c
 
 basicMeleeDamage :: Character -> Equipment -> String
-basicMeleeDamage c w = "1[W]+" ++ (show $ strAbilMod c)
+basicMeleeDamage c w = "1[W]+" ++ (show $ mods)
+  where mods = sum [strAbilMod c, damageEnh basicMeleePower c]
 
 basicRangedDamage :: Character -> Equipment -> String
 basicRangedDamage c w = "1[W]+" ++ (show $ strAbilMod c)
@@ -1144,9 +1149,14 @@ savingThrowMods c = unwords' $ map Modifier.name mods
 unwords' :: [String] -> String
 unwords' ws = foldr1 (\w s -> w ++ ", " ++ s) ws
 
+resistances :: Character -> String
+resistances c = unwords' $ map Modifier.name mods
+  where mods = modsByTarget Resistance $ Modifier.modifiers c
+
 otherEquipment :: Int -> Character -> String
 otherEquipment i c
   | length items > i = (escapeParen . Equipment.name) $ items !! i
   | otherwise = ""
   where items = L.sort $ filter (\x -> x `notElem` mi) $ gear c
         mi = magicItems $ gear c
+
