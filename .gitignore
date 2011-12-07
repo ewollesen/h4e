@@ -5,3 +5,4 @@ TAGS
 *.fdf
 *.json
 *.pdf
+!CharacterSheetFillable.pdf
