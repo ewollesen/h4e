@@ -128,3 +128,14 @@ lodestoneLure = Power { Power.name="Lodestone Lure"
                       , Power.level=3
                       , Power.damage=Just "Constitution modifier"
                       }
+
+nightmareVortex = Power { Power.name="Nightmare Vortex"
+                      , Power.attackAbility=Just Ability.Constitution
+                      , Power.attackVsDefense=Just "AC"
+                      , Power.uses=Daily
+                      , Power.action=StandardAction
+                      , Power.keywords=["Fear", "Psionic", "Weapon"]
+                      , Power.powerType=Power.Attack
+                      , Power.level=5
+                      , Power.damage=Just "1[W} + Constitution modifier"
+                      }
