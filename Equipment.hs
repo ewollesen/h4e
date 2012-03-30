@@ -3,12 +3,14 @@ module Equipment where
 import Modifier
 import Taggable
 import Equippable
+import Power
 
 
 data Equipment = Equipment { name :: String
                            , modifiers :: [Modifier]
                            , tags :: [Tag]
                            , proficiencyBonus :: Maybe Int
+                           , powers :: [Power]
                            } deriving (Show, Ord, Eq)
 
 
@@ -23,11 +25,12 @@ instance Equippable Equipment where
   modifiers e = Equipment.modifiers e
 
 
-equipFactory n m t b = Equipment { Equipment.name=n
-                                 , Equipment.modifiers=m
-                                 , Equipment.tags=t
-                                 , Equipment.proficiencyBonus=b
-                                 }
+equipFactory n m t b p = Equipment { Equipment.name=n
+                                   , Equipment.modifiers=m
+                                   , Equipment.tags=t
+                                   , Equipment.proficiencyBonus=b
+                                   , Equipment.powers=p
+                                   }
 
 lightArmorTag = tagFactory "Light"
 heavyArmorTag = tagFactory "Heavy"
@@ -40,21 +43,25 @@ meleeWeaponTag = tagFactory "Melee"
 rangedWeaponTag = tagFactory "Ranged"
 magicItemTag = tagFactory "Magic"
 neckTag = tagFactory "Neck"
+armsTag = tagFactory "Arms"
 
 longsword = equipFactory "Longsword"
             []
             [weaponTag, martialWeaponTag, meleeWeaponTag]
             (Just 3)
+            []
 
 dagger = equipFactory "Dagger"
          []
          [weaponTag, simpleWeaponTag, meleeWeaponTag, rangedWeaponTag]
          (Just 2)
+         []
 
 bastardsword = equipFactory "Bastard sword"
                []
                [weaponTag, meleeWeaponTag, exoticWeaponTag]
                (Just (-99)) -- so I know this value is not verified
+               []
 
 plateMail = equipFactory "Plate mail"
             [modFactory "+8 AC bonus (Armor)" ArmorClass 8 ArmorMod,
@@ -62,20 +69,24 @@ plateMail = equipFactory "Plate mail"
              modFactory "-2 Armor penalty" Skill (-2) ArmorMod]
             [heavyArmorTag, armorTag]
             Nothing
+            []
 
 scaleMail = equipFactory "Scale mail"
             [modFactory "+7 AC bonus (Armor)" ArmorClass 7 ArmorMod,
              modFactory "-1 Speed penalty (Armor)" Speed (-1) ArmorMod]
             [heavyArmorTag, armorTag]
             Nothing
+            []
 
 lightShield = equipFactory "Shield (light)"
               [modFactory "+1 AC bonus (Shield)" ArmorClass 1 ShieldMod,
                modFactory "+1 Reflex bonus (Shield)" Reflex 1 ShieldMod]
               [lightArmorTag]
               Nothing
+              []
 
 advKit = equipFactory "Adventurer's Kit"
          []
          []
          Nothing
+         []

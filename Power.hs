@@ -35,6 +35,7 @@ data PowerType = Attack
                | PathFeature
                | DestinyFeature
                | Utility
+               | Item
                deriving (Show, Eq, Ord)
 $(derive[''PowerType])
 

@@ -179,7 +179,7 @@ skillTrainedBonus s c
   where trained = skillTrained s c
 
 skillArmorPenalty :: Character -> Int
-skillArmorPenalty c = (-1)
+skillArmorPenalty c = sum $ (map value (armorCheckPenaltyMods c))
 
 skillMisc :: SkillName -> Character -> Int
 skillMisc s c = modToTarget (skillNameToModTarget s) $ Modifier.modifiers c
@@ -714,7 +714,9 @@ surgesDay c = conAbilMod c
 {- Powers -}
 {----------}
 powers :: Character -> [Power]
-powers c = concatMap Level.powers (levels c) -- TODO racial & class
+-- powers c = powersFromLevels c :: powersFromItems c
+powers c = concat [concatMap Level.powers (levels c), -- TODO racial & class
+                   concatMap Equipment.powers (gear c)]
 
 powersByType :: PowerType -> [Power] -> [Power]
 powersByType t p = filter (\p -> Power.powerType p == t) p
@@ -1159,4 +1161,3 @@ otherEquipment i c
   | otherwise = ""
   where items = L.sort $ filter (\x -> x `notElem` mi) $ gear c
         mi = magicItems $ gear c
-

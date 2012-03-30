@@ -139,3 +139,14 @@ nightmareVortex = Power { Power.name="Nightmare Vortex"
                       , Power.level=5
                       , Power.damage=Just "1[W} + Constitution modifier"
                       }
+
+psionicAmbush = Power { Power.name="Psionic Ambush"
+                      , Power.attackAbility=Nothing
+                      , Power.attackVsDefense=Nothing
+                      , Power.uses=Encounter
+                      , Power.action=MoveAction
+                      , Power.keywords=["Psionic", "Teleportation"]
+                      , Power.powerType=Utility
+                      , Power.level=6
+                      , Power.damage=Nothing
+                      }

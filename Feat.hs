@@ -19,3 +19,5 @@ lureOfIron = featFactory "Lure of Iron" []
 deceptiveMind = featFactory "Deceptive Mind" []
 
 resilientDemand = featFactory "Resilient Demand" []
+
+defensiveMobility = featFactory "Defensive Mobility" []
